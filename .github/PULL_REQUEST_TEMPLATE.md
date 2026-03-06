@@ -51,7 +51,7 @@ Closes #<!-- issue number -->
 - [ ] All user inputs are validated (Zod / class-validator)
 - [ ] Auth and role guards are in place for new endpoints
 - [ ] No secrets or credentials in the code
-- [ ] No `dangerouslySetInnerHTML`
+- [ ] No unsafe HTML rendering
 
 #### Testing
 - [ ] I have tested my changes locally
@@ -61,7 +61,7 @@ Closes #<!-- issue number -->
 #### Database (if applicable)
 - [ ] Migration is reversible
 - [ ] Indexes are added for new foreign keys
-- [ ] Schema change reviewed by Ayeen
+- [ ] Schema change reviewed by backend lead
 
 #### AI Assistance
 - [ ] I understand every line of AI-generated code in this PR

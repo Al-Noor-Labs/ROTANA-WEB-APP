@@ -148,7 +148,7 @@ ROTANA-WEB-APP/
 | Hooks                  | camelCase, `use` prefix | `useOrderStatus.ts`           |
 | Utilities              | camelCase             | `formatCurrency.ts`             |
 | Constants              | camelCase file, UPPER_SNAKE values | `orderStatuses.ts` → `ORDER_PENDING` |
-| Types/Interfaces       | PascalCase, `I` prefix for interfaces | `IOrder`, `OrderStatus` |
+| Types/Interfaces       | PascalCase            | `Order`, `OrderStatus` |
 | Zod schemas            | camelCase, `Schema` suffix | `createOrderSchema`        |
 | NestJS modules         | kebab-case directory  | `src/modules/warehouse/`        |
 | NestJS services        | PascalCase, `.service.ts` | `WarehouseService`          |
@@ -193,7 +193,7 @@ These will be **rejected in code review**. No exceptions.
 - ❌ `// @ts-ignore` or `// @ts-expect-error` without a linked issue
 - ❌ Non-null assertion `!` without justification
 - ❌ `var` keyword — use `const` or `let`
-- ❌ `console.log` in committed code — use proper logger
+- ❌ `console.log` in committed code — use `pino` logger (backend) or remove before commit (frontend)
 - ❌ Magic numbers/strings — use named constants
 - ❌ Default exports (except Next.js pages) — use named exports
 
@@ -317,8 +317,10 @@ JWT_SECRET=...                         # Secret
 - `NEXT_PUBLIC_*` prefix = safe to expose in browser
 - Everything else = server-only, NEVER expose to client
 - Store in `.env.local` (gitignored)
-- Share via Google Chat pinned message (encrypted)
+- **Dev secrets**: Shared via pinned message in the dedicated team Google Chat group (not open channels)
+- **Production secrets**: Managed directly on Vercel/Supabase dashboards by Ayeen only
 - Update `.env.example` when adding new variables (values = placeholder only)
+- Rotate secrets immediately if accidentally exposed
 
 ---
 

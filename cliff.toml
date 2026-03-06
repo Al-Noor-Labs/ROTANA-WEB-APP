@@ -35,6 +35,8 @@ commit_parsers = [
     { message = "^chore\\(release\\)", skip = true },
     { message = "^chore", group = "🔨 Miscellaneous" },
     { message = "^ci", group = "⚙️ CI/CD" },
+    { message = "^build", group = "📦 Build" },
+    { message = "^revert", group = "⏪ Reverts" },
 ]
 filter_commits = false
 tag_pattern = "v[0-9].*"

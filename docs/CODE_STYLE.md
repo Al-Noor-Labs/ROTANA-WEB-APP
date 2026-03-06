@@ -40,7 +40,7 @@ interface IOrderItem {
 }
 
 // ❌ WRONG — inline types for public APIs
-function createOrder(data: { customerId: string; items: any[] }) {}
+function createOrder(data: { customerId: string; items: unknown[] }): void {}
 ```
 
 ### Enums vs Union Types
@@ -115,6 +115,7 @@ Every component that fetches data must handle:
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { createOrderSchema } from '@rotana/shared/schemas';
 
 export function CreateOrderForm() {

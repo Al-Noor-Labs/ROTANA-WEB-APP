@@ -113,9 +113,10 @@ We use [Conventional Commits](https://www.conventionalcommits.org/). This is **e
 | `style`    | Formatting, no logic change          | `style(ui): fix button alignment`            |
 | `refactor` | Code change, no feature/fix          | `refactor(auth): extract token validation`   |
 | `test`     | Adding/fixing tests                  | `test(orders): add checkout unit tests`      |
-| `chore`    | Build config, tooling, deps          | `chore(deps): update next to 16.2`           |
+| `chore`    | Tooling, config, deps                | `chore(deps): update next to 16.2`           |
 | `perf`     | Performance improvement              | `perf(db): add index on orders.created_at`   |
 | `ci`       | CI/CD changes                        | `ci: add type-check step to pipeline`        |
+| `build`    | Build system or dependencies         | `build(api): update NestJS to v11`           |
 
 ### Scopes (use the module name)
 
@@ -258,12 +259,13 @@ See [docs/SETUP.md](docs/SETUP.md) for detailed instructions.
 
 ## Communication
 
-| Channel        | Purpose                                        |
-| -------------- | ---------------------------------------------- |
-| Google Chat    | Daily standups, quick questions, .env updates  |
-| GitHub Issues  | All tasks, bugs, and feature requests          |
-| GitHub PRs     | Code-specific discussions                      |
-| Google Chat    | Urgent issues, blockers, deployment alerts     |
+| Channel        | Purpose                                                     |
+| -------------- | ----------------------------------------------------------- |
+| Google Chat    | Daily standups, quick questions, .env updates, urgent alerts |
+| GitHub Issues  | All tasks, bugs, and feature requests                       |
+| GitHub PRs     | Code-specific discussions                                   |
+
+> **⚠️ Secrets Sharing**: Environment variable values are shared via Google Chat pinned message. Never share secrets in open channels — use the dedicated team group only. For production secrets, Ayeen manages them directly on Vercel/Supabase dashboards.
 
 ### Daily Standup (on Google Chat)
 

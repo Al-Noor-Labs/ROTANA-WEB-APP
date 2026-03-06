@@ -19,25 +19,30 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
 
       - name: Generate Changelog
+        id: changelog
         uses: orhun/git-cliff-action@v3
         with:
           config: cliff.toml
-          args: --verbose
+          args: --latest --strip header
         env:
-          OUTPUT: CHANGELOG.md
+          OUTPUT: RELEASE_NOTES.md
 
-      - name: Commit Changelog
+      - name: Commit Full Changelog
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Generate full changelog
+          npx git-cliff@latest --config cliff.toml -o CHANGELOG.md || true
+
           git add CHANGELOG.md
           git commit -m "docs: update changelog for ${{ github.ref_name }}" || echo "No changes"
-          git push
+          git push origin main
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          body_path: CHANGELOG.md
-          generate_release_notes: true
+          body_path: RELEASE_NOTES.md

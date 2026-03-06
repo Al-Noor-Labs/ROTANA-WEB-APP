@@ -27,7 +27,7 @@ Before generating ANY code, you MUST read and follow:
 
 ### 2. TypeScript Strict Mode
 - NEVER use `any` — use `unknown` and type guards
-- NEVER use `// @ts-ignore` without an issue link
+- NEVER use `// @ts-ignore` — prefer `// @ts-expect-error` with a comment explaining why
 - ALL function parameters and return types MUST be explicitly typed
 - ALL component props MUST have a defined interface
 
@@ -59,7 +59,6 @@ Before generating ANY code, you MUST read and follow:
 - Primary keys: `id` (UUID)
 - Foreign keys: `<entity>_id` (e.g., `customer_id`)
 - ALWAYS include `created_at` and `updated_at` timestamps
-- NEVER write raw SQL — use Prisma Client
 - NEVER make schema changes without discussing with the team
 
 ### 6. Security
@@ -87,8 +86,8 @@ Before generating ANY code, you MUST read and follow:
 ### 9. Code Quality
 - Functions: max 50 lines (prefer < 30)
 - Components: max 200 lines
-- Use named exports (not default exports, except Next.js pages)
-- No `console.log` — use a proper logger
+- Use named exports (not default exports, except Next.js `page.tsx`, `layout.tsx`, `error.tsx`, `loading.tsx`, `not-found.tsx`)
+- No `console.log` — use `pino` logger for backend, remove all logs before committing frontend
 - No magic numbers/strings — use named constants
 - No code duplication — extract shared utilities
 - Prefer composition over inheritance
