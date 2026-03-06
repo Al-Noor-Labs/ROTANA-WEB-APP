@@ -1,36 +1,104 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏪 Rotana Store
 
-## Getting Started
+> Warehouse & Store Management Platform — B2C + B2B Commerce
 
-First, run the development server:
+Built by [Alnoor Labs](https://alnorlabs.com) for Rotana.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🏗️ Architecture
+
+Turborepo monorepo with 3 applications and shared packages:
+
+```
+apps/
+  web/      → Next.js 16 (App Router) — Admin dashboards + Customer portals
+  api/      → NestJS — REST API backend
+  mobile/   → React Native (Expo) — Mobile app
+packages/
+  shared/   → Shared types, Zod schemas, utils, constants
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Layer        | Technology                              |
+| ------------ | --------------------------------------- |
+| Frontend     | Next.js 16, React 19, TypeScript        |
+| Backend      | NestJS, TypeScript                      |
+| Database     | PostgreSQL via Supabase                 |
+| ORM          | Prisma                                  |
+| Auth         | Supabase Auth + JWT                     |
+| UI           | shadcn/ui, Tailwind CSS 4, Lucide Icons |
+| State        | Zustand + TanStack React Query          |
+| Payments     | Razorpay                                |
+| Mobile       | React Native (Expo)                     |
+| CI/CD        | GitHub Actions → Vercel                 |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Modules
 
-## Learn More
+| Module              | Status     | Description                                    |
+| ------------------- | ---------- | ---------------------------------------------- |
+| Auth & RBAC         | 🔲 Planned | Login, register, 8-role access control         |
+| Product Catalog     | 🔲 Planned | SKU master, categories, search                 |
+| B2C Commerce        | 🔲 Planned | Browse, cart, checkout, payment, tracking       |
+| B2B Commerce        | 🔲 Planned | Credit lines, invoicing, due-bill management   |
+| Warehouse           | 🔲 Planned | PO, GRN, stock transfer, low stock alerts      |
+| Store / POS         | 🔲 Planned | Shelf stock, quick sale, order packing          |
+| Inventory           | 🔲 Planned | Multi-location, FIFO, batch expiry             |
+| Supplier Portal     | 🔲 Planned | PO view, invoice upload, payment tracking      |
+| Salesman Dashboard  | 🔲 Planned | Visits, orders, commission, collections        |
+| Delivery Management | 🔲 Planned | Fleet management, assignment, tracking         |
+| Payroll             | 🔲 Planned | Salary, attendance, commission, payslips       |
+| Invoicing / Finance | 🔲 Planned | GST invoices, credit notes, cash flow          |
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 Quick Start
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Prerequisites: Node.js ≥ 20, pnpm ≥ 9
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Clone and install
+git clone <repo-url>
+cd ROTANA-WEB-APP
+pnpm install
 
-## Deploy on Vercel
+# Setup environment
+cp .env.example .env.local
+# Fill in values from Google Chat pinned message
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Start development
+pnpm dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [docs/SETUP.md](docs/SETUP.md) for detailed setup instructions.
+
+## 👥 Team
+
+| Member  | Role                   | Focus Area                    |
+| ------- | ---------------------- | ----------------------------- |
+| Ayeen   | PM + Backend Lead      | API, Auth, DB, DevOps         |
+| Rahmath | Backend Developer      | Inventory, Invoicing, Payroll |
+| Faizan  | Frontend Developer     | B2C portal, Checkout UI       |
+| Najeeb  | Frontend Developer     | Admin dashboards              |
+| Zaka    | React Native Developer | Mobile app                    |
+
+## 📖 Documentation
+
+| Document                                            | Description                          |
+| --------------------------------------------------- | ------------------------------------ |
+| [CONTRIBUTING.md](CONTRIBUTING.md)                   | Team workflow, PR process, AI rules  |
+| [PROJECT_CANON.md](PROJECT_CANON.md)                 | Stack rules, naming, patterns        |
+| [docs/CODE_STYLE.md](docs/CODE_STYLE.md)             | Code examples and conventions        |
+| [docs/SETUP.md](docs/SETUP.md)                       | Local development setup              |
+| [docs/SPRINT_PLAN.md](docs/SPRINT_PLAN.md)           | 8-week development roadmap           |
+| [docs/TEAM_MATRIX.md](docs/TEAM_MATRIX.md)           | Module ownership & review buddies    |
+| [docs/BRANCH_PROTECTION.md](docs/BRANCH_PROTECTION.md) | GitHub branch protection setup    |
+| [docs/adr/](docs/adr/)                               | Architecture Decision Records        |
+
+## 📋 Git Workflow
+
+We use **GitFlow**: `main` → `develop` → `feature/ROT-*` branches.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full details.
+
+---
+
+*© 2026 Alnoor Labs — Confidential & Proprietary*
