@@ -134,13 +134,19 @@ export const POST = withAuth(async (req, { user }) => {
         }
       }
 
-      // 4. Mark GRN as STOCKED
-      await tx.goodsReceivedNote.update({
+      // 4. Mark GRN as STOCKED and return the updated record
+      const updatedGRN = await tx.goodsReceivedNote.update({
         where: { id: newGRN.id },
         data: { status: GRNStatus.STOCKED },
+        include: {
+          items: { include: { variant: true } },
+          supplier: true,
+          location: true,
+        },
       });
 
-      return newGRN;
+      return updatedGRN;
+
     });
 
     return apiSuccess(grn, 201);
