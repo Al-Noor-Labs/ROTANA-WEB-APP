@@ -15,8 +15,8 @@ export const GET = withAuth(async (req) => {
       : new Date(now.getFullYear(), now.getMonth(), 1);
     const endDate = endDateParam ? new Date(endDateParam) : now;
 
-    const [allSuppliers, supplierGrns, supplierInvoices, supplierDiscrepancies] =
-      (await Promise.all([
+    const [allSuppliers, supplierGrns, supplierInvoices, supplierDiscrepancies] = await Promise.all(
+      [
         // Get all active suppliers
         prisma.supplier.findMany({
           where: { status: 'ACTIVE' },
@@ -44,7 +44,8 @@ export const GET = withAuth(async (req) => {
           },
           include: { grn: { select: { supplierId: true } } },
         }),
-      ]));
+      ],
+    );
 
     type GrnItem = (typeof supplierDiscrepancies)[number];
     type SupplierInfo = (typeof allSuppliers)[number];
