@@ -1,4 +1,5 @@
 import { signAccessToken } from "../lib/jwt";
+import { Role } from "@/lib/generated/prisma";
 
 // Manually set secrets if not in environment
 process.env.JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || "RotanaAdminAccessSecretKey123!@#";
@@ -9,7 +10,7 @@ async function test() {
   const token = signAccessToken({
     userId: "437e3a4b-ab92-4e72-b3a3-5f8a560142c0",
     email: "admin@rotana.com",
-    role: "SUPER_ADMIN" as any
+    role: Role.SUPER_ADMIN
   });
 
   const baseUrl = "http://localhost:3000/api";
@@ -38,8 +39,8 @@ async function test() {
     const supAnalytics = await supAnalyticsRes.json();
     console.log("✅ GET /analytics/suppliers:", supAnalytics.data.performance.length, "suppliers found");
 
-  } catch (error: any) {
-    console.error("❌ Test failed:", error.message);
+  } catch (error) {
+    console.error("❌ Test failed:", (error as Error).message);
   }
 }
 

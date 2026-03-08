@@ -78,14 +78,3 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
           working-directory: apps/web
-
-  # Uncomment when NestJS API is deployed separately
-  # deploy-api:
-  #   name: Deploy API
-  #   needs: quality
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #     - name: Deploy to Railway/AWS/etc
-  #       run: echo "Add deployment steps here"

@@ -88,6 +88,7 @@ yarn-error.log*
 # Generated Files
 # =============================================
 /app/generated/prisma
+/lib/generated/
 *.generated.*
 
 # =============================================

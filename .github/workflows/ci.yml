@@ -44,6 +44,10 @@ jobs:
       - name: ESLint — lint check
         run: pnpm lint
 
+      - name: Generate Prisma client
+        run: pnpm db:generate
+        # prisma generate reads from schema only — no DB connection needed
+
       - name: TypeScript — type check
         run: pnpm type-check
 
@@ -70,6 +74,10 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+        # prisma generate reads from schema only — no DB connection needed
 
       - name: Build all apps
         run: pnpm build

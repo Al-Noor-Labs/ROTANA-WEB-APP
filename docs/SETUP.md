@@ -6,12 +6,14 @@
 
 ## Prerequisites
 
-| Tool      | Version  | Install                                           |
-| --------- | -------- | ------------------------------------------------- |
-| Node.js   | ≥ 20 LTS | [nodejs.org](https://nodejs.org)                  |
-| pnpm      | ≥ 9.x    | `npm install -g pnpm`                             |
-| Git       | ≥ 2.40   | [git-scm.com](https://git-scm.com)               |
-| VS Code   | Latest   | [code.visualstudio.com](https://code.visualstudio.com) |
+| Tool    | Version  | Install                                                |
+| ------- | -------- | ------------------------------------------------------ |
+| Node.js | ≥ 20 LTS | [nodejs.org](https://nodejs.org)                       |
+| pnpm    | ≥ 9.x    | `npm install -g pnpm`                                  |
+| Git     | ≥ 2.40   | [git-scm.com](https://git-scm.com)                     |
+| VS Code | Latest   | [code.visualstudio.com](https://code.visualstudio.com) |
+
+> **Package manager**: This project uses **pnpm** exclusively. Do NOT use `npm install` or `yarn` — they will create wrong lockfiles and break CI.
 
 ### Recommended VS Code Extensions
 
@@ -37,8 +39,6 @@ cd ROTANA-WEB-APP
 pnpm install
 ```
 
-> This installs dependencies for all apps in the monorepo (web, api, mobile).
-
 ## Step 3: Environment Variables
 
 ```bash
@@ -48,17 +48,20 @@ cp .env.example .env.local
 
 Now fill in the values. Get them from the **Google Chat pinned message** in the team group.
 
-| Variable                          | Where to Get               |
-| --------------------------------- | -------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`        | Supabase Dashboard → Settings → API |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY`   | Supabase Dashboard → Settings → API |
-| `SUPABASE_SERVICE_ROLE_KEY`       | Google Chat pinned message |
-| `DATABASE_URL`                    | Supabase Dashboard → Settings → Database |
-| `JWT_SECRET`                      | Google Chat pinned message |
-| `RAZORPAY_KEY_ID`                 | Razorpay Dashboard         |
-| `RAZORPAY_KEY_SECRET`             | Google Chat pinned message |
+| Variable                        | Where to Get                             |
+| ------------------------------- | ---------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase Dashboard → Settings → API      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard → Settings → API      |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Google Chat pinned message               |
+| `DATABASE_URL`                  | Supabase Dashboard → Settings → Database |
+| `DIRECT_URL`                    | Supabase Dashboard → Settings → Database |
+| `NEXTAUTH_SECRET`               | Google Chat pinned message               |
+| `RAZORPAY_KEY_ID`               | Razorpay Dashboard                       |
+| `RAZORPAY_KEY_SECRET`           | Google Chat pinned message               |
+| `RAZORPAY_WEBHOOK_SECRET`       | Google Chat pinned message               |
 
 > **⚠️ NEVER commit `.env.local` to Git.** It is in `.gitignore` by default.
+> See `.rules/PROJECT_CANON.md` Section 8 for the complete list of all environment variables.
 
 ## Step 4: Database Setup
 
@@ -76,38 +79,33 @@ pnpm db:seed
 ## Step 5: Start Development
 
 ```bash
-# Start all apps (web + api) via Turborepo
 pnpm dev
-
-# Or start individual apps
-pnpm dev --filter=web    # Next.js frontend only
-pnpm dev --filter=api    # NestJS backend only
 ```
 
-### Default Ports
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-| App    | URL                           |
-| ------ | ----------------------------- |
-| Web    | http://localhost:3000          |
-| API    | http://localhost:3001/api/v1   |
+The Next.js app serves both the **web UI** and the **API routes** (`/api/v1/...`) from the same server on port 3000.
 
 ---
 
 ## Common Commands
 
-| Command               | Description                          |
-| --------------------- | ------------------------------------ |
-| `pnpm dev`            | Start all apps in dev mode           |
-| `pnpm build`          | Build all apps                       |
-| `pnpm lint`           | Run ESLint on all apps               |
-| `pnpm format`         | Format all files with Prettier       |
-| `pnpm format:check`   | Check formatting without writing     |
-| `pnpm type-check`     | Run TypeScript type checking         |
-| `pnpm test`           | Run all tests                        |
-| `pnpm db:generate`    | Generate Prisma client               |
-| `pnpm db:migrate`     | Run database migrations              |
-| `pnpm db:seed`        | Seed database with test data         |
-| `pnpm db:studio`      | Open Prisma Studio (DB browser)      |
+| Command             | Description                          |
+| ------------------- | ------------------------------------ |
+| `pnpm dev`          | Start Next.js dev server (web + API) |
+| `pnpm build`        | Build for production                 |
+| `pnpm start`        | Run production build locally         |
+| `pnpm lint`         | Run ESLint                           |
+| `pnpm format`       | Format all files with Prettier       |
+| `pnpm format:check` | Check formatting without writing     |
+| `pnpm type-check`   | Run TypeScript type checking         |
+| `pnpm test`         | Run all unit tests (Vitest)          |
+| `pnpm test:e2e`     | Run E2E tests (Playwright)           |
+| `pnpm db:generate`  | Generate Prisma client               |
+| `pnpm db:migrate`   | Run database migrations              |
+| `pnpm db:seed`      | Seed database with test data         |
+| `pnpm db:studio`    | Open Prisma Studio (DB browser GUI)  |
+| `pnpm db:reset`     | ⚠️ RESET DB — deletes all data!      |
 
 ---
 
@@ -135,7 +133,6 @@ pnpm db:reset
 ### Port already in use
 
 ```bash
-# Find and kill the process using the port
 # Windows
 netstat -ano | findstr :3000
 taskkill /PID <pid> /F
@@ -148,7 +145,14 @@ lsof -ti:3000 | xargs kill
 
 - Make sure `.env.local` exists and has all required variables
 - Restart the dev server after changing env vars
-- `NEXT_PUBLIC_*` vars require a full restart (no hot reload)
+- `NEXT_PUBLIC_*` vars require a full server restart (no hot reload for these)
+
+### "Cannot find module" after adding a new lib/ file
+
+```bash
+# Restart the TypeScript server in VS Code
+# Command Palette → "TypeScript: Restart TS Server"
+```
 
 ---
 
@@ -176,4 +180,4 @@ git branch -d feature/ROT-12-add-cart
 
 ---
 
-*Questions? Ask in the Google Chat team group.*
+_Questions? Ask in the Google Chat team group._
