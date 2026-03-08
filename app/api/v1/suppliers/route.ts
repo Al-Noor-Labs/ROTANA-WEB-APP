@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, MANAGER_ROLES, STAFF_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
 
 const SupplierSchema = z.object({
   name: z.string().min(1),
@@ -21,21 +21,21 @@ const SupplierSchema = z.object({
 export const GET = withAuth(async (req) => {
   try {
     const { searchParams } = new URL(req.url);
-    const search = searchParams.get("search");
+    const search = searchParams.get('search');
 
     const suppliers = await prisma.supplier.findMany({
       where: {
-        status: "ACTIVE",
+        status: 'ACTIVE',
         ...(search
           ? {
               OR: [
-                { name: { contains: search, mode: "insensitive" } },
-                { contactName: { contains: search, mode: "insensitive" } },
+                { name: { contains: search, mode: 'insensitive' } },
+                { contactName: { contains: search, mode: 'insensitive' } },
               ],
             }
           : {}),
       },
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
     });
     return apiSuccess(suppliers);
   } catch (error) {

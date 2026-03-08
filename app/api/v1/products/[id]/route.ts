@@ -1,14 +1,11 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, MANAGER_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
 
 // GET /api/products/[id] - Get single product
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const product = await prisma.product.findUnique({
@@ -18,7 +15,7 @@ export async function GET(
         variants: { where: { isActive: true } },
       },
     });
-    if (!product) return apiError("Product not found", 404);
+    if (!product) return apiError('Product not found', 404);
     return apiSuccess(product);
   } catch (error) {
     return handleApiError(error);
@@ -45,9 +42,9 @@ export const DELETE = withAuth(async (req, { params }) => {
   try {
     await prisma.product.update({
       where: { id: params.id },
-      data: { status: "DISCONTINUED" },
+      data: { status: 'DISCONTINUED' },
     });
-    return apiSuccess({ message: "Product discontinued" });
+    return apiSuccess({ message: 'Product discontinued' });
   } catch (error) {
     return handleApiError(error);
   }

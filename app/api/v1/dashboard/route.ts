@@ -1,7 +1,7 @@
-import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { withAuth, STAFF_ROLES } from "@/lib/with-auth";
-import { apiSuccess, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { withAuth, STAFF_ROLES } from '@/lib/with-auth';
+import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 
 // GET /api/dashboard - Business intelligence summary
 export const GET = withAuth(async (req) => {
@@ -34,25 +34,25 @@ export const GET = withAuth(async (req) => {
     ] = await Promise.all([
       // Today's orders count
       prisma.order.count({
-        where: { createdAt: { gte: todayStart }, status: { not: "CANCELLED" } },
+        where: { createdAt: { gte: todayStart }, status: { not: 'CANCELLED' } },
       }),
       // This month's orders
       prisma.order.count({
-        where: { createdAt: { gte: monthStart }, status: { not: "CANCELLED" } },
+        where: { createdAt: { gte: monthStart }, status: { not: 'CANCELLED' } },
       }),
       // Pending orders (not delivered/cancelled)
       prisma.order.count({
-        where: { status: { notIn: ["DELIVERED", "CANCELLED", "RETURNED"] } },
+        where: { status: { notIn: ['DELIVERED', 'CANCELLED', 'RETURNED'] } },
       }),
       // All-time revenue
       prisma.order.aggregate({
-        where: { status: "DELIVERED" },
+        where: { status: 'DELIVERED' },
         _sum: { totalAmount: true },
       }),
       // This month's revenue
       prisma.order.aggregate({
         where: {
-          status: "DELIVERED",
+          status: 'DELIVERED',
           deliveredAt: { gte: monthStart },
         },
         _sum: { totalAmount: true },
@@ -60,40 +60,40 @@ export const GET = withAuth(async (req) => {
       // Last month's revenue
       prisma.order.aggregate({
         where: {
-          status: "DELIVERED",
+          status: 'DELIVERED',
           deliveredAt: { gte: lastMonthStart, lte: lastMonthEnd },
         },
         _sum: { totalAmount: true },
       }),
 
       // Product counts
-      prisma.product.count({ where: { status: "ACTIVE" } }),
+      prisma.product.count({ where: { status: 'ACTIVE' } }),
       // Low stock - items where available <= reorderLevel
       prisma.inventoryBalance.count({ where: { available: { lte: 10 } } }),
 
       // Active deliveries
       prisma.delivery.count({
-        where: { status: { in: ["ASSIGNED", "PICKED_UP", "IN_TRANSIT"] } },
+        where: { status: { in: ['ASSIGNED', 'PICKED_UP', 'IN_TRANSIT'] } },
       }),
       // Delivered today
       prisma.delivery.count({
         where: {
-          status: "DELIVERED",
+          status: 'DELIVERED',
           deliveredAt: { gte: todayStart },
         },
       }),
 
       // Top 5 selling products this month
       prisma.orderItem.groupBy({
-        by: ["variantId"],
+        by: ['variantId'],
         where: {
           order: {
             createdAt: { gte: monthStart },
-            status: { not: "CANCELLED" },
+            status: { not: 'CANCELLED' },
           },
         },
         _sum: { quantity: true, lineTotal: true },
-        orderBy: { _sum: { lineTotal: "desc" } },
+        orderBy: { _sum: { lineTotal: 'desc' } },
         take: 5,
       }),
     ]);

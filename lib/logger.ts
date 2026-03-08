@@ -1,4 +1,4 @@
-import pino from "pino";
+import pino from 'pino';
 
 /**
  * Pino structured logger — single instance for the entire app.
@@ -13,17 +13,26 @@ import pino from "pino";
  * In development, output is pretty-printed via pino-pretty (install separately if needed).
  */
 const logger = pino({
-  name: "rotana-api",
-  level: process.env.LOG_LEVEL ?? (process.env.NODE_ENV === "production" ? "info" : "debug"),
+  name: 'rotana-api',
+  level: process.env.LOG_LEVEL ?? (process.env.NODE_ENV === 'production' ? 'info' : 'debug'),
   // In development, keep timestamps readable; in prod, use epoch ms for log aggregators
   timestamp: pino.stdTimeFunctions.isoTime,
   // Never log these fields — PII & secrets
   redact: {
-    paths: ["password", "passwordHash", "token", "accessToken", "refreshToken", "*.password", "*.passwordHash", "*.token"],
-    censor: "[REDACTED]",
+    paths: [
+      'password',
+      'passwordHash',
+      'token',
+      'accessToken',
+      'refreshToken',
+      '*.password',
+      '*.passwordHash',
+      '*.token',
+    ],
+    censor: '[REDACTED]',
   },
   base: {
-    service: "rotana-api",
+    service: 'rotana-api',
     env: process.env.NODE_ENV,
   },
 });

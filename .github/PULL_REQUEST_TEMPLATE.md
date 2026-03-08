@@ -24,9 +24,9 @@ Closes #<!-- issue number -->
 
 <!-- List the key changes made in this PR -->
 
-- 
-- 
-- 
+-
+-
+-
 
 ### Screenshots / Videos
 
@@ -41,6 +41,7 @@ Closes #<!-- issue number -->
 ### Checklist
 
 #### Code Quality
+
 - [ ] My code follows `PROJECT_CANON.md` conventions
 - [ ] TypeScript strict — no `any`, all types explicit
 - [ ] No `console.log` or debug code left in
@@ -48,22 +49,26 @@ Closes #<!-- issue number -->
 - [ ] No code duplication — I used shared utilities
 
 #### Security
+
 - [ ] All user inputs are validated (Zod / class-validator)
 - [ ] Auth and role guards are in place for new endpoints
 - [ ] No secrets or credentials in the code
 - [ ] No unsafe HTML rendering
 
 #### Testing
+
 - [ ] I have tested my changes locally
 - [ ] New/modified code has test coverage
 - [ ] All existing tests still pass
 
 #### Database (if applicable)
+
 - [ ] Migration is reversible
 - [ ] Indexes are added for new foreign keys
 - [ ] Schema change reviewed by backend lead
 
 #### AI Assistance
+
 - [ ] I understand every line of AI-generated code in this PR
 - [ ] I verified all AI-suggested APIs/methods exist in official docs
 - [ ] No phantom dependencies (packages not in package.json)

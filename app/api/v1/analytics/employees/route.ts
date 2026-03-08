@@ -1,51 +1,53 @@
-import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { withAuth, MANAGER_ROLES } from "@/lib/with-auth";
-import { apiSuccess, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
+import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 
 // GET /api/analytics/employees - Performance analytics for staff members
 export const GET = withAuth(async (req) => {
   try {
     const { searchParams } = new URL(req.url);
-    const startDateParam = searchParams.get("startDate");
-    const endDateParam = searchParams.get("endDate");
-    
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+
     const now = new Date();
-    const startDate = startDateParam ? new Date(startDateParam) : new Date(now.getFullYear(), now.getMonth(), 1);
+    const startDate = startDateParam
+      ? new Date(startDateParam)
+      : new Date(now.getFullYear(), now.getMonth(), 1);
     const endDate = endDateParam ? new Date(endDateParam) : now;
 
     const [allStaff, staffOrders, staffDeliveries, staffCommissions] = await Promise.all([
       // Get all non-customer users
       prisma.user.findMany({
-        where: { role: { not: "CUSTOMER" }, isActive: true },
-        select: { id: true, name: true, role: true, email: true }
+        where: { role: { not: 'CUSTOMER' }, isActive: true },
+        select: { id: true, name: true, role: true, email: true },
       }),
       // Count orders handled by each staff
       prisma.order.groupBy({
-        by: ["assignedToId"],
-        where: { 
+        by: ['assignedToId'],
+        where: {
           assignedToId: { not: null },
-          createdAt: { gte: startDate, lte: endDate }
+          createdAt: { gte: startDate, lte: endDate },
         },
         _count: { id: true },
-        _sum: { totalAmount: true }
+        _sum: { totalAmount: true },
       }),
       // Count deliveries by driver
       prisma.delivery.groupBy({
-        by: ["driverId"],
+        by: ['driverId'],
         where: {
           driverId: { not: null },
-          status: "DELIVERED",
-          deliveredAt: { gte: startDate, lte: endDate }
+          status: 'DELIVERED',
+          deliveredAt: { gte: startDate, lte: endDate },
         },
-        _count: { id: true }
+        _count: { id: true },
       }),
       // Total commissions by staff
       prisma.salesCommission.groupBy({
-        by: ["userId"],
+        by: ['userId'],
         where: { createdAt: { gte: startDate, lte: endDate } },
-        _sum: { amount: true }
-      })
+        _sum: { amount: true },
+      }),
     ]);
 
     // Build performance map
@@ -68,7 +70,7 @@ export const GET = withAuth(async (req) => {
 
     return apiSuccess({
       period: { startDate, endDate },
-      performance: performanceData.sort((a: any, b: any) => b.ordersHandled - a.ordersHandled)
+      performance: performanceData.sort((a: any, b: any) => b.ordersHandled - a.ordersHandled),
     });
   } catch (error) {
     return handleApiError(error);

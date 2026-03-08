@@ -1,9 +1,9 @@
-import { NextRequest } from "next/server";
-import bcrypt from "bcryptjs";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { signAccessToken, signRefreshToken } from "@/lib/jwt";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { signAccessToken, signRefreshToken } from '@/lib/jwt';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -17,12 +17,12 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || !user.isActive) {
-      return apiError("Invalid credentials", 401);
+      return apiError('Invalid credentials', 401);
     }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
-      return apiError("Invalid credentials", 401);
+      return apiError('Invalid credentials', 401);
     }
 
     const payload = { userId: user.id, email: user.email, role: user.role };

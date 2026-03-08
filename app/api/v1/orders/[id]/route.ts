@@ -1,19 +1,10 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, STAFF_ROLES, MANAGER_ROLES } from "@/lib/with-auth";
-import {
-  apiSuccess,
-  apiError,
-  handleApiError,
-  generateInvoiceNumber,
-} from "@/lib/api-helpers";
-import { applyInventoryEvent } from "@/app/api/inventory/route";
-import {
-  InventoryEventType,
-  OrderStatus,
-  PaymentStatus,
-} from "@/lib/generated/prisma";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, STAFF_ROLES, MANAGER_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError, generateInvoiceNumber } from '@/lib/api-helpers';
+import { applyInventoryEvent } from '@/app/api/inventory/route';
+import { InventoryEventType, OrderStatus, PaymentStatus } from '@/lib/generated/prisma';
 
 // GET /api/orders/[id]
 export const GET = withAuth(async (req, { params, user }) => {
@@ -38,11 +29,11 @@ export const GET = withAuth(async (req, { params, user }) => {
       },
     });
 
-    if (!order) return apiError("Order not found", 404);
+    if (!order) return apiError('Order not found', 404);
 
     // Customers can only view their own orders
-    if (user.role === "CUSTOMER" && order.customerId !== user.userId) {
-      return apiError("Forbidden", 403);
+    if (user.role === 'CUSTOMER' && order.customerId !== user.userId) {
+      return apiError('Forbidden', 403);
     }
 
     return apiSuccess(order);
@@ -70,7 +61,7 @@ export const PATCH = withAuth(async (req, { params, user }) => {
       where: { id: params.id },
       include: { items: true },
     });
-    if (!existing) return apiError("Order not found", 404);
+    if (!existing) return apiError('Order not found', 404);
 
     // State machine: handle inventory on status transitions
     const updatedOrder = await prisma.$transaction(async (tx) => {
@@ -78,8 +69,7 @@ export const PATCH = withAuth(async (req, { params, user }) => {
         where: { id: params.id },
         data: {
           ...validated,
-          deliveredAt:
-            validated.status === OrderStatus.DELIVERED ? new Date() : undefined,
+          deliveredAt: validated.status === OrderStatus.DELIVERED ? new Date() : undefined,
         },
         include: { items: true, invoice: true },
       });
@@ -92,33 +82,39 @@ export const PATCH = withAuth(async (req, { params, user }) => {
       ) {
         for (const item of existing.items) {
           // Release the reservation
-          await applyInventoryEvent({
-            variantId: item.variantId,
-            locationId: existing.sourceLocationId,
-            eventType: InventoryEventType.ORDER_RELEASED,
-            quantity: item.quantity,
-            referenceId: existing.id,
-            referenceType: "ORDER",
-            createdBy: user.userId,
-          }, tx);
+          await applyInventoryEvent(
+            {
+              variantId: item.variantId,
+              locationId: existing.sourceLocationId,
+              eventType: InventoryEventType.ORDER_RELEASED,
+              quantity: item.quantity,
+              referenceId: existing.id,
+              referenceType: 'ORDER',
+              createdBy: user.userId,
+            },
+            tx,
+          );
           // Now mark as fulfilled (reduce onHand)
-          await applyInventoryEvent({
-            variantId: item.variantId,
-            locationId: existing.sourceLocationId,
-            eventType: InventoryEventType.ORDER_FULFILLED,
-            quantity: item.quantity,
-            referenceId: existing.id,
-            referenceType: "ORDER",
-            createdBy: user.userId,
-          }, tx);
+          await applyInventoryEvent(
+            {
+              variantId: item.variantId,
+              locationId: existing.sourceLocationId,
+              eventType: InventoryEventType.ORDER_FULFILLED,
+              quantity: item.quantity,
+              referenceId: existing.id,
+              referenceType: 'ORDER',
+              createdBy: user.userId,
+            },
+            tx,
+          );
         }
 
         // Post ledger entries for the sale
         const cashAccount = await tx.ledgerAccount.findFirst({
-          where: { code: "1001" },
+          where: { code: '1001' },
         });
         const revenueAccount = await tx.ledgerAccount.findFirst({
-          where: { code: "4001" },
+          where: { code: '4001' },
         });
 
         if (cashAccount && revenueAccount) {
@@ -128,7 +124,7 @@ export const PATCH = withAuth(async (req, { params, user }) => {
               creditAccountId: revenueAccount.id,
               amount: existing.totalAmount,
               description: `Sales Revenue - Order ${existing.orderNumber}`,
-              referenceType: "ORDER",
+              referenceType: 'ORDER',
               referenceId: existing.id,
               orderId: existing.id,
               createdBy: user.userId,
@@ -159,15 +155,18 @@ export const PATCH = withAuth(async (req, { params, user }) => {
         existing.sourceLocationId
       ) {
         for (const item of existing.items) {
-          await applyInventoryEvent({
-            variantId: item.variantId,
-            locationId: existing.sourceLocationId,
-            eventType: InventoryEventType.ORDER_RELEASED,
-            quantity: item.quantity,
-            referenceId: existing.id,
-            referenceType: "ORDER",
-            createdBy: user.userId,
-          }, tx);
+          await applyInventoryEvent(
+            {
+              variantId: item.variantId,
+              locationId: existing.sourceLocationId,
+              eventType: InventoryEventType.ORDER_RELEASED,
+              quantity: item.quantity,
+              referenceId: existing.id,
+              referenceType: 'ORDER',
+              createdBy: user.userId,
+            },
+            tx,
+          );
         }
       }
 

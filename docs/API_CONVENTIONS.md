@@ -122,16 +122,9 @@ export function apiSuccessList<T>(data: T[], meta: IPaginationMeta) {
   return NextResponse.json({ success: true, data, meta }, { status: 200 });
 }
 
-export function apiError(
-  status: number,
-  code: string,
-  details?: unknown,
-) {
+export function apiError(status: number, code: string, details?: unknown) {
   const message = ERROR_MESSAGES[code] ?? 'An unexpected error occurred';
-  return NextResponse.json(
-    { success: false, error: { code, message, details } },
-    { status },
-  );
+  return NextResponse.json({ success: false, error: { code, message, details } }, { status });
 }
 ```
 
@@ -155,9 +148,7 @@ The `getUserFromRequest()` helper handles both:
 import { createServerClient } from '@supabase/ssr';
 import { verifyToken } from './jwt';
 
-export async function getUserFromRequest(
-  request: NextRequest,
-): Promise<IAuthUser | null> {
+export async function getUserFromRequest(request: NextRequest): Promise<IAuthUser | null> {
   // 1. Try Bearer token (mobile app)
   const authHeader = request.headers.get('Authorization');
   if (authHeader?.startsWith('Bearer ')) {
@@ -167,7 +158,9 @@ export async function getUserFromRequest(
 
   // 2. Fall back to session cookie (web browser)
   const supabase = createServerClient(/* ... */);
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   return user ? mapSupabaseUser(user) : null;
 }
 ```
@@ -177,10 +170,10 @@ export async function getUserFromRequest(
 ```typescript
 // lib/types/auth.types.ts
 interface IAuthUser {
-  id: string;          // UUID — matches users table PK
+  id: string; // UUID — matches users table PK
   email: string;
-  role: UserRole;      // one of the 8 defined roles
-  displayId: string;   // e.g., CUS-2026-00001
+  role: UserRole; // one of the 8 defined roles
+  displayId: string; // e.g., CUS-2026-00001
 }
 ```
 
@@ -190,19 +183,19 @@ interface IAuthUser {
 
 Use these exact codes — the mobile app and frontend both depend on machine-readable codes.
 
-| HTTP | Code | Meaning |
-|---|---|---|
-| 400 | `VALIDATION_ERROR` | Request body/params failed Zod validation |
-| 400 | `INVALID_REQUEST` | Malformed JSON or missing required fields |
-| 401 | `UNAUTHENTICATED` | No valid session or token |
-| 403 | `FORBIDDEN` | Authenticated but insufficient role |
-| 404 | `NOT_FOUND` | Resource does not exist |
-| 409 | `CONFLICT` | Duplicate resource (e.g., email already registered) |
-| 422 | `INSUFFICIENT_STOCK` | Domain error — not enough inventory |
-| 422 | `CREDIT_LIMIT_EXCEEDED` | B2B order exceeds credit line |
-| 422 | `PAYMENT_FAILED` | Payment gateway returned failure |
-| 429 | `RATE_LIMITED` | Too many requests |
-| 500 | `INTERNAL_ERROR` | Unexpected server error — never expose internals |
+| HTTP | Code                    | Meaning                                             |
+| ---- | ----------------------- | --------------------------------------------------- |
+| 400  | `VALIDATION_ERROR`      | Request body/params failed Zod validation           |
+| 400  | `INVALID_REQUEST`       | Malformed JSON or missing required fields           |
+| 401  | `UNAUTHENTICATED`       | No valid session or token                           |
+| 403  | `FORBIDDEN`             | Authenticated but insufficient role                 |
+| 404  | `NOT_FOUND`             | Resource does not exist                             |
+| 409  | `CONFLICT`              | Duplicate resource (e.g., email already registered) |
+| 422  | `INSUFFICIENT_STOCK`    | Domain error — not enough inventory                 |
+| 422  | `CREDIT_LIMIT_EXCEEDED` | B2B order exceeds credit line                       |
+| 422  | `PAYMENT_FAILED`        | Payment gateway returned failure                    |
+| 429  | `RATE_LIMITED`          | Too many requests                                   |
+| 500  | `INTERNAL_ERROR`        | Unexpected server error — never expose internals    |
 
 ---
 
@@ -228,6 +221,7 @@ POST   /api/v1/payments/webhook    → Razorpay/Stripe webhook (no auth)
 ```
 
 **Rules:**
+
 - URLs are plural nouns: `/orders`, `/products`, `/invoices` — never verbs
 - Use query params for filtering: `GET /api/v1/orders?status=PENDING&page=1&limit=20`
 - Use path params for specific resources: `GET /api/v1/orders/ORD-B2C-0000001`
@@ -239,18 +233,20 @@ POST   /api/v1/payments/webhook    → Razorpay/Stripe webhook (no auth)
 All list endpoints MUST support pagination. Never return unlimited lists.
 
 ### Query Parameters
+
 ```
 GET /api/v1/orders?page=1&limit=20&sortBy=createdAt&sortOrder=desc&status=PENDING
 ```
 
-| Param | Type | Default | Max | Description |
-|---|---|---|---|---|
-| `page` | number | 1 | — | Page number (1-indexed) |
-| `limit` | number | 20 | 100 | Items per page |
-| `sortBy` | string | `createdAt` | — | Field to sort by |
-| `sortOrder` | `asc\|desc` | `desc` | — | Sort direction |
+| Param       | Type        | Default     | Max | Description             |
+| ----------- | ----------- | ----------- | --- | ----------------------- |
+| `page`      | number      | 1           | —   | Page number (1-indexed) |
+| `limit`     | number      | 20          | 100 | Items per page          |
+| `sortBy`    | string      | `createdAt` | —   | Field to sort by        |
+| `sortOrder` | `asc\|desc` | `desc`      | —   | Sort direction          |
 
 ### Response Meta
+
 ```typescript
 {
   "success": true,
@@ -265,12 +261,13 @@ GET /api/v1/orders?page=1&limit=20&sortBy=createdAt&sortOrder=desc&status=PENDIN
 ```
 
 ### Pagination Schema (Zod)
+
 ```typescript
 // lib/schemas/pagination.schema.ts
 export const paginationSchema = z.object({
-  page:      z.coerce.number().int().positive().default(1),
-  limit:     z.coerce.number().int().positive().max(100).default(20),
-  sortBy:    z.string().optional(),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  sortBy: z.string().optional(),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 ```
@@ -286,14 +283,18 @@ Every route handler validates EVERY input before processing. No exceptions.
 import { z } from 'zod';
 
 export const createOrderSchema = z.object({
-  items: z.array(z.object({
-    productId:  z.string().uuid(),
-    quantity:   z.number().int().positive().max(9999),
-    unitPrice:  z.number().positive(),
-  })).min(1, 'Order must have at least one item'),
+  items: z
+    .array(
+      z.object({
+        productId: z.string().uuid(),
+        quantity: z.number().int().positive().max(9999),
+        unitPrice: z.number().positive(),
+      }),
+    )
+    .min(1, 'Order must have at least one item'),
   deliveryAddress: z.object({
-    street:  z.string().min(5).max(255),
-    city:    z.string().min(2).max(100),
+    street: z.string().min(5).max(255),
+    city: z.string().min(2).max(100),
     pincode: z.string().regex(/^\d{6}$/, 'Invalid PIN code'),
   }),
   notes: z.string().max(500).optional(),
@@ -332,14 +333,14 @@ export async function createOrder(
   const order = await prisma.$transaction(async (tx) => {
     const newOrder = await tx.order.create({
       data: {
-        displayId:       generateOrderId(user.role),
-        customerId:      user.id,
-        orderType:       user.role === 'b2c_customer' ? 'B2C' : 'B2B',
-        subtotal:        totals.subtotal,
-        taxAmount:       totals.tax,
-        totalAmount:     totals.total,
+        displayId: generateOrderId(user.role),
+        customerId: user.id,
+        orderType: user.role === 'b2c_customer' ? 'B2C' : 'B2B',
+        subtotal: totals.subtotal,
+        taxAmount: totals.tax,
+        totalAmount: totals.total,
         deliveryAddress: dto.deliveryAddress,
-        notes:           dto.notes,
+        notes: dto.notes,
         items: { create: dto.items },
       },
     });
@@ -412,5 +413,5 @@ export async function POST(request: NextRequest) {
 
 ---
 
-*This document is maintained by Ayeen (PM + Backend Lead). Update when new patterns are established.*
-*Mobile API consumers: see Authentication section (Section 4) for Bearer token usage.*
+_This document is maintained by Ayeen (PM + Backend Lead). Update when new patterns are established._
+_Mobile API consumers: see Authentication section (Section 4) for Bearer token usage._

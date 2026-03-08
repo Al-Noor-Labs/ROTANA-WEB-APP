@@ -1,16 +1,27 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, ADMIN_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
-import bcrypt from "bcryptjs";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, ADMIN_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
+import bcrypt from 'bcryptjs';
 
 const UserUpdateSchema = z.object({
   name: z.string().optional(),
   phone: z.string().optional(),
-  role: z.enum(["SUPER_ADMIN", "WAREHOUSE_MANAGER", "STORE_MANAGER", "CASHIER", "SALESMAN", "DELIVERY_DRIVER", "ACCOUNTANT", "CUSTOMER"]).optional(),
+  role: z
+    .enum([
+      'SUPER_ADMIN',
+      'WAREHOUSE_MANAGER',
+      'STORE_MANAGER',
+      'CASHIER',
+      'SALESMAN',
+      'DELIVERY_DRIVER',
+      'ACCOUNTANT',
+      'CUSTOMER',
+    ])
+    .optional(),
   isActive: z.boolean().optional(),
-  password: z.string().min(8).optional()
+  password: z.string().min(8).optional(),
 });
 
 // PATCH /api/users/[id] - Update user (Admin)
@@ -18,12 +29,12 @@ export const PATCH = withAuth(async (req, { params }) => {
   try {
     const body = await req.json();
     const validated = UserUpdateSchema.parse(body);
-    
+
     // Check if the user exists
     const existingUser = await prisma.user.findUnique({
       where: { id: params.id },
     });
-    if (!existingUser) return apiError("User not found", 404);
+    if (!existingUser) return apiError('User not found', 404);
 
     let passwordHash = undefined;
     if (validated.password) {
@@ -48,7 +59,7 @@ export const PATCH = withAuth(async (req, { params }) => {
         role: true,
         isActive: true,
         createdAt: true,
-      }
+      },
     });
 
     return apiSuccess(updatedUser);
@@ -63,14 +74,14 @@ export const DELETE = withAuth(async (req, { params }) => {
     const existingUser = await prisma.user.findUnique({
       where: { id: params.id },
     });
-    if (!existingUser) return apiError("User not found", 404);
-    
+    if (!existingUser) return apiError('User not found', 404);
+
     await prisma.user.update({
       where: { id: params.id },
       data: { isActive: false },
     });
 
-    return apiSuccess({ message: "User disabled successfully" });
+    return apiSuccess({ message: 'User disabled successfully' });
   } catch (error) {
     return handleApiError(error);
   }

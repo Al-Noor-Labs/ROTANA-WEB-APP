@@ -1,14 +1,15 @@
 # ADR-0001: Turborepo Monorepo Architecture
 
-| Field    | Value                    |
-| -------- | ------------------------ |
-| Status   | Accepted                 |
-| Date     | 2026-03-07               |
-| Author   | Ayeen (PM + Backend Lead)|
+| Field  | Value                     |
+| ------ | ------------------------- |
+| Status | Accepted                  |
+| Date   | 2026-03-07                |
+| Author | Ayeen (PM + Backend Lead) |
 
 ## Context
 
 Rotana Store consists of 3 distinct applications:
+
 1. **Web** — Next.js 16 admin dashboards + B2C/B2B customer portals
 2. **API** — NestJS REST API backend
 3. **Mobile** — React Native (Expo) mobile app
@@ -36,14 +37,14 @@ packages/
 
 ### Why Monorepo (over Multi-Repo)
 
-| Factor                 | Monorepo ✅                         | Multi-Repo ❌                    |
-| ---------------------- | ----------------------------------- | -------------------------------- |
-| Code sharing           | Trivial, via `@rotana/shared`       | Requires publishing npm packages |
-| Type safety across apps| Instant, shared types               | Version mismatch risk            |
-| CI/CD                  | Single pipeline, Turborepo caching  | Separate pipelines per repo      |
-| Refactoring            | Atomic commits across apps          | Coordinated PRs across repos     |
-| Team coordination      | One PR, one review                  | Multiple PRs for related changes |
-| Onboarding             | One repo to clone                   | Multiple repos to set up         |
+| Factor                  | Monorepo ✅                        | Multi-Repo ❌                    |
+| ----------------------- | ---------------------------------- | -------------------------------- |
+| Code sharing            | Trivial, via `@rotana/shared`      | Requires publishing npm packages |
+| Type safety across apps | Instant, shared types              | Version mismatch risk            |
+| CI/CD                   | Single pipeline, Turborepo caching | Separate pipelines per repo      |
+| Refactoring             | Atomic commits across apps         | Coordinated PRs across repos     |
+| Team coordination       | One PR, one review                 | Multiple PRs for related changes |
+| Onboarding              | One repo to clone                  | Multiple repos to set up         |
 
 ### Why Turborepo (over Nx, Lerna)
 
@@ -63,18 +64,21 @@ packages/
 ## Consequences
 
 ### Positive
+
 - Single source of truth for all code
 - Type changes propagate instantly across all apps
 - One CI pipeline to maintain
 - Easier code reviews (all related changes in one PR)
 
 ### Negative
+
 - Larger repo size over time
 - CI runs may be slower without Turborepo caching configured
 - All team members need to understand the monorepo structure
 - Need disciplined `packages/shared` organization to avoid bloat
 
 ### Mitigations
+
 - Configure Turborepo remote caching on Vercel
 - Document folder structure in `PROJECT_CANON.md`
 - Keep `packages/shared` focused — only truly shared code belongs there
@@ -87,4 +91,4 @@ packages/
 
 ---
 
-*This ADR is final. Any changes require team discussion and a new ADR.*
+_This ADR is final. Any changes require team discussion and a new ADR._

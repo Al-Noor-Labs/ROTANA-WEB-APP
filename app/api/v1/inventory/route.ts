@@ -1,9 +1,9 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, MANAGER_ROLES, STAFF_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
-import { InventoryEventType } from "@/lib/generated/prisma";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
+import { InventoryEventType } from '@/lib/generated/prisma';
 
 const StockEventSchema = z.object({
   variantId: z.string().uuid(),
@@ -50,7 +50,10 @@ export async function applyInventoryEvent(
     notes?: string;
     createdBy?: string;
   },
-  tx?: Omit<typeof prisma, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">
+  tx?: Omit<
+    typeof prisma,
+    '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+  >,
 ) {
   const db = tx ?? prisma;
 
@@ -64,11 +67,7 @@ export async function applyInventoryEvent(
     const isRelease = RELEASE_EVENTS.has(data.eventType);
 
     const onHandDelta = isOutbound ? -data.quantity : data.quantity;
-    const reservedDelta = isReserve
-      ? data.quantity
-      : isRelease
-      ? -data.quantity
-      : 0;
+    const reservedDelta = isReserve ? data.quantity : isRelease ? -data.quantity : 0;
 
     // If it's a release event, don't change onHand either
     const actualOnHandDelta =
@@ -124,9 +123,9 @@ export async function applyInventoryEvent(
 export const GET = withAuth(async (req) => {
   try {
     const { searchParams } = new URL(req.url);
-    const locationId = searchParams.get("locationId");
-    const variantId = searchParams.get("variantId");
-    const lowStock = searchParams.get("lowStock") === "true";
+    const locationId = searchParams.get('locationId');
+    const variantId = searchParams.get('variantId');
+    const lowStock = searchParams.get('lowStock') === 'true';
 
     const where: any = {};
     if (locationId) where.locationId = locationId;

@@ -1,17 +1,17 @@
-import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { withAuth, STAFF_ROLES, ADMIN_ROLES } from "@/lib/with-auth";
-import { apiSuccess, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { withAuth, STAFF_ROLES, ADMIN_ROLES } from '@/lib/with-auth';
+import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 
 // GET /api/finance/ledger - View all ledger entries
 export const GET = withAuth(async (req) => {
   try {
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") ?? "1");
-    const limit = parseInt(searchParams.get("limit") ?? "30");
-    const from = searchParams.get("from");
-    const to = searchParams.get("to");
-    const referenceType = searchParams.get("referenceType");
+    const page = parseInt(searchParams.get('page') ?? '1');
+    const limit = parseInt(searchParams.get('limit') ?? '30');
+    const from = searchParams.get('from');
+    const to = searchParams.get('to');
+    const referenceType = searchParams.get('referenceType');
 
     const where: any = {};
     if (referenceType) where.referenceType = referenceType;
@@ -30,7 +30,7 @@ export const GET = withAuth(async (req) => {
         },
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { postedAt: "desc" },
+        orderBy: { postedAt: 'desc' },
       }),
       prisma.ledgerEntry.count({ where }),
     ]);

@@ -1,33 +1,36 @@
 # PROJECT CANON — Rotana Store
+
 # The single source of truth for the entire codebase.
+
 # Read this before touching any file. Update this when conventions change.
+
 # Last updated: March 2026 | Maintained by Ayeen (PM + Backend Lead)
 
 ---
 
 ## 1. Tech Stack (Pinned Versions)
 
-| Layer | Technology | Version | Notes |
-|---|---|---|---|
-| **Framework** | Next.js | 15.x (App Router) | No Pages Router |
-| **Language** | TypeScript | 5.x | strict mode — no exceptions |
-| **Package Manager** | pnpm | ≥ 9.x | never use npm or yarn |
-| **UI Components** | shadcn/ui | latest | managed via CLI — don't edit `components/ui/` |
-| **Styling** | Tailwind CSS | 4.x | utility-first, no CSS modules |
-| **Database** | PostgreSQL | 16.x | hosted on Supabase |
-| **ORM** | Prisma | 5.x | no raw SQL |
-| **Auth** | Supabase Auth | latest | + JWT Bearer for API consumers (mobile) |
-| **Validation** | Zod | 3.x | all boundaries: API, actions, forms |
-| **Client State** | Zustand | 4.x | dashboards, cart, UI state |
-| **Server State** | TanStack React Query | 5.x | client-side data fetching only |
-| **Forms** | react-hook-form | 7.x | always with Zod resolver |
-| **File Storage** | Cloudflare R2 | — | invoices, payslips, supplier docs |
-| **Payments** | Razorpay or Stripe | — | TBD by client |
-| **Email** | Resend | — | transactional emails |
-| **Logging** | Pino | 9.x | structured JSON logs |
-| **Testing** | Vitest + Playwright | latest | unit + E2E |
-| **CI/CD** | GitHub Actions | — | lint → type-check → build → test → deploy |
-| **Hosting** | Vercel | — | web + API (Next.js Route Handlers) |
+| Layer               | Technology           | Version           | Notes                                         |
+| ------------------- | -------------------- | ----------------- | --------------------------------------------- |
+| **Framework**       | Next.js              | 15.x (App Router) | No Pages Router                               |
+| **Language**        | TypeScript           | 5.x               | strict mode — no exceptions                   |
+| **Package Manager** | pnpm                 | ≥ 9.x             | never use npm or yarn                         |
+| **UI Components**   | shadcn/ui            | latest            | managed via CLI — don't edit `components/ui/` |
+| **Styling**         | Tailwind CSS         | 4.x               | utility-first, no CSS modules                 |
+| **Database**        | PostgreSQL           | 16.x              | hosted on Supabase                            |
+| **ORM**             | Prisma               | 5.x               | no raw SQL                                    |
+| **Auth**            | Supabase Auth        | latest            | + JWT Bearer for API consumers (mobile)       |
+| **Validation**      | Zod                  | 3.x               | all boundaries: API, actions, forms           |
+| **Client State**    | Zustand              | 4.x               | dashboards, cart, UI state                    |
+| **Server State**    | TanStack React Query | 5.x               | client-side data fetching only                |
+| **Forms**           | react-hook-form      | 7.x               | always with Zod resolver                      |
+| **File Storage**    | Cloudflare R2        | —                 | invoices, payslips, supplier docs             |
+| **Payments**        | Razorpay or Stripe   | —                 | TBD by client                                 |
+| **Email**           | Resend               | —                 | transactional emails                          |
+| **Logging**         | Pino                 | 9.x               | structured JSON logs                          |
+| **Testing**         | Vitest + Playwright  | latest            | unit + E2E                                    |
+| **CI/CD**           | GitHub Actions       | —                 | lint → type-check → build → test → deploy     |
+| **Hosting**         | Vercel               | —                 | web + API (Next.js Route Handlers)            |
 
 > **Mobile App Note**: The Rotana mobile app (React Native, Expo) is developed by Zaka in a **separate repository**. It consumes this project's API Route Handlers via Bearer token auth. This repository has zero mobile code.
 
@@ -173,45 +176,49 @@ ROTANA-WEB-APP/
 ## 3. Naming Conventions
 
 ### Files & Directories
-| Pattern | Rule | Example |
-|---|---|---|
-| Next.js route files | lowercase | `page.tsx`, `layout.tsx`, `route.ts` |
-| React components | PascalCase | `OrderStatusBadge.tsx` |
-| Services / utilities | camelCase with suffix | `orders.service.ts`, `id-generator.ts` |
-| Schemas | camelCase with suffix | `order.schema.ts` |
-| Types | camelCase with suffix | `auth.types.ts` |
-| Hooks | camelCase, `use` prefix | `useOrderStatus.ts` |
-| Constants | camelCase with suffix | `roles.ts` |
-| Test files | same as source + `.test` | `orders.service.test.ts` |
+
+| Pattern              | Rule                     | Example                                |
+| -------------------- | ------------------------ | -------------------------------------- |
+| Next.js route files  | lowercase                | `page.tsx`, `layout.tsx`, `route.ts`   |
+| React components     | PascalCase               | `OrderStatusBadge.tsx`                 |
+| Services / utilities | camelCase with suffix    | `orders.service.ts`, `id-generator.ts` |
+| Schemas              | camelCase with suffix    | `order.schema.ts`                      |
+| Types                | camelCase with suffix    | `auth.types.ts`                        |
+| Hooks                | camelCase, `use` prefix  | `useOrderStatus.ts`                    |
+| Constants            | camelCase with suffix    | `roles.ts`                             |
+| Test files           | same as source + `.test` | `orders.service.test.ts`               |
 
 ### TypeScript
-| Pattern | Rule | Example |
-|---|---|---|
-| Interfaces | `I` prefix, PascalCase | `ICreateOrderRequest` |
-| Types (unions/mapped) | PascalCase, no prefix | `OrderStatus`, `UserRole` |
-| Zod schemas | camelCase, `Schema` suffix | `createOrderSchema` |
-| Enums | NEVER use TS enums | Use Zod enum or `as const` object |
-| Constants | SCREAMING_SNAKE_CASE | `MAX_CREDIT_LIMIT` |
-| Functions | camelCase, verb first | `getOrderById`, `calculateCommission` |
-| React components | PascalCase | `OrderTable`, `WarehouseDashboard` |
+
+| Pattern               | Rule                       | Example                               |
+| --------------------- | -------------------------- | ------------------------------------- |
+| Interfaces            | `I` prefix, PascalCase     | `ICreateOrderRequest`                 |
+| Types (unions/mapped) | PascalCase, no prefix      | `OrderStatus`, `UserRole`             |
+| Zod schemas           | camelCase, `Schema` suffix | `createOrderSchema`                   |
+| Enums                 | NEVER use TS enums         | Use Zod enum or `as const` object     |
+| Constants             | SCREAMING_SNAKE_CASE       | `MAX_CREDIT_LIMIT`                    |
+| Functions             | camelCase, verb first      | `getOrderById`, `calculateCommission` |
+| React components      | PascalCase                 | `OrderTable`, `WarehouseDashboard`    |
 
 ### Database (Prisma / PostgreSQL)
-| Element | Rule | Example |
-|---|---|---|
-| Table names | snake_case, plural | `purchase_orders`, `order_items` |
-| Column names | snake_case | `created_at`, `customer_id` |
-| Primary key | `id` (UUID) | `id UUID PRIMARY KEY DEFAULT gen_random_uuid()` |
-| Foreign keys | `<entity>_id` | `customer_id`, `supplier_id` |
-| Timestamps | always include both | `created_at`, `updated_at` |
-| Boolean columns | `is_` or `has_` prefix | `is_active`, `has_gst` |
-| Index names | `idx_<table>_<column>` | `idx_orders_customer_id` |
+
+| Element         | Rule                   | Example                                         |
+| --------------- | ---------------------- | ----------------------------------------------- |
+| Table names     | snake_case, plural     | `purchase_orders`, `order_items`                |
+| Column names    | snake_case             | `created_at`, `customer_id`                     |
+| Primary key     | `id` (UUID)            | `id UUID PRIMARY KEY DEFAULT gen_random_uuid()` |
+| Foreign keys    | `<entity>_id`          | `customer_id`, `supplier_id`                    |
+| Timestamps      | always include both    | `created_at`, `updated_at`                      |
+| Boolean columns | `is_` or `has_` prefix | `is_active`, `has_gst`                          |
+| Index names     | `idx_<table>_<column>` | `idx_orders_customer_id`                        |
 
 ### Environment Variables
-| Pattern | Rule | Example |
-|---|---|---|
-| Browser-safe | `NEXT_PUBLIC_` prefix | `NEXT_PUBLIC_SUPABASE_URL` |
-| Server-only | no prefix | `SUPABASE_SERVICE_ROLE_KEY` |
-| Secret values | NEVER in codebase | stored in Vercel Environment Variables |
+
+| Pattern       | Rule                  | Example                                |
+| ------------- | --------------------- | -------------------------------------- |
+| Browser-safe  | `NEXT_PUBLIC_` prefix | `NEXT_PUBLIC_SUPABASE_URL`             |
+| Server-only   | no prefix             | `SUPABASE_SERVICE_ROLE_KEY`            |
+| Secret values | NEVER in codebase     | stored in Vercel Environment Variables |
 
 ---
 
@@ -267,13 +274,22 @@ const data: unknown = await response.json();
 if (!isOrderResponse(data)) throw new Error('Invalid response shape');
 
 // ✅ Zod enum as const
-const UserRole = z.enum(['super_admin', 'warehouse_manager', 'store_manager',
-  'supplier', 'salesman', 'b2c_customer', 'b2b_buyer', 'delivery_staff']);
+const UserRole = z.enum([
+  'super_admin',
+  'warehouse_manager',
+  'store_manager',
+  'supplier',
+  'salesman',
+  'b2c_customer',
+  'b2b_buyer',
+  'delivery_staff',
+]);
 type UserRole = z.infer<typeof UserRole>;
 
 // ✅ Named constants for magic values
 import { ROLES } from '@/lib/constants/roles';
-if (user.role === ROLES.SUPER_ADMIN) {}
+if (user.role === ROLES.SUPER_ADMIN) {
+}
 
 // ✅ Service layer separation
 // lib/services/orders.service.ts
@@ -306,16 +322,16 @@ logger.info({ orderId, userId }, 'Order created successfully');
 
 Every protected resource MUST check the user's role. Available roles:
 
-| Constant | DB Value | Description |
-|---|---|---|
-| `ROLES.SUPER_ADMIN` | `super_admin` | Full system access |
-| `ROLES.WAREHOUSE_MANAGER` | `warehouse_manager` | Inbound stock, GRN, bin assignment |
-| `ROLES.STORE_MANAGER` | `store_manager` | POS, order fulfillment, shelf stock |
-| `ROLES.SUPPLIER` | `supplier` | View POs, upload invoices, track payments |
-| `ROLES.SALESMAN` | `salesman` | B2B orders, commission tracking, collections |
-| `ROLES.B2C_CUSTOMER` | `b2c_customer` | Browse, order, pay online |
-| `ROLES.B2B_BUYER` | `b2b_buyer` | Order on credit, view invoices |
-| `ROLES.DELIVERY_STAFF` | `delivery_staff` | View assignments, mark delivered |
+| Constant                  | DB Value            | Description                                  |
+| ------------------------- | ------------------- | -------------------------------------------- |
+| `ROLES.SUPER_ADMIN`       | `super_admin`       | Full system access                           |
+| `ROLES.WAREHOUSE_MANAGER` | `warehouse_manager` | Inbound stock, GRN, bin assignment           |
+| `ROLES.STORE_MANAGER`     | `store_manager`     | POS, order fulfillment, shelf stock          |
+| `ROLES.SUPPLIER`          | `supplier`          | View POs, upload invoices, track payments    |
+| `ROLES.SALESMAN`          | `salesman`          | B2B orders, commission tracking, collections |
+| `ROLES.B2C_CUSTOMER`      | `b2c_customer`      | Browse, order, pay online                    |
+| `ROLES.B2B_BUYER`         | `b2b_buyer`         | Order on credit, view invoices               |
+| `ROLES.DELIVERY_STAFF`    | `delivery_staff`    | View assignments, mark delivered             |
 
 ---
 
@@ -323,16 +339,16 @@ Every protected resource MUST check the user's role. Available roles:
 
 All entity IDs use a **UUID** as the database primary key and a **display ID** as the human-readable reference.
 
-| Entity | Display ID Format | Example |
-|---|---|---|
-| B2C Customer | `CUS-{YYYY}-{5digits}` | `CUS-2026-00001` |
-| B2B Business | `BIZ-{YYYY}-{5digits}` | `BIZ-2026-00001` |
-| B2C Order | `ORD-B2C-{7digits}` | `ORD-B2C-0000001` |
-| B2B Order | `ORD-B2B-{7digits}` | `ORD-B2B-0000001` |
-| Invoice | `INV-{YYYY}-{5digits}` | `INV-2026-00001` |
-| Purchase Order | `PO-{YYYY}-{5digits}` | `PO-2026-00001` |
-| Salesman | `SAL-{YYYY}-{3digits}` | `SAL-2026-001` |
-| Delivery | `DEL-{YYYY}-{5digits}` | `DEL-2026-00001` |
+| Entity         | Display ID Format      | Example           |
+| -------------- | ---------------------- | ----------------- |
+| B2C Customer   | `CUS-{YYYY}-{5digits}` | `CUS-2026-00001`  |
+| B2B Business   | `BIZ-{YYYY}-{5digits}` | `BIZ-2026-00001`  |
+| B2C Order      | `ORD-B2C-{7digits}`    | `ORD-B2C-0000001` |
+| B2B Order      | `ORD-B2B-{7digits}`    | `ORD-B2B-0000001` |
+| Invoice        | `INV-{YYYY}-{5digits}` | `INV-2026-00001`  |
+| Purchase Order | `PO-{YYYY}-{5digits}`  | `PO-2026-00001`   |
+| Salesman       | `SAL-{YYYY}-{3digits}` | `SAL-2026-001`    |
+| Delivery       | `DEL-{YYYY}-{5digits}` | `DEL-2026-00001`  |
 
 Generation logic lives in `lib/utils/id-generator.ts`.
 
@@ -377,5 +393,5 @@ NODE_ENV=                         # development | test | production
 
 ---
 
-*This document is the law. If code violates PROJECT_CANON, it does not get merged.*
-*Update this file when conventions evolve — never let it go stale.*
+_This document is the law. If code violates PROJECT_CANON, it does not get merged._
+_Update this file when conventions evolve — never let it go stale._

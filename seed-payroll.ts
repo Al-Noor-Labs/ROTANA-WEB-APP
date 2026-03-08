@@ -13,7 +13,7 @@ async function main() {
 
   const salaries = [
     { month: 1, year: 2026, basicSalary: 50000, netPay: 48000 },
-    { month: 2, year: 2026, basicSalary: 50000, netPay: 48000 }
+    { month: 2, year: 2026, basicSalary: 50000, netPay: 48000 },
   ];
 
   for (const s of salaries) {
@@ -26,8 +26,8 @@ async function main() {
         year: s.year,
         basicSalary: s.basicSalary,
         netPay: s.netPay,
-        paidAt: new Date()
-      }
+        paidAt: new Date(),
+      },
     });
   }
 

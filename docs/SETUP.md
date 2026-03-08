@@ -6,12 +6,12 @@
 
 ## Prerequisites
 
-| Tool    | Version  | Install                                                         |
-| ------- | -------- | --------------------------------------------------------------- |
-| Node.js | ≥ 20 LTS | [nodejs.org](https://nodejs.org)                                |
-| pnpm    | ≥ 9.x    | `npm install -g pnpm`                                           |
-| Git     | ≥ 2.40   | [git-scm.com](https://git-scm.com)                             |
-| VS Code | Latest   | [code.visualstudio.com](https://code.visualstudio.com)          |
+| Tool    | Version  | Install                                                |
+| ------- | -------- | ------------------------------------------------------ |
+| Node.js | ≥ 20 LTS | [nodejs.org](https://nodejs.org)                       |
+| pnpm    | ≥ 9.x    | `npm install -g pnpm`                                  |
+| Git     | ≥ 2.40   | [git-scm.com](https://git-scm.com)                     |
+| VS Code | Latest   | [code.visualstudio.com](https://code.visualstudio.com) |
 
 > **Package manager**: This project uses **pnpm** exclusively. Do NOT use `npm install` or `yarn` — they will create wrong lockfiles and break CI.
 
@@ -48,17 +48,17 @@ cp .env.example .env.local
 
 Now fill in the values. Get them from the **Google Chat pinned message** in the team group.
 
-| Variable                          | Where to Get                           |
-| --------------------------------- | -------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`        | Supabase Dashboard → Settings → API    |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY`   | Supabase Dashboard → Settings → API    |
-| `SUPABASE_SERVICE_ROLE_KEY`       | Google Chat pinned message             |
-| `DATABASE_URL`                    | Supabase Dashboard → Settings → Database |
-| `DIRECT_URL`                      | Supabase Dashboard → Settings → Database |
-| `NEXTAUTH_SECRET`                 | Google Chat pinned message             |
-| `RAZORPAY_KEY_ID`                 | Razorpay Dashboard                     |
-| `RAZORPAY_KEY_SECRET`             | Google Chat pinned message             |
-| `RAZORPAY_WEBHOOK_SECRET`         | Google Chat pinned message             |
+| Variable                        | Where to Get                             |
+| ------------------------------- | ---------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase Dashboard → Settings → API      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard → Settings → API      |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Google Chat pinned message               |
+| `DATABASE_URL`                  | Supabase Dashboard → Settings → Database |
+| `DIRECT_URL`                    | Supabase Dashboard → Settings → Database |
+| `NEXTAUTH_SECRET`               | Google Chat pinned message               |
+| `RAZORPAY_KEY_ID`               | Razorpay Dashboard                       |
+| `RAZORPAY_KEY_SECRET`           | Google Chat pinned message               |
+| `RAZORPAY_WEBHOOK_SECRET`       | Google Chat pinned message               |
 
 > **⚠️ NEVER commit `.env.local` to Git.** It is in `.gitignore` by default.
 > See `.rules/PROJECT_CANON.md` Section 8 for the complete list of all environment variables.
@@ -90,22 +90,22 @@ The Next.js app serves both the **web UI** and the **API routes** (`/api/v1/...`
 
 ## Common Commands
 
-| Command              | Description                                   |
-| -------------------- | --------------------------------------------- |
-| `pnpm dev`           | Start Next.js dev server (web + API)          |
-| `pnpm build`         | Build for production                          |
-| `pnpm start`         | Run production build locally                  |
-| `pnpm lint`          | Run ESLint                                    |
-| `pnpm format`        | Format all files with Prettier                |
-| `pnpm format:check`  | Check formatting without writing              |
-| `pnpm type-check`    | Run TypeScript type checking                  |
-| `pnpm test`          | Run all unit tests (Vitest)                   |
-| `pnpm test:e2e`      | Run E2E tests (Playwright)                    |
-| `pnpm db:generate`   | Generate Prisma client                        |
-| `pnpm db:migrate`    | Run database migrations                       |
-| `pnpm db:seed`       | Seed database with test data                  |
-| `pnpm db:studio`     | Open Prisma Studio (DB browser GUI)           |
-| `pnpm db:reset`      | ⚠️ RESET DB — deletes all data!              |
+| Command             | Description                          |
+| ------------------- | ------------------------------------ |
+| `pnpm dev`          | Start Next.js dev server (web + API) |
+| `pnpm build`        | Build for production                 |
+| `pnpm start`        | Run production build locally         |
+| `pnpm lint`         | Run ESLint                           |
+| `pnpm format`       | Format all files with Prettier       |
+| `pnpm format:check` | Check formatting without writing     |
+| `pnpm type-check`   | Run TypeScript type checking         |
+| `pnpm test`         | Run all unit tests (Vitest)          |
+| `pnpm test:e2e`     | Run E2E tests (Playwright)           |
+| `pnpm db:generate`  | Generate Prisma client               |
+| `pnpm db:migrate`   | Run database migrations              |
+| `pnpm db:seed`      | Seed database with test data         |
+| `pnpm db:studio`    | Open Prisma Studio (DB browser GUI)  |
+| `pnpm db:reset`     | ⚠️ RESET DB — deletes all data!      |
 
 ---
 
@@ -180,4 +180,4 @@ git branch -d feature/ROT-12-add-cart
 
 ---
 
-*Questions? Ask in the Google Chat team group.*
+_Questions? Ask in the Google Chat team group._

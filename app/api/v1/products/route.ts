@@ -1,9 +1,16 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, MANAGER_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiSuccessList, apiError, handleApiError, parsePagination, buildMeta } from "@/lib/api-helpers";
-import type { Prisma } from "@/lib/generated/prisma";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
+import {
+  apiSuccess,
+  apiSuccessList,
+  apiError,
+  handleApiError,
+  parsePagination,
+  buildMeta,
+} from '@/lib/api-helpers';
+import type { Prisma } from '@/lib/generated/prisma';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Request schemas
@@ -19,19 +26,21 @@ const ProductSchema = z.object({
   barcode: z.string().optional(),
   isPerishable: z.boolean().optional().default(false),
   tags: z.array(z.string()).optional().default([]),
-  variants: z.array(
-    z.object({
-      sku: z.string().min(1).max(50),
-      name: z.string().min(1).max(100),
-      unitValue: z.number().positive(),
-      unitLabel: z.string().min(1).max(20),
-      costPrice: z.number().nonnegative(),
-      sellingPrice: z.number().nonnegative(),
-      mrp: z.number().optional(),
-      taxRate: z.number().min(0).max(100).optional().default(0),
-      reorderLevel: z.number().int().optional().default(10),
-    })
-  ).min(1, "At least one variant is required"),
+  variants: z
+    .array(
+      z.object({
+        sku: z.string().min(1).max(50),
+        name: z.string().min(1).max(100),
+        unitValue: z.number().positive(),
+        unitLabel: z.string().min(1).max(20),
+        costPrice: z.number().nonnegative(),
+        sellingPrice: z.number().nonnegative(),
+        mrp: z.number().optional(),
+        taxRate: z.number().min(0).max(100).optional().default(0),
+        reorderLevel: z.number().int().optional().default(10),
+      }),
+    )
+    .min(1, 'At least one variant is required'),
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -50,16 +59,16 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const { page, limit, skip } = parsePagination(req.url);
 
-    const categoryId = searchParams.get("categoryId");
-    const search = searchParams.get("search");
+    const categoryId = searchParams.get('categoryId');
+    const search = searchParams.get('search');
 
     // Build typed where clause — no any
-    const where: Prisma.ProductWhereInput = { status: "ACTIVE" };
+    const where: Prisma.ProductWhereInput = { status: 'ACTIVE' };
     if (categoryId) where.categoryId = categoryId;
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { brand: { contains: search, mode: "insensitive" } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { brand: { contains: search, mode: 'insensitive' } },
         { tags: { has: search } },
       ];
     }
@@ -71,12 +80,12 @@ export async function GET(req: NextRequest) {
           category: { select: { id: true, name: true, slug: true } },
           variants: {
             where: { isActive: true },
-            orderBy: { sellingPrice: "asc" },
+            orderBy: { sellingPrice: 'asc' },
           },
         },
         skip,
         take: limit,
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
       }),
       prisma.product.count({ where }),
     ]);
@@ -102,7 +111,7 @@ export const POST = withAuth(async (req) => {
     const body: unknown = await req.json();
     const parsed = ProductSchema.safeParse(body);
     if (!parsed.success) {
-      return apiError(422, "VALIDATION_ERROR", parsed.error.flatten().fieldErrors);
+      return apiError(422, 'VALIDATION_ERROR', parsed.error.flatten().fieldErrors);
     }
 
     const { variants, ...productData } = parsed.data;

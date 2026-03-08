@@ -12,7 +12,11 @@ async function testFetching() {
     const res = await fetch(`${BASE_URL}${path}`);
     const data = await res.json();
     if (data.success) {
-      const count = data.data.products ? data.data.products.length : (Array.isArray(data.data) ? data.data.length : 'N/A');
+      const count = data.data.products
+        ? data.data.products.length
+        : Array.isArray(data.data)
+          ? data.data.length
+          : 'N/A';
       console.log(`✅ GET ${path}: Success (Found ${count} items)`);
     } else {
       console.log(`❌ GET ${path}: Failed`, data);
@@ -26,9 +30,9 @@ async function testFetching() {
     const res = await fetch(`${BASE_URL}/products/${product.id}`);
     const data = await res.json();
     if (data.success && data.data.id === product.id) {
-        console.log(`✅ GET /products/[id]: Success (Fetched "${data.data.name}")`);
+      console.log(`✅ GET /products/[id]: Success (Fetched "${data.data.name}")`);
     } else {
-        console.log(`❌ GET /products/[id]: Failed`, data);
+      console.log(`❌ GET /products/[id]: Failed`, data);
     }
   }
 
@@ -37,7 +41,9 @@ async function testFetching() {
   const searchRes = await fetch(`${BASE_URL}/products?search=Coca`);
   const searchData = await searchRes.json();
   if (searchData.success) {
-    console.log(`✅ Search Success: Found ${searchData.data.products.length} products matching "Coca"`);
+    console.log(
+      `✅ Search Success: Found ${searchData.data.products.length} products matching "Coca"`,
+    );
   }
 
   await prisma.$disconnect();

@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { verifyRefreshToken, signAccessToken, signRefreshToken } from "@/lib/jwt";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { verifyRefreshToken, signAccessToken, signRefreshToken } from '@/lib/jwt';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
 
 const RefreshSchema = z.object({
   refreshToken: z.string().min(1),
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!stored || stored.expiresAt < new Date() || !stored.user.isActive) {
-      return apiError("Invalid or expired refresh token", 401);
+      return apiError('Invalid or expired refresh token', 401);
     }
 
     // Rotate tokens

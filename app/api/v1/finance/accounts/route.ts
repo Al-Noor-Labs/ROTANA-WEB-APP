@@ -1,9 +1,9 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, STAFF_ROLES, ADMIN_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
-import { AccountType } from "@/lib/generated/prisma";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, STAFF_ROLES, ADMIN_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
+import { AccountType } from '@/lib/generated/prisma';
 
 const AccountSchema = z.object({
   code: z.string().min(1),
@@ -17,7 +17,7 @@ export const GET = withAuth(async (req) => {
   try {
     const accounts = await prisma.ledgerAccount.findMany({
       where: { isActive: true },
-      orderBy: { code: "asc" }
+      orderBy: { code: 'asc' },
     });
     return apiSuccess(accounts);
   } catch (error) {
@@ -30,21 +30,21 @@ export const POST = withAuth(async (req) => {
   try {
     const body = await req.json();
     const validated = AccountSchema.parse(body);
-    
+
     // Check if code already exists
     const existing = await prisma.ledgerAccount.findUnique({
-      where: { code: validated.code }
+      where: { code: validated.code },
     });
-    
+
     if (existing) {
       return apiError(`An account with code ${validated.code} already exists`, 400);
     }
 
-    const account = await prisma.ledgerAccount.create({ 
+    const account = await prisma.ledgerAccount.create({
       data: {
         ...validated,
-        isSystem: false // Users can only create non-system accounts
-      }
+        isSystem: false, // Users can only create non-system accounts
+      },
     });
 
     return apiSuccess(account, 201);

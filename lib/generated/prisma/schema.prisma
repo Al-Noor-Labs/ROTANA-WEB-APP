@@ -1,0 +1,671 @@
+// Rotana Grocery & Warehouse Management Platform
+// Prisma Schema - PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum Role {
+  SUPER_ADMIN
+  WAREHOUSE_MANAGER
+  STORE_MANAGER
+  CASHIER
+  SALESMAN
+  DELIVERY_DRIVER
+  ACCOUNTANT
+  CUSTOMER
+}
+
+enum OrderStatus {
+  CREATED
+  PAID
+  PACKING
+  READY_FOR_DISPATCH
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+enum OrderType {
+  B2C_STORE
+  B2C_ONLINE
+  B2B_WHOLESALE
+  INTERNAL_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIALLY_PAID
+  REFUNDED
+  FAILED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  UPI
+  BANK_TRANSFER
+  CREDIT
+}
+
+enum InventoryEventType {
+  STOCK_IN
+  STOCK_OUT
+  ORDER_RESERVED
+  ORDER_RELEASED
+  ORDER_FULFILLED
+  TRANSFER_OUT
+  TRANSFER_IN
+  DAMAGE_WRITE_OFF
+  ADJUSTMENT
+  RETURN_IN
+}
+
+enum GRNStatus {
+  DRAFT
+  RECEIVED
+  QUALITY_CHECKED
+  STOCKED
+  DISCREPANCY
+}
+
+enum DeliveryStatus {
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+  RETURNED
+}
+
+enum LedgerEntryType {
+  DEBIT
+  CREDIT
+}
+
+enum AccountType {
+  ASSET
+  LIABILITY
+  REVENUE
+  EXPENSE
+  EQUITY
+}
+
+enum LocationType {
+  WAREHOUSE
+  STORE
+  TRANSIT
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
+}
+
+enum SupplierStatus {
+  ACTIVE
+  INACTIVE
+  BLACKLISTED
+}
+
+enum TransferStatus {
+  PENDING
+  IN_TRANSIT
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================================
+// USER & AUTH
+// ============================================================
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  phone        String?  @unique
+  passwordHash String   @map("password_hash")
+  role         Role     @default(CUSTOMER)
+  isActive     Boolean  @default(true) @map("is_active")
+  avatarUrl    String?  @map("avatar_url")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  orders           Order[]             @relation("CustomerOrders")
+  assignedOrders   Order[]             @relation("AssignedStaff")
+  deliveries       Delivery[]
+  payslips         Payslip[]
+  salesCommissions SalesCommission[]
+  createdGRNs      GoodsReceivedNote[]
+  refreshTokens    RefreshToken[]
+  addresses        Address[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("refresh_tokens")
+}
+
+model Address {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String // Home, Office, etc.
+  line1     String
+  line2     String?
+  city      String
+  state     String
+  pincode   String
+  isDefault Boolean  @default(false) @map("is_default")
+  latitude  Decimal? @db.Decimal(10, 7)
+  longitude Decimal? @db.Decimal(10, 7)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  orders Order[]
+
+  @@map("addresses")
+}
+
+// ============================================================
+// LOCATION (Warehouse / Store / Transit)
+// ============================================================
+
+model Location {
+  id        String       @id @default(uuid())
+  name      String
+  type      LocationType
+  code      String       @unique
+  address   String?
+  city      String?
+  isActive  Boolean      @default(true) @map("is_active")
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  bins              Bin[]
+  inventoryEvents   InventoryEvent[]
+  grnLocations      GoodsReceivedNote[]
+  ordersAsSource    Order[]             @relation("SourceLocation")
+  ordersAsDest      Order[]             @relation("DestLocation")
+  transfersOut      StockTransfer[]     @relation("TransferFrom")
+  transfersIn       StockTransfer[]     @relation("TransferTo")
+  inventoryBalances InventoryBalance[]
+
+  @@map("locations")
+}
+
+model Bin {
+  id          String   @id @default(uuid())
+  locationId  String   @map("location_id")
+  location    Location @relation(fields: [locationId], references: [id])
+  code        String
+  aisle       String?
+  rack        String?
+  shelf       String?
+  maxCapacity Int?     @map("max_capacity")
+  isActive    Boolean  @default(true) @map("is_active")
+
+  inventoryEvents   InventoryEvent[]
+  inventoryBalances InventoryBalance[]
+
+  @@unique([locationId, code])
+  @@map("bins")
+}
+
+// ============================================================
+// PRODUCTS & CATEGORIES
+// ============================================================
+
+model Category {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  imageUrl    String?    @map("image_url")
+  parentId    String?    @map("parent_id")
+  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children    Category[] @relation("SubCategories")
+  isActive    Boolean    @default(true) @map("is_active")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id           String        @id @default(uuid())
+  categoryId   String        @map("category_id")
+  category     Category      @relation(fields: [categoryId], references: [id])
+  name         String
+  description  String?
+  brand        String?
+  imageUrl     String?       @map("image_url")
+  images       String[] // multiple image URLs
+  barcode      String?       @unique
+  isPerishable Boolean       @default(false) @map("is_perishable")
+  status       ProductStatus @default(ACTIVE)
+  tags         String[]
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  variants ProductVariant[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  id           String   @id @default(uuid())
+  productId    String   @map("product_id")
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku          String   @unique
+  name         String // e.g. "1kg", "500g", "6-pack"
+  unitValue    Decimal  @map("unit_value") @db.Decimal(10, 3) // e.g. 1.000
+  unitLabel    String   @map("unit_label") // "kg", "g", "pcs", "litre"
+  costPrice    Decimal  @map("cost_price") @db.Decimal(10, 2)
+  sellingPrice Decimal  @map("selling_price") @db.Decimal(10, 2)
+  mrp          Decimal? @db.Decimal(10, 2)
+  taxRate      Decimal  @default(0) @map("tax_rate") @db.Decimal(5, 2) // percentage
+  reorderLevel Int      @default(10) @map("reorder_level")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  inventoryEvents   InventoryEvent[]
+  orderItems        OrderItem[]
+  supplierLinks     SupplierProduct[]
+  grnItems          GRNItem[]
+  transferItems     StockTransferItem[]
+  inventoryBalances InventoryBalance[]
+
+  @@map("product_variants")
+}
+
+// ============================================================
+// SUPPLIERS
+// ============================================================
+
+model Supplier {
+  id           String         @id @default(uuid())
+  name         String
+  contactName  String?        @map("contact_name")
+  phone        String?
+  email        String?        @unique
+  address      String?
+  city         String?
+  gstNumber    String?        @map("gst_number")
+  panNumber    String?        @map("pan_number")
+  paymentTerms Int            @default(30) @map("payment_terms") // days
+  creditLimit  Decimal?       @map("credit_limit") @db.Decimal(12, 2)
+  status       SupplierStatus @default(ACTIVE)
+  createdAt    DateTime       @default(now()) @map("created_at")
+
+  products SupplierProduct[]
+  grns     GoodsReceivedNote[]
+  invoices SupplierInvoice[]
+
+  @@map("suppliers")
+}
+
+model SupplierProduct {
+  id            String         @id @default(uuid())
+  supplierId    String         @map("supplier_id")
+  supplier      Supplier       @relation(fields: [supplierId], references: [id])
+  variantId     String         @map("variant_id")
+  variant       ProductVariant @relation(fields: [variantId], references: [id])
+  supplierSku   String?        @map("supplier_sku")
+  leadTimeDays  Int            @default(1) @map("lead_time_days")
+  minOrderQty   Int            @default(1) @map("min_order_qty")
+  lastCostPrice Decimal        @map("last_cost_price") @db.Decimal(10, 2)
+
+  @@unique([supplierId, variantId])
+  @@map("supplier_products")
+}
+
+// ============================================================
+// INVENTORY (Event-Sourced)
+// ============================================================
+
+model InventoryEvent {
+  id            String             @id @default(uuid())
+  variantId     String             @map("variant_id")
+  variant       ProductVariant     @relation(fields: [variantId], references: [id])
+  locationId    String             @map("location_id")
+  location      Location           @relation(fields: [locationId], references: [id])
+  binId         String?            @map("bin_id")
+  bin           Bin?               @relation(fields: [binId], references: [id])
+  eventType     InventoryEventType @map("event_type")
+  quantity      Int // positive always; direction determined by event type
+  referenceId   String?            @map("reference_id") // orderId, grnId, etc.
+  referenceType String?            @map("reference_type") // "ORDER", "GRN", "TRANSFER"
+  notes         String?
+  createdAt     DateTime           @default(now()) @map("created_at")
+  createdBy     String?            @map("created_by")
+
+  @@index([variantId, locationId])
+  @@index([referenceId])
+  @@map("inventory_events")
+}
+
+// Materialized view of current stock (updated by triggers/events)
+model InventoryBalance {
+  id         String         @id @default(uuid())
+  variantId  String         @map("variant_id")
+  locationId String         @map("location_id")
+  binId      String?        @map("bin_id")
+  variant    ProductVariant @relation(fields: [variantId], references: [id])
+  location   Location       @relation(fields: [locationId], references: [id])
+  bin        Bin?           @relation(fields: [binId], references: [id])
+  onHand     Int            @default(0) @map("on_hand")
+  reserved   Int            @default(0)
+  available  Int            @default(0) // onHand - reserved
+  updatedAt  DateTime       @updatedAt @map("updated_at")
+
+  @@unique([variantId, locationId])
+  @@map("inventory_balances")
+}
+
+// ============================================================
+// GOODS RECEIVED NOTE (GRN)
+// ============================================================
+
+model GoodsReceivedNote {
+  id           String    @id @default(uuid())
+  grnNumber    String    @unique @map("grn_number")
+  supplierId   String    @map("supplier_id")
+  supplier     Supplier  @relation(fields: [supplierId], references: [id])
+  locationId   String    @map("location_id")
+  location     Location  @relation(fields: [locationId], references: [id])
+  status       GRNStatus @default(DRAFT)
+  receivedById String    @map("received_by_id")
+  receivedBy   User      @relation(fields: [receivedById], references: [id])
+  invoiceRef   String?   @map("invoice_ref")
+  receivedAt   DateTime? @map("received_at")
+  notes        String?
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  items           GRNItem[]
+  supplierInvoice SupplierInvoice?
+
+  @@map("goods_received_notes")
+}
+
+model GRNItem {
+  id          String            @id @default(uuid())
+  grnId       String            @map("grn_id")
+  grn         GoodsReceivedNote @relation(fields: [grnId], references: [id], onDelete: Cascade)
+  variantId   String            @map("variant_id")
+  variant     ProductVariant    @relation(fields: [variantId], references: [id])
+  orderedQty  Int               @map("ordered_qty")
+  receivedQty Int               @map("received_qty")
+  damagedQty  Int               @default(0) @map("damaged_qty")
+  costPrice   Decimal           @map("cost_price") @db.Decimal(10, 2)
+  expiryDate  DateTime?         @map("expiry_date")
+  batchNumber String?           @map("batch_number")
+
+  @@map("grn_items")
+}
+
+// ============================================================
+// STOCK TRANSFERS
+// ============================================================
+
+model StockTransfer {
+  id             String         @id @default(uuid())
+  transferNumber String         @unique @map("transfer_number")
+  fromLocationId String         @map("from_location_id")
+  fromLocation   Location       @relation("TransferFrom", fields: [fromLocationId], references: [id])
+  toLocationId   String         @map("to_location_id")
+  toLocation     Location       @relation("TransferTo", fields: [toLocationId], references: [id])
+  status         TransferStatus @default(PENDING)
+  requestedById  String         @map("requested_by_id")
+  notes          String?
+  createdAt      DateTime       @default(now()) @map("created_at")
+  completedAt    DateTime?      @map("completed_at")
+
+  items StockTransferItem[]
+
+  @@map("stock_transfers")
+}
+
+model StockTransferItem {
+  id           String         @id @default(uuid())
+  transferId   String         @map("transfer_id")
+  transfer     StockTransfer  @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  variantId    String         @map("variant_id")
+  variant      ProductVariant @relation(fields: [variantId], references: [id])
+  requestedQty Int            @map("requested_qty")
+  sentQty      Int            @default(0) @map("sent_qty")
+  receivedQty  Int            @default(0) @map("received_qty")
+
+  @@map("stock_transfer_items")
+}
+
+// ============================================================
+// ORDERS
+// ============================================================
+
+model Order {
+  id            String         @id @default(uuid())
+  orderNumber   String         @unique @map("order_number")
+  customerId    String?        @map("customer_id")
+  customer      User?          @relation("CustomerOrders", fields: [customerId], references: [id])
+  orderType     OrderType      @map("order_type")
+  status        OrderStatus    @default(CREATED)
+  paymentStatus PaymentStatus  @default(PENDING) @map("payment_status")
+  paymentMethod PaymentMethod? @map("payment_method")
+
+  // Fulfillment routing
+  sourceLocationId  String?   @map("source_location_id")
+  sourceLocation    Location? @relation("SourceLocation", fields: [sourceLocationId], references: [id])
+  destLocationId    String?   @map("dest_location_id")
+  destLocation      Location? @relation("DestLocation", fields: [destLocationId], references: [id])
+  deliveryAddressId String?   @map("delivery_address_id")
+  deliveryAddress   Address?  @relation(fields: [deliveryAddressId], references: [id])
+
+  // Pricing
+  subtotal       Decimal @db.Decimal(12, 2)
+  taxAmount      Decimal @default(0) @map("tax_amount") @db.Decimal(12, 2)
+  discountAmount Decimal @default(0) @map("discount_amount") @db.Decimal(12, 2)
+  deliveryCharge Decimal @default(0) @map("delivery_charge") @db.Decimal(12, 2)
+  totalAmount    Decimal @map("total_amount") @db.Decimal(12, 2)
+  paidAmount     Decimal @default(0) @map("paid_amount") @db.Decimal(12, 2)
+
+  // Staff
+  assignedToId String? @map("assigned_to_id")
+  assignedTo   User?   @relation("AssignedStaff", fields: [assignedToId], references: [id])
+
+  notes       String?
+  gatewayRef  String?   @map("gateway_ref") // Razorpay payment ID
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deliveredAt DateTime? @map("delivered_at")
+
+  items            OrderItem[]
+  delivery         Delivery?
+  ledgerEntries    LedgerEntry[]
+  invoice          Invoice?
+  salesCommissions SalesCommission[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String         @id @default(uuid())
+  orderId   String         @map("order_id")
+  order     Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId String         @map("variant_id")
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  quantity  Int
+  unitPrice Decimal        @map("unit_price") @db.Decimal(10, 2)
+  taxRate   Decimal        @default(0) @map("tax_rate") @db.Decimal(5, 2)
+  discount  Decimal        @default(0) @db.Decimal(10, 2)
+  lineTotal Decimal        @map("line_total") @db.Decimal(12, 2)
+
+  @@map("order_items")
+}
+
+// ============================================================
+// DELIVERY & LOGISTICS
+// ============================================================
+
+model Delivery {
+  id            String         @id @default(uuid())
+  orderId       String         @unique @map("order_id")
+  order         Order          @relation(fields: [orderId], references: [id])
+  driverId      String?        @map("driver_id")
+  driver        User?          @relation(fields: [driverId], references: [id])
+  status        DeliveryStatus @default(ASSIGNED)
+  routeOrder    Int?           @map("route_order") // position in delivery route
+  estimatedAt   DateTime?      @map("estimated_at")
+  pickedUpAt    DateTime?      @map("picked_up_at")
+  deliveredAt   DateTime?      @map("delivered_at")
+  deliveryProof String?        @map("delivery_proof") // image URL
+  failureReason String?        @map("failure_reason")
+  latitude      Decimal?       @db.Decimal(10, 7)
+  longitude     Decimal?       @db.Decimal(10, 7)
+  notes         String?
+  createdAt     DateTime       @default(now()) @map("created_at")
+
+  @@map("deliveries")
+}
+
+// ============================================================
+// FINANCE - DOUBLE ENTRY LEDGER
+// ============================================================
+
+model LedgerAccount {
+  id          String      @id @default(uuid())
+  code        String      @unique
+  name        String
+  type        AccountType
+  description String?
+  isSystem    Boolean     @default(false) @map("is_system")
+  isActive    Boolean     @default(true) @map("is_active")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  debitEntries  LedgerEntry[] @relation("DebitAccount")
+  creditEntries LedgerEntry[] @relation("CreditAccount")
+
+  @@map("ledger_accounts")
+}
+
+model LedgerEntry {
+  id              String        @id @default(uuid())
+  debitAccountId  String        @map("debit_account_id")
+  debitAccount    LedgerAccount @relation("DebitAccount", fields: [debitAccountId], references: [id])
+  creditAccountId String        @map("credit_account_id")
+  creditAccount   LedgerAccount @relation("CreditAccount", fields: [creditAccountId], references: [id])
+  amount          Decimal       @db.Decimal(12, 2)
+  description     String
+  referenceType   String        @map("reference_type") // "ORDER", "PAYROLL", "GRN", etc.
+  referenceId     String        @map("reference_id")
+  orderId         String?       @map("order_id")
+  order           Order?        @relation(fields: [orderId], references: [id])
+  postedAt        DateTime      @default(now()) @map("posted_at")
+  createdBy       String?       @map("created_by")
+
+  @@index([referenceId])
+  @@index([postedAt])
+  @@map("ledger_entries")
+}
+
+// ============================================================
+// INVOICES
+// ============================================================
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique @map("invoice_number")
+  orderId       String        @unique @map("order_id")
+  order         Order         @relation(fields: [orderId], references: [id])
+  issuedAt      DateTime      @default(now()) @map("issued_at")
+  dueDate       DateTime?     @map("due_date")
+  pdfUrl        String?       @map("pdf_url")
+  totalAmount   Decimal       @map("total_amount") @db.Decimal(12, 2)
+  paymentStatus PaymentStatus @default(PENDING) @map("payment_status")
+  notes         String?
+
+  @@map("invoices")
+}
+
+model SupplierInvoice {
+  id            String             @id @default(uuid())
+  invoiceNumber String             @unique @map("invoice_number")
+  supplierId    String             @map("supplier_id")
+  supplier      Supplier           @relation(fields: [supplierId], references: [id])
+  grnId         String?            @unique @map("grn_id")
+  grn           GoodsReceivedNote? @relation(fields: [grnId], references: [id])
+  amount        Decimal            @db.Decimal(12, 2)
+  taxAmount     Decimal            @default(0) @map("tax_amount") @db.Decimal(12, 2)
+  totalAmount   Decimal            @map("total_amount") @db.Decimal(12, 2)
+  paymentStatus PaymentStatus      @default(PENDING) @map("payment_status")
+  dueDate       DateTime?          @map("due_date")
+  paidAt        DateTime?          @map("paid_at")
+  pdfUrl        String?            @map("pdf_url")
+  createdAt     DateTime           @default(now()) @map("created_at")
+
+  @@map("supplier_invoices")
+}
+
+// ============================================================
+// PAYROLL & COMMISSIONS
+// ============================================================
+
+model Payslip {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [id])
+  month       Int // 1-12
+  year        Int
+  basicSalary Decimal   @map("basic_salary") @db.Decimal(10, 2)
+  allowances  Decimal   @default(0) @db.Decimal(10, 2)
+  deductions  Decimal   @default(0) @db.Decimal(10, 2)
+  commissions Decimal   @default(0) @db.Decimal(10, 2)
+  netPay      Decimal   @map("net_pay") @db.Decimal(10, 2)
+  pdfUrl      String?   @map("pdf_url")
+  paidAt      DateTime? @map("paid_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@unique([userId, month, year])
+  @@map("payslips")
+}
+
+model SalesCommission {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+  orderId   String   @map("order_id")
+  order     Order    @relation(fields: [orderId], references: [id]) // Added relation
+  amount    Decimal  @db.Decimal(10, 2)
+  rate      Decimal  @db.Decimal(5, 2) // percentage
+  isPaid    Boolean  @default(false) @map("is_paid")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sales_commissions")
+}

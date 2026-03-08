@@ -1,21 +1,21 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, MANAGER_ROLES, DELIVERY_ROLES, STAFF_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
-import { DeliveryStatus } from "@/lib/generated/prisma";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, MANAGER_ROLES, DELIVERY_ROLES, STAFF_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
+import { DeliveryStatus } from '@/lib/generated/prisma';
 
 // GET /api/deliveries - List deliveries (drivers see only theirs)
 export const GET = withAuth(async (req, { user }) => {
   try {
     const { searchParams } = new URL(req.url);
-    const status = searchParams.get("status");
-    const driverId = searchParams.get("driverId");
+    const status = searchParams.get('status');
+    const driverId = searchParams.get('driverId');
 
     const where: any = {};
     if (status) where.status = status;
     if (driverId) where.driverId = driverId;
-    if (user.role === "DELIVERY_DRIVER") where.driverId = user.userId;
+    if (user.role === 'DELIVERY_DRIVER') where.driverId = user.userId;
 
     const deliveries = await prisma.delivery.findMany({
       where,
@@ -35,7 +35,7 @@ export const GET = withAuth(async (req, { user }) => {
         },
         driver: { select: { id: true, name: true, phone: true } },
       },
-      orderBy: [{ routeOrder: "asc" }, { createdAt: "asc" }],
+      orderBy: [{ routeOrder: 'asc' }, { createdAt: 'asc' }],
     });
 
     return apiSuccess(deliveries);
@@ -58,10 +58,10 @@ export const POST = withAuth(async (req, { user }) => {
       .parse(body);
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
-    if (!order) return apiError("Order not found", 404);
+    if (!order) return apiError('Order not found', 404);
 
     const existing = await prisma.delivery.findUnique({ where: { orderId } });
-    if (existing) return apiError("Delivery already assigned for this order", 409);
+    if (existing) return apiError('Delivery already assigned for this order', 409);
 
     const delivery = await prisma.delivery.create({
       data: {

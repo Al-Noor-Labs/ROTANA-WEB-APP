@@ -1,48 +1,51 @@
-import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { withAuth, MANAGER_ROLES } from "@/lib/with-auth";
-import { apiSuccess, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
+import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 
 // GET /api/analytics/suppliers - Performance analytics for vendors/suppliers
 export const GET = withAuth(async (req) => {
   try {
     const { searchParams } = new URL(req.url);
-    const startDateParam = searchParams.get("startDate");
-    const endDateParam = searchParams.get("endDate");
-    
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+
     const now = new Date();
-    const startDate = startDateParam ? new Date(startDateParam) : new Date(now.getFullYear(), now.getMonth(), 1);
+    const startDate = startDateParam
+      ? new Date(startDateParam)
+      : new Date(now.getFullYear(), now.getMonth(), 1);
     const endDate = endDateParam ? new Date(endDateParam) : now;
 
-    const [allSuppliers, supplierGrns, supplierInvoices, supplierDiscrepancies] = await Promise.all([
-      // Get all active suppliers
-      prisma.supplier.findMany({
-        where: { status: "ACTIVE" },
-        select: { id: true, name: true, city: true, contactName: true }
-      }),
-      // Count GRNs and total goods received
-      prisma.goodsReceivedNote.groupBy({
-        by: ["supplierId"],
-        where: { createdAt: { gte: startDate, lte: endDate } },
-        _count: { id: true }
-      }),
-      // Total invoices and spent amount
-      prisma.supplierInvoice.groupBy({
-        by: ["supplierId"],
-        where: { createdAt: { gte: startDate, lte: endDate } },
-        _sum: { totalAmount: true },
-        _count: { id: true }
-      }),
-      // Sum damaged items and total received items per supplier via GRN items
-      prisma.gRNItem.findMany({
-        where: {
-          grn: {
-             createdAt: { gte: startDate, lte: endDate }
-          }
-        },
-        include: { grn: { select: { supplierId: true } } }
-      })
-    ]) as any;
+    const [allSuppliers, supplierGrns, supplierInvoices, supplierDiscrepancies] =
+      (await Promise.all([
+        // Get all active suppliers
+        prisma.supplier.findMany({
+          where: { status: 'ACTIVE' },
+          select: { id: true, name: true, city: true, contactName: true },
+        }),
+        // Count GRNs and total goods received
+        prisma.goodsReceivedNote.groupBy({
+          by: ['supplierId'],
+          where: { createdAt: { gte: startDate, lte: endDate } },
+          _count: { id: true },
+        }),
+        // Total invoices and spent amount
+        prisma.supplierInvoice.groupBy({
+          by: ['supplierId'],
+          where: { createdAt: { gte: startDate, lte: endDate } },
+          _sum: { totalAmount: true },
+          _count: { id: true },
+        }),
+        // Sum damaged items and total received items per supplier via GRN items
+        prisma.gRNItem.findMany({
+          where: {
+            grn: {
+              createdAt: { gte: startDate, lte: endDate },
+            },
+          },
+          include: { grn: { select: { supplierId: true } } },
+        }),
+      ])) as any;
 
     // Build discrepancy map
     const discrepancyMap = new Map();
@@ -80,7 +83,7 @@ export const GET = withAuth(async (req) => {
 
     return apiSuccess({
       period: { startDate, endDate },
-      performance: performanceData.sort((a: any, b: any) => b.totalSpend - a.totalSpend)
+      performance: performanceData.sort((a: any, b: any) => b.totalSpend - a.totalSpend),
     });
   } catch (error) {
     return handleApiError(error);

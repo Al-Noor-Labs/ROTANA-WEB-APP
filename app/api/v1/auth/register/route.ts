@@ -1,19 +1,19 @@
-import { NextRequest } from "next/server";
-import bcrypt from "bcryptjs";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { signAccessToken, signRefreshToken } from "@/lib/jwt";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import bcrypt from 'bcryptjs';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { signAccessToken, signRefreshToken } from '@/lib/jwt';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
 
 const RegisterSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
   phone: z.string().min(10).optional(),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
   role: z
-    .enum(["CUSTOMER", "CASHIER", "SALESMAN", "DELIVERY_DRIVER"])
+    .enum(['CUSTOMER', 'CASHIER', 'SALESMAN', 'DELIVERY_DRIVER'])
     .optional()
-    .default("CUSTOMER"),
+    .default('CUSTOMER'),
 });
 
 export async function POST(req: NextRequest) {
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       where: { email: validated.email },
     });
     if (existing) {
-      return apiError("User with this email already exists", 409);
+      return apiError('User with this email already exists', 409);
     }
 
     const passwordHash = await bcrypt.hash(validated.password, 12);

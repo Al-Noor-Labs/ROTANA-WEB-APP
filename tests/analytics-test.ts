@@ -36,7 +36,7 @@ async function main() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: 'admin@rotana.com', password: 'Password123!' }),
-  }).then(r => r.json());
+  }).then((r) => r.json());
 
   const token = loginRes.data.accessToken;
   console.log('✅ Login successful');
@@ -48,30 +48,43 @@ async function main() {
   const warehouse = locations.data.find((l: any) => l.type === 'WAREHOUSE');
   const suppliers = await get('/suppliers', token);
   const supplier = suppliers.data[0];
-  
+
   if (!variant || !warehouse || !supplier) {
-    console.error('❌ Missing test data (products, locations, or suppliers). Run diverse-test.ts first.');
+    console.error(
+      '❌ Missing test data (products, locations, or suppliers). Run diverse-test.ts first.',
+    );
     return;
   }
 
   // 2.5 Stock in the variant so we can create an order
   console.log('⏳ Adding stock via GRN...');
-  const grnRes = await post('/grn', {
-    supplierId: supplier.id,
-    locationId: warehouse.id,
-    items: [{ variantId: variant.id, orderedQty: 50, receivedQty: 50, costPrice: 350 }]
-  }, token);
-  if (!grnRes.success) { console.error('❌ GRN Failed:', grnRes); return; }
+  const grnRes = await post(
+    '/grn',
+    {
+      supplierId: supplier.id,
+      locationId: warehouse.id,
+      items: [{ variantId: variant.id, orderedQty: 50, receivedQty: 50, costPrice: 350 }],
+    },
+    token,
+  );
+  if (!grnRes.success) {
+    console.error('❌ GRN Failed:', grnRes);
+    return;
+  }
   console.log('✅ Stock added');
 
   // 3. Create a test order
   console.log('⏳ Creating an order...');
-  const orderRes = await post('/orders', {
-    orderType: 'B2C_STORE',
-    sourceLocationId: warehouse.id,
-    paymentMethod: 'CASH',
-    items: [{ variantId: variant.id, quantity: 5 }]
-  }, token);
+  const orderRes = await post(
+    '/orders',
+    {
+      orderType: 'B2C_STORE',
+      sourceLocationId: warehouse.id,
+      paymentMethod: 'CASH',
+      items: [{ variantId: variant.id, quantity: 5 }],
+    },
+    token,
+  );
 
   if (!orderRes.success) {
     console.error('❌ Order Creation Failed:', orderRes);
@@ -92,7 +105,7 @@ async function main() {
   // 5. Test Analytics Charts API
   console.log('\n⏳ Fetching Dashboard Charts (Full BI Analytics)...');
   const chartsRes = await get('/dashboard/charts', token);
-  
+
   if (chartsRes.success) {
     const { finances, trends } = chartsRes.data;
     const l30 = finances.last30Days;

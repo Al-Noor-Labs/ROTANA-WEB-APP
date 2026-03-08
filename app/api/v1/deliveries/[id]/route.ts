@@ -1,10 +1,15 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, DELIVERY_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError, generateInvoiceNumber } from "@/lib/api-helpers";
-import { DeliveryStatus, InventoryEventType, OrderStatus, PaymentStatus } from "@/lib/generated/prisma";
-import { applyInventoryEvent } from "@/app/api/inventory/route";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, DELIVERY_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError, generateInvoiceNumber } from '@/lib/api-helpers';
+import {
+  DeliveryStatus,
+  InventoryEventType,
+  OrderStatus,
+  PaymentStatus,
+} from '@/lib/generated/prisma';
+import { applyInventoryEvent } from '@/app/api/inventory/route';
 
 const UpdateDeliverySchema = z.object({
   status: z.nativeEnum(DeliveryStatus),
@@ -22,21 +27,19 @@ export const PATCH = withAuth(async (req, { params, user }) => {
     const validated = UpdateDeliverySchema.parse(body);
 
     const delivery = await prisma.delivery.findUnique({ where: { id: params.id } });
-    if (!delivery) return apiError("Delivery not found", 404);
+    if (!delivery) return apiError('Delivery not found', 404);
 
     // Drivers can only update their own deliveries
-    if (user.role === "DELIVERY_DRIVER" && delivery.driverId !== user.userId) {
-      return apiError("Forbidden", 403);
+    if (user.role === 'DELIVERY_DRIVER' && delivery.driverId !== user.userId) {
+      return apiError('Forbidden', 403);
     }
 
     const updated = await prisma.delivery.update({
       where: { id: params.id },
       data: {
         ...validated,
-        pickedUpAt:
-          validated.status === DeliveryStatus.PICKED_UP ? new Date() : undefined,
-        deliveredAt:
-          validated.status === DeliveryStatus.DELIVERED ? new Date() : undefined,
+        pickedUpAt: validated.status === DeliveryStatus.PICKED_UP ? new Date() : undefined,
+        deliveredAt: validated.status === DeliveryStatus.DELIVERED ? new Date() : undefined,
       },
       include: {
         order: { select: { id: true, orderNumber: true } },
@@ -62,31 +65,37 @@ export const PATCH = withAuth(async (req, { params, user }) => {
           // Fulfill inventory: release reservation → fulfilled
           if (existingOrder.sourceLocationId) {
             for (const item of existingOrder.items) {
-              await applyInventoryEvent({
-                variantId: item.variantId,
-                locationId: existingOrder.sourceLocationId,
-                eventType: InventoryEventType.ORDER_RELEASED,
-                quantity: item.quantity,
-                referenceId: existingOrder.id,
-                referenceType: "ORDER",
-                createdBy: user.userId,
-              }, tx);
+              await applyInventoryEvent(
+                {
+                  variantId: item.variantId,
+                  locationId: existingOrder.sourceLocationId,
+                  eventType: InventoryEventType.ORDER_RELEASED,
+                  quantity: item.quantity,
+                  referenceId: existingOrder.id,
+                  referenceType: 'ORDER',
+                  createdBy: user.userId,
+                },
+                tx,
+              );
 
-              await applyInventoryEvent({
-                variantId: item.variantId,
-                locationId: existingOrder.sourceLocationId,
-                eventType: InventoryEventType.ORDER_FULFILLED,
-                quantity: item.quantity,
-                referenceId: existingOrder.id,
-                referenceType: "ORDER",
-                createdBy: user.userId,
-              }, tx);
+              await applyInventoryEvent(
+                {
+                  variantId: item.variantId,
+                  locationId: existingOrder.sourceLocationId,
+                  eventType: InventoryEventType.ORDER_FULFILLED,
+                  quantity: item.quantity,
+                  referenceId: existingOrder.id,
+                  referenceType: 'ORDER',
+                  createdBy: user.userId,
+                },
+                tx,
+              );
             }
           }
 
           // Post ledger entries for the sale
-          const cashAccount = await tx.ledgerAccount.findFirst({ where: { code: "1001" } });
-          const revenueAccount = await tx.ledgerAccount.findFirst({ where: { code: "4001" } });
+          const cashAccount = await tx.ledgerAccount.findFirst({ where: { code: '1001' } });
+          const revenueAccount = await tx.ledgerAccount.findFirst({ where: { code: '4001' } });
 
           if (cashAccount && revenueAccount) {
             await tx.ledgerEntry.create({
@@ -95,7 +104,7 @@ export const PATCH = withAuth(async (req, { params, user }) => {
                 creditAccountId: revenueAccount.id,
                 amount: existingOrder.totalAmount,
                 description: `Sales Revenue - Order ${existingOrder.orderNumber}`,
-                referenceType: "ORDER",
+                referenceType: 'ORDER',
                 referenceId: existingOrder.id,
                 orderId: existingOrder.id,
                 createdBy: user.userId,

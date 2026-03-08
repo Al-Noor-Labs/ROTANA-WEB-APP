@@ -212,15 +212,15 @@ export async function createOrder(
   const order = await prisma.$transaction(async (tx) => {
     const newOrder = await tx.order.create({
       data: {
-        displayId:       generateOrderId(user.role),
-        customerId:      user.id,
-        orderType:       user.role === 'b2c_customer' ? 'B2C' : 'B2B',
-        subtotal:        totals.subtotal,
-        taxAmount:       totals.tax,
-        totalAmount:     totals.total,
+        displayId: generateOrderId(user.role),
+        customerId: user.id,
+        orderType: user.role === 'b2c_customer' ? 'B2C' : 'B2B',
+        subtotal: totals.subtotal,
+        taxAmount: totals.tax,
+        totalAmount: totals.total,
         deliveryAddress: dto.deliveryAddress,
-        notes:           dto.notes,
-        items:           { create: dto.items },
+        notes: dto.notes,
+        items: { create: dto.items },
       },
     });
 
@@ -355,7 +355,7 @@ export async function POST(request: NextRequest) {
     // ... handler logic
   } catch (error) {
     logger.error({ error }, 'Unexpected error creating order');
-    return apiError(500, 'INTERNAL_ERROR');  // NEVER expose error.message to client
+    return apiError(500, 'INTERNAL_ERROR'); // NEVER expose error.message to client
   }
 }
 ```
@@ -367,13 +367,7 @@ export async function POST(request: NextRequest) {
 // app/(admin)/orders/error.tsx
 'use client';
 
-export default function OrdersError({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) {
+export default function OrdersError({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div>
       <h2>Something went wrong</h2>
@@ -403,5 +397,5 @@ logger.info(`Error: ${error.message}`);
 
 ---
 
-*This document is maintained by the team. Update when new patterns are established.*
-*When a new pattern is agreed upon, add it here before starting implementation.*
+_This document is maintained by the team. Update when new patterns are established._
+_When a new pattern is agreed upon, add it here before starting implementation._

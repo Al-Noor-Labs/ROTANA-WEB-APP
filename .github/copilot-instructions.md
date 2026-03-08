@@ -5,6 +5,7 @@
 ## Project Overview
 
 Rotana Store is a warehouse & store management platform built as a Turborepo monorepo:
+
 - `apps/web` — Next.js 16 (App Router) frontend
 - `apps/api` — NestJS backend API
 - `apps/mobile` — React Native (Expo) mobile app

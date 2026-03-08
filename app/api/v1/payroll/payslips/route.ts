@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, MANAGER_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
 
 const PayslipSchema = z.object({
   userId: z.string().uuid(),
@@ -19,9 +19,9 @@ const PayslipSchema = z.object({
 export const GET = withAuth(async (req) => {
   try {
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
-    const month = searchParams.get("month");
-    const year = searchParams.get("year");
+    const userId = searchParams.get('userId');
+    const month = searchParams.get('month');
+    const year = searchParams.get('year');
 
     const where: any = {};
     if (userId) where.userId = userId;
@@ -37,8 +37,8 @@ export const GET = withAuth(async (req) => {
             name: true,
             email: true,
             role: true,
-          }
-        }
+          },
+        },
       },
       orderBy: [{ year: 'desc' }, { month: 'desc' }],
     });
@@ -53,22 +53,26 @@ export const GET = withAuth(async (req) => {
 export const POST = withAuth(async (req) => {
   try {
     const body = await req.json();
-    
+
     // Check if it's bulk generate or single create
     if (Array.isArray(body)) {
       // Bulk create
       const results = [];
       for (const item of body) {
         const validated = PayslipSchema.parse(item);
-        const netPay = validated.basicSalary + validated.allowances + validated.commissions - validated.deductions;
-        
+        const netPay =
+          validated.basicSalary +
+          validated.allowances +
+          validated.commissions -
+          validated.deductions;
+
         const payslip = await prisma.payslip.upsert({
           where: {
             userId_month_year: {
               userId: validated.userId,
               month: validated.month,
               year: validated.year,
-            }
+            },
           },
           update: {
             ...validated,
@@ -87,7 +91,11 @@ export const POST = withAuth(async (req) => {
     } else {
       // Single create
       const validated = PayslipSchema.parse(body);
-      const netPay = validated.basicSalary + (validated.allowances || 0) + (validated.commissions || 0) - (validated.deductions || 0);
+      const netPay =
+        validated.basicSalary +
+        (validated.allowances || 0) +
+        (validated.commissions || 0) -
+        (validated.deductions || 0);
 
       const payslip = await prisma.payslip.upsert({
         where: {
@@ -95,7 +103,7 @@ export const POST = withAuth(async (req) => {
             userId: validated.userId,
             month: validated.month,
             year: validated.year,
-          }
+          },
         },
         update: {
           ...validated,

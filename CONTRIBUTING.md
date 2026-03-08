@@ -21,13 +21,13 @@
 
 ## Team & Ownership
 
-| Member  | Role                   | Modules Owned                                    | Review Buddy | Repo |
-| ------- | ---------------------- | ------------------------------------------------ | ------------ | ---- |
-| Ayeen   | PM + Backend Lead      | Auth, API architecture, DB schema, DevOps, CI/CD | Rahmath      | This repo |
-| Rahmath | Backend Developer      | Inventory, Invoicing, Payroll, B2B credit logic  | Ayeen        | This repo |
-| Faizan  | Frontend Developer     | B2C portal, Customer flows, Checkout UI          | Najeeb       | This repo |
-| Najeeb  | Frontend Developer     | Admin dashboards, Warehouse/Store UI             | Faizan       | This repo |
-| Zaka    | Mobile Developer       | Rotana mobile app (React Native, Expo)           | Ayeen        | **Separate repo** — not this codebase |
+| Member  | Role               | Modules Owned                                    | Review Buddy | Repo                                  |
+| ------- | ------------------ | ------------------------------------------------ | ------------ | ------------------------------------- |
+| Ayeen   | PM + Backend Lead  | Auth, API architecture, DB schema, DevOps, CI/CD | Rahmath      | This repo                             |
+| Rahmath | Backend Developer  | Inventory, Invoicing, Payroll, B2B credit logic  | Ayeen        | This repo                             |
+| Faizan  | Frontend Developer | B2C portal, Customer flows, Checkout UI          | Najeeb       | This repo                             |
+| Najeeb  | Frontend Developer | Admin dashboards, Warehouse/Store UI             | Faizan       | This repo                             |
+| Zaka    | Mobile Developer   | Rotana mobile app (React Native, Expo)           | Ayeen        | **Separate repo** — not this codebase |
 
 > **Note on Zaka**: Zaka works on the Rotana mobile app in a separate repository. The mobile app consumes the API Route Handlers in this repo via Bearer token auth. Zaka does not commit to this repository. Any API contract changes that could affect the mobile app must be communicated to Zaka before merging.
 
@@ -74,17 +74,18 @@ main ─────────────────────────
 
 Format: `<type>/ROT-<issue#>-<short-description>`
 
-| Type       | Use Case                         | Example                           |
-| ---------- | -------------------------------- | --------------------------------- |
-| `feature/` | New functionality                | `feature/ROT-12-b2c-cart`         |
-| `fix/`     | Bug fixes                        | `fix/ROT-45-stock-negative`       |
-| `refactor/`| Code improvement, no new feature | `refactor/ROT-67-api-validation`  |
-| `docs/`    | Documentation only               | `docs/ROT-89-api-docs`            |
-| `chore/`   | Tooling, config, deps            | `chore/ROT-23-eslint-update`      |
-| `hotfix/`  | Urgent production fix            | `hotfix/ROT-99-payment-crash`     |
-| `release/` | Release preparation              | `release/v1.0`                    |
+| Type        | Use Case                         | Example                          |
+| ----------- | -------------------------------- | -------------------------------- |
+| `feature/`  | New functionality                | `feature/ROT-12-b2c-cart`        |
+| `fix/`      | Bug fixes                        | `fix/ROT-45-stock-negative`      |
+| `refactor/` | Code improvement, no new feature | `refactor/ROT-67-api-validation` |
+| `docs/`     | Documentation only               | `docs/ROT-89-api-docs`           |
+| `chore/`    | Tooling, config, deps            | `chore/ROT-23-eslint-update`     |
+| `hotfix/`   | Urgent production fix            | `hotfix/ROT-99-payment-crash`    |
+| `release/`  | Release preparation              | `release/v1.0`                   |
 
 **Rules:**
+
 - Always lowercase, hyphen-separated
 - Always include the GitHub Issue number (`ROT-<number>`)
 - Keep description under 5 words
@@ -107,18 +108,17 @@ We use [Conventional Commits](https://www.conventionalcommits.org/). This is **e
 
 ### Types
 
-| Type       | When to Use                          | Example                                      |
-| ---------- | ------------------------------------ | -------------------------------------------- |
-| `feat`     | New feature                          | `feat(cart): add quantity selector`           |
-| `fix`      | Bug fix                              | `fix(inventory): correct stock deduction`    |
-| `docs`     | Documentation only                   | `docs(api): add endpoint descriptions`       |
-| `style`    | Formatting, no logic change          | `style(ui): fix button alignment`            |
-| `refactor` | Code change, no feature/fix          | `refactor(auth): extract token validation`   |
-| `test`     | Adding/fixing tests                  | `test(orders): add checkout unit tests`      |
-| `chore`    | Tooling, config, deps                | `chore(deps): update next to 15.2`           |
-| `perf`     | Performance improvement              | `perf(db): add index on orders.created_at`   |
-| `ci`       | CI/CD changes                        | `ci: add type-check step to pipeline`        |
-
+| Type       | When to Use                 | Example                                    |
+| ---------- | --------------------------- | ------------------------------------------ |
+| `feat`     | New feature                 | `feat(cart): add quantity selector`        |
+| `fix`      | Bug fix                     | `fix(inventory): correct stock deduction`  |
+| `docs`     | Documentation only          | `docs(api): add endpoint descriptions`     |
+| `style`    | Formatting, no logic change | `style(ui): fix button alignment`          |
+| `refactor` | Code change, no feature/fix | `refactor(auth): extract token validation` |
+| `test`     | Adding/fixing tests         | `test(orders): add checkout unit tests`    |
+| `chore`    | Tooling, config, deps       | `chore(deps): update next to 15.2`         |
+| `perf`     | Performance improvement     | `perf(db): add index on orders.created_at` |
+| `ci`       | CI/CD changes               | `ci: add type-check step to pipeline`      |
 
 ### Scopes (use the module name)
 
@@ -127,6 +127,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/). This is **e
 > **Note**: `mobile` is no longer a valid scope in this repo. Mobile changes are made in the mobile app repository.
 
 ### Rules
+
 - Subject line ≤ 72 characters
 - Use imperative mood ("add" not "added" or "adds")
 - No period at the end
@@ -170,11 +171,13 @@ Every PR will auto-populate with our template. Fill in **all sections**, don't d
 Reviewers MUST check these before approving:
 
 ### Correctness
+
 - [ ] Does the code do what the issue/ticket describes?
 - [ ] Are edge cases handled? (null, empty, negative values, large inputs)
 - [ ] Are error states handled gracefully? (try/catch, error boundaries)
 
 ### Security
+
 - [ ] No secrets or credentials in code
 - [ ] All user input is validated with Zod schemas before processing
 - [ ] API route handlers check both authentication AND authorization (role)
@@ -183,6 +186,7 @@ Reviewers MUST check these before approving:
 - [ ] No `NEXT_PUBLIC_*` misuse — only expose what the browser truly needs
 
 ### Code Quality
+
 - [ ] Follows `.rules/PROJECT_CANON.md` naming and structure rules
 - [ ] No `any` type in TypeScript (use `unknown` if needed)
 - [ ] No code duplication — uses shared utilities from `lib/`
@@ -190,6 +194,7 @@ Reviewers MUST check these before approving:
 - [ ] Components are < 200 lines
 
 ### API-Specific Checks (for Route Handler changes)
+
 - [ ] Follows the 5-step pattern: Validate → Authenticate → Authorize → Execute → Respond
 - [ ] Business logic is in `lib/services/` — not in the route handler
 - [ ] Response uses `apiSuccess()` / `apiError()` helpers
@@ -198,6 +203,7 @@ Reviewers MUST check these before approving:
 - [ ] Endpoint is documented with JSDoc
 
 ### AI-Specific Checks
+
 - [ ] No hallucinated APIs or library methods
 - [ ] No made-up environment variables
 - [ ] No phantom dependencies (packages not in package.json)
@@ -205,6 +211,7 @@ Reviewers MUST check these before approving:
 - [ ] Pattern matches existing codebase conventions
 
 ### Performance
+
 - [ ] No N+1 queries (use Prisma `include` and `select`)
 - [ ] Large lists are paginated
 - [ ] Images are optimized (next/image)
@@ -275,11 +282,11 @@ See [docs/SETUP.md](docs/SETUP.md) for detailed instructions.
 
 ## Communication
 
-| Channel        | Purpose                                                     |
-| -------------- | ----------------------------------------------------------- |
-| Google Chat    | Daily standups, quick questions, .env updates, urgent alerts |
-| GitHub Issues  | All tasks, bugs, and feature requests                       |
-| GitHub PRs     | Code-specific discussions                                   |
+| Channel       | Purpose                                                      |
+| ------------- | ------------------------------------------------------------ |
+| Google Chat   | Daily standups, quick questions, .env updates, urgent alerts |
+| GitHub Issues | All tasks, bugs, and feature requests                        |
+| GitHub PRs    | Code-specific discussions                                    |
 
 > **⚠️ Secrets Sharing**: Environment variable values are shared via Google Chat pinned message. Never share secrets in open channels — use the dedicated team group only. For production secrets, Ayeen&Rahmath manages them directly on Vercel/Supabase dashboards.
 
@@ -297,4 +304,4 @@ Post by **10:00 AM IST** every working day:
 
 ---
 
-*Last updated: March 2026 | Maintained by Ayeen (PM)*
+_Last updated: March 2026 | Maintained by Ayeen (PM)_

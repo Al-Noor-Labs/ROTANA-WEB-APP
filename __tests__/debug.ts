@@ -16,8 +16,8 @@ async function debug() {
     body: JSON.stringify({
       supplierId,
       locationId: wh?.id,
-      items: [{ variantId, orderedQty: 10, receivedQty: 10, damagedQty: 0, costPrice: 50 }]
-    })
+      items: [{ variantId, orderedQty: 10, receivedQty: 10, damagedQty: 0, costPrice: 50 }],
+    }),
   });
   console.log('GRN status:', grnRes.status, 'success:', grnRes.data.success);
   console.log('GRN data status field:', grnRes.data.data?.status);

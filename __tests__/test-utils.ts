@@ -25,7 +25,7 @@ export async function adminLogin(retries = 5): Promise<string> {
     } catch (err) {
       if (attempt === retries) throw err;
       // Wait 1s before retry (for hot-reload or server startup)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     }
   }
   throw new Error('adminLogin: exhausted retries');

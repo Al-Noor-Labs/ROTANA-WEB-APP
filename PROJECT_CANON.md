@@ -8,29 +8,29 @@
 
 ## 1. Tech Stack (Locked — No Substitutions)
 
-| Layer            | Technology                    | Version   |
-| ---------------- | ----------------------------- | --------- |
-| **Monorepo**     | Turborepo                     | Latest    |
-| **Package Mgr**  | pnpm                          | ≥ 9.x     |
-| **Frontend**     | Next.js (App Router)          | 16.x      |
-| **Backend API**  | NestJS                        | Latest    |
-| **Language**     | TypeScript (strict mode)      | ≥ 5.x     |
-| **Database**     | PostgreSQL via Supabase       | 15+       |
-| **ORM**          | Prisma                        | ≥ 6.x     |
-| **Auth**         | Supabase Auth + JWT           | -         |
-| **Payments**     | Razorpay / Stripe             | -         |
-| **File Storage** | Supabase Storage / Cloudflare R2 | -      |
-| **State Mgmt**   | Zustand                       | ≥ 5.x     |
-| **UI Components**| shadcn/ui                     | Latest    |
-| **CSS**          | Tailwind CSS                  | 4.x       |
-| **Validation**   | Zod                           | ≥ 4.x     |
-| **API Client**   | TanStack React Query          | ≥ 5.x     |
-| **Charts**       | Recharts                      | 3.x       |
-| **Icons**        | Lucide React                  | Latest    |
-| **Testing**      | Vitest + Playwright           | Latest    |
-| **CI/CD**        | GitHub Actions                | -         |
-| **Hosting**      | Vercel (frontend) + Supabase  | -         |
-| **Mobile**       | React Native (Expo)           | Latest    |
+| Layer             | Technology                       | Version |
+| ----------------- | -------------------------------- | ------- |
+| **Monorepo**      | Turborepo                        | Latest  |
+| **Package Mgr**   | pnpm                             | ≥ 9.x   |
+| **Frontend**      | Next.js (App Router)             | 16.x    |
+| **Backend API**   | NestJS                           | Latest  |
+| **Language**      | TypeScript (strict mode)         | ≥ 5.x   |
+| **Database**      | PostgreSQL via Supabase          | 15+     |
+| **ORM**           | Prisma                           | ≥ 6.x   |
+| **Auth**          | Supabase Auth + JWT              | -       |
+| **Payments**      | Razorpay / Stripe                | -       |
+| **File Storage**  | Supabase Storage / Cloudflare R2 | -       |
+| **State Mgmt**    | Zustand                          | ≥ 5.x   |
+| **UI Components** | shadcn/ui                        | Latest  |
+| **CSS**           | Tailwind CSS                     | 4.x     |
+| **Validation**    | Zod                              | ≥ 4.x   |
+| **API Client**    | TanStack React Query             | ≥ 5.x   |
+| **Charts**        | Recharts                         | 3.x     |
+| **Icons**         | Lucide React                     | Latest  |
+| **Testing**       | Vitest + Playwright              | Latest  |
+| **CI/CD**         | GitHub Actions                   | -       |
+| **Hosting**       | Vercel (frontend) + Supabase     | -       |
+| **Mobile**        | React Native (Expo)              | Latest  |
 
 > **Rule**: Do NOT add new dependencies without team discussion in Google Chat and Ayeen's approval.
 
@@ -141,42 +141,42 @@ ROTANA-WEB-APP/
 
 ### Files & Directories
 
-| Type                   | Convention            | Example                         |
-| ---------------------- | --------------------- | ------------------------------- |
-| React components       | PascalCase            | `OrderCard.tsx`                 |
-| Pages/layouts (App Router) | kebab-case dir + `page.tsx` | `app/(admin)/warehouse/page.tsx` |
-| Hooks                  | camelCase, `use` prefix | `useOrderStatus.ts`           |
-| Utilities              | camelCase             | `formatCurrency.ts`             |
-| Constants              | camelCase file, UPPER_SNAKE values | `orderStatuses.ts` → `ORDER_PENDING` |
-| Types/Interfaces       | PascalCase            | `Order`, `OrderStatus` |
-| Zod schemas            | camelCase, `Schema` suffix | `createOrderSchema`        |
-| NestJS modules         | kebab-case directory  | `src/modules/warehouse/`        |
-| NestJS services        | PascalCase, `.service.ts` | `WarehouseService`          |
-| NestJS controllers     | PascalCase, `.controller.ts` | `WarehouseController`    |
-| NestJS DTOs            | PascalCase, `.dto.ts` | `CreateOrderDto`                |
-| Test files             | Same name + `.test.ts` or `.spec.ts` | `OrderCard.test.tsx`  |
+| Type                       | Convention                           | Example                              |
+| -------------------------- | ------------------------------------ | ------------------------------------ |
+| React components           | PascalCase                           | `OrderCard.tsx`                      |
+| Pages/layouts (App Router) | kebab-case dir + `page.tsx`          | `app/(admin)/warehouse/page.tsx`     |
+| Hooks                      | camelCase, `use` prefix              | `useOrderStatus.ts`                  |
+| Utilities                  | camelCase                            | `formatCurrency.ts`                  |
+| Constants                  | camelCase file, UPPER_SNAKE values   | `orderStatuses.ts` → `ORDER_PENDING` |
+| Types/Interfaces           | PascalCase                           | `Order`, `OrderStatus`               |
+| Zod schemas                | camelCase, `Schema` suffix           | `createOrderSchema`                  |
+| NestJS modules             | kebab-case directory                 | `src/modules/warehouse/`             |
+| NestJS services            | PascalCase, `.service.ts`            | `WarehouseService`                   |
+| NestJS controllers         | PascalCase, `.controller.ts`         | `WarehouseController`                |
+| NestJS DTOs                | PascalCase, `.dto.ts`                | `CreateOrderDto`                     |
+| Test files                 | Same name + `.test.ts` or `.spec.ts` | `OrderCard.test.tsx`                 |
 
 ### Database
 
-| Type        | Convention      | Example                     |
-| ----------- | --------------- | --------------------------- |
-| Tables      | snake_case, plural | `purchase_orders`          |
-| Columns     | snake_case      | `created_at`, `total_amount`|
-| Primary Key | `id` (UUID)     | `id UUID DEFAULT gen_random_uuid()` |
-| Foreign Key | `<table>_id`    | `order_id`, `customer_id`   |
-| Indexes     | `idx_<table>_<columns>` | `idx_orders_customer_id` |
-| Enums       | PascalCase      | `OrderStatus`, `UserRole`   |
-| Migrations  | Timestamp prefix | `20260307_create_orders`   |
+| Type        | Convention              | Example                             |
+| ----------- | ----------------------- | ----------------------------------- |
+| Tables      | snake_case, plural      | `purchase_orders`                   |
+| Columns     | snake_case              | `created_at`, `total_amount`        |
+| Primary Key | `id` (UUID)             | `id UUID DEFAULT gen_random_uuid()` |
+| Foreign Key | `<table>_id`            | `order_id`, `customer_id`           |
+| Indexes     | `idx_<table>_<columns>` | `idx_orders_customer_id`            |
+| Enums       | PascalCase              | `OrderStatus`, `UserRole`           |
+| Migrations  | Timestamp prefix        | `20260307_create_orders`            |
 
 ### API Endpoints
 
-| Convention        | Example                                   |
-| ----------------- | ----------------------------------------- |
-| RESTful, plural nouns | `GET /api/v1/orders`                  |
-| Nest resources    | `POST /api/v1/orders`                     |
-| Sub-resources     | `GET /api/v1/orders/:id/items`            |
-| Query params      | `GET /api/v1/orders?status=pending&page=1`|
-| Version prefixed  | `/api/v1/...`                              |
+| Convention            | Example                                    |
+| --------------------- | ------------------------------------------ |
+| RESTful, plural nouns | `GET /api/v1/orders`                       |
+| Nest resources        | `POST /api/v1/orders`                      |
+| Sub-resources         | `GET /api/v1/orders/:id/items`             |
+| Query params          | `GET /api/v1/orders?status=pending&page=1` |
+| Version prefixed      | `/api/v1/...`                              |
 
 ### Git Branches
 
@@ -189,6 +189,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md#branch-naming).
 These will be **rejected in code review**. No exceptions.
 
 ### TypeScript
+
 - ❌ `any` type — use `unknown` and narrow with type guards
 - ❌ `// @ts-ignore` or `// @ts-expect-error` without a linked issue
 - ❌ Non-null assertion `!` without justification
@@ -198,6 +199,7 @@ These will be **rejected in code review**. No exceptions.
 - ❌ Default exports (except Next.js pages) — use named exports
 
 ### React / Next.js
+
 - ❌ `'use client'` on every component — default to Server Components
 - ❌ `useEffect` for data fetching — use Server Components or React Query
 - ❌ Inline styles — use Tailwind classes
@@ -206,6 +208,7 @@ These will be **rejected in code review**. No exceptions.
 - ❌ Prop drilling beyond 2 levels — use Zustand or Context
 
 ### NestJS / Backend
+
 - ❌ Raw SQL queries — use Prisma Client
 - ❌ Business logic in controllers — controllers are thin, logic goes in services
 - ❌ Missing input validation — every endpoint MUST use DTOs with class-validator or Zod
@@ -215,12 +218,14 @@ These will be **rejected in code review**. No exceptions.
 - ❌ N+1 queries — use Prisma `include` or `select` properly
 
 ### Database
+
 - ❌ Migrations that drop columns/tables without team discussion
 - ❌ Missing indexes on foreign keys
 - ❌ Nullable columns without business justification
 - ❌ `CASCADE DELETE` without explicit approval
 
 ### General
+
 - ❌ Committing `.env` files
 - ❌ Committing `node_modules`, `.next`, `dist`
 - ❌ Large binary files in git (use Supabase Storage)
@@ -265,24 +270,28 @@ These will be **rejected in code review**. No exceptions.
 ## 6. Security Requirements
 
 ### Authentication
+
 - Supabase Auth for user management
 - JWT tokens with short expiry (15 min access, 7 day refresh)
 - Refresh token rotation enabled
 - Session management via Supabase
 
 ### Authorization (RBAC)
+
 - 8 roles as defined in SRD: Super Admin, Warehouse Manager, Store Manager, Supplier, Salesman, B2C Customer, B2B Business Buyer, Delivery Staff
 - Role checks on EVERY protected endpoint
 - Row Level Security (RLS) on Supabase tables
 - Principle of least privilege — each role sees only their data
 
 ### Input Validation
+
 - ALL user input validated server-side with Zod/class-validator
 - Frontend validation is for UX only — never trust client data
 - Sanitize all string inputs (XSS prevention)
 - Validate file uploads (type, size, content)
 
 ### Data Protection
+
 - Encrypt sensitive data at rest (Supabase handles this)
 - HTTPS everywhere (enforced by Vercel + Supabase)
 - No PII in logs
@@ -291,6 +300,7 @@ These will be **rejected in code review**. No exceptions.
 - CSP headers configured
 
 ### India-Specific Compliance
+
 - GST data handling per government guidelines
 - Data stored in India region (Supabase Mumbai / ap-south-1)
 - Payment data handled by Razorpay (PCI DSS compliant — we never store card data)
@@ -347,7 +357,7 @@ throw new Error('something went wrong');
 // Use React Query's error handling for API calls
 
 // ❌ WRONG — unhandled promise rejections
-fetch('/api/orders').then(res => res.json()); // Missing .catch()
+fetch('/api/orders').then((res) => res.json()); // Missing .catch()
 ```
 
 ---
@@ -356,19 +366,19 @@ fetch('/api/orders').then(res => res.json()); // Missing .catch()
 
 As per SRD, all entities use formatted IDs:
 
-| Entity       | Format              | Example           |
-| ------------ | ------------------- | ----------------- |
-| B2C Customer | `CUS-YYYY-NNNNN`   | `CUS-2026-00001`  |
-| B2B Business | `BIZ-YYYY-NNNNN`   | `BIZ-2026-00001`  |
-| Order (B2C)  | `ORD-B2C-NNNNNNN`  | `ORD-B2C-0000001` |
-| Order (B2B)  | `ORD-B2B-NNNNNNN`  | `ORD-B2B-0000001` |
-| Invoice      | `INV-YYYY-NNNNN`   | `INV-2026-00001`  |
-| Purchase Order | `PO-YYYY-NNNNN`  | `PO-2026-00001`   |
-| Salesman     | `SAL-YYYY-NNN`     | `SAL-2026-001`    |
-| Delivery     | `DEL-YYYY-NNNNN`   | `DEL-2026-00001`  |
+| Entity         | Format            | Example           |
+| -------------- | ----------------- | ----------------- |
+| B2C Customer   | `CUS-YYYY-NNNNN`  | `CUS-2026-00001`  |
+| B2B Business   | `BIZ-YYYY-NNNNN`  | `BIZ-2026-00001`  |
+| Order (B2C)    | `ORD-B2C-NNNNNNN` | `ORD-B2C-0000001` |
+| Order (B2B)    | `ORD-B2B-NNNNNNN` | `ORD-B2B-0000001` |
+| Invoice        | `INV-YYYY-NNNNN`  | `INV-2026-00001`  |
+| Purchase Order | `PO-YYYY-NNNNN`   | `PO-2026-00001`   |
+| Salesman       | `SAL-YYYY-NNN`    | `SAL-2026-001`    |
+| Delivery       | `DEL-YYYY-NNNNN`  | `DEL-2026-00001`  |
 
 > These are generated server-side via a shared utility in `packages/shared/src/utils/id-generator.ts`. The DB primary key remains UUID — these are display IDs stored in a separate column.
 
 ---
 
-*This document is maintained by Ayeen (PM + Backend Lead). Any changes require team notification.*
+_This document is maintained by Ayeen (PM + Backend Lead). Any changes require team notification._

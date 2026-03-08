@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { ZodError } from "zod";
-import { logger } from "@/lib/logger";
+import { NextResponse } from 'next/server';
+import { ZodError } from 'zod';
+import { logger } from '@/lib/logger';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Response types
@@ -35,16 +35,16 @@ export interface IPaginationMeta {
 
 // Human-readable messages for each error code — NEVER expose internal details
 const ERROR_MESSAGES: Record<string, string> = {
-  VALIDATION_ERROR: "The request data is invalid. Check the details field.",
-  UNAUTHENTICATED: "Authentication is required to access this resource.",
-  FORBIDDEN: "You do not have permission to perform this action.",
-  NOT_FOUND: "The requested resource was not found.",
-  CONFLICT: "A resource with this identifier already exists.",
-  INSUFFICIENT_STOCK: "One or more items do not have sufficient stock.",
-  CREDIT_LIMIT_EXCEEDED: "This order exceeds the available credit limit.",
-  PAYMENT_FAILED: "The payment could not be processed.",
-  RATE_LIMITED: "Too many requests. Please try again later.",
-  INTERNAL_ERROR: "An unexpected error occurred. Our team has been notified.",
+  VALIDATION_ERROR: 'The request data is invalid. Check the details field.',
+  UNAUTHENTICATED: 'Authentication is required to access this resource.',
+  FORBIDDEN: 'You do not have permission to perform this action.',
+  NOT_FOUND: 'The requested resource was not found.',
+  CONFLICT: 'A resource with this identifier already exists.',
+  INSUFFICIENT_STOCK: 'One or more items do not have sufficient stock.',
+  CREDIT_LIMIT_EXCEEDED: 'This order exceeds the available credit limit.',
+  PAYMENT_FAILED: 'The payment could not be processed.',
+  RATE_LIMITED: 'Too many requests. Please try again later.',
+  INTERNAL_ERROR: 'An unexpected error occurred. Our team has been notified.',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -76,16 +76,9 @@ export function apiSuccessList<T>(
  * NEVER pass user-facing or internal error messages from the server directly
  * as `details`. Only pass structured validation errors from Zod.
  */
-export function apiError(
-  status: number,
-  code: string,
-  details?: unknown,
-): NextResponse<IApiError> {
-  const message = ERROR_MESSAGES[code] ?? ERROR_MESSAGES["INTERNAL_ERROR"]!;
-  return NextResponse.json(
-    { success: false, error: { code, message, details } },
-    { status },
-  );
+export function apiError(status: number, code: string, details?: unknown): NextResponse<IApiError> {
+  const message = ERROR_MESSAGES[code] ?? ERROR_MESSAGES['INTERNAL_ERROR']!;
+  return NextResponse.json({ success: false, error: { code, message, details } }, { status });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -100,14 +93,14 @@ export function apiError(
  */
 export function handleApiError(error: unknown): NextResponse<IApiError> {
   if (error instanceof ZodError) {
-    return apiError(422, "VALIDATION_ERROR", error.flatten().fieldErrors);
+    return apiError(422, 'VALIDATION_ERROR', error.flatten().fieldErrors);
   }
 
   // Log the real error server-side with full details
-  logger.error({ err: error }, "Unhandled API error");
+  logger.error({ err: error }, 'Unhandled API error');
 
   // Return a safe, generic message to the client — never leak internals
-  return apiError(500, "INTERNAL_ERROR");
+  return apiError(500, 'INTERNAL_ERROR');
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -120,8 +113,8 @@ export function handleApiError(error: unknown): NextResponse<IApiError> {
  */
 export function parsePagination(url: string): { page: number; limit: number; skip: number } {
   const { searchParams } = new URL(url);
-  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
-  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") ?? "20", 10)));
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10));
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '20', 10)));
   return { page, limit, skip: (page - 1) * limit };
 }
 

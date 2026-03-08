@@ -1,21 +1,23 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, MANAGER_ROLES, STAFF_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError, generateTransferNumber } from "@/lib/api-helpers";
-import { applyInventoryEvent } from "@/app/api/inventory/route";
-import { InventoryEventType } from "@/lib/generated/prisma";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError, generateTransferNumber } from '@/lib/api-helpers';
+import { applyInventoryEvent } from '@/app/api/inventory/route';
+import { InventoryEventType } from '@/lib/generated/prisma';
 
 const TransferSchema = z.object({
   fromLocationId: z.string().uuid(),
   toLocationId: z.string().uuid(),
   notes: z.string().optional(),
-  items: z.array(
-    z.object({
-      variantId: z.string().uuid(),
-      requestedQty: z.number().int().positive(),
-    })
-  ).min(1),
+  items: z
+    .array(
+      z.object({
+        variantId: z.string().uuid(),
+        requestedQty: z.number().int().positive(),
+      }),
+    )
+    .min(1),
 });
 
 const CompleteTransferSchema = z.object({
@@ -23,7 +25,7 @@ const CompleteTransferSchema = z.object({
     z.object({
       variantId: z.string().uuid(),
       receivedQty: z.number().int().nonnegative(),
-    })
+    }),
   ),
 });
 
@@ -40,7 +42,7 @@ export const GET = withAuth(async (req) => {
           },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
     return apiSuccess(transfers);
   } catch (error) {
@@ -55,7 +57,7 @@ export const POST = withAuth(async (req, { user }) => {
     const validated = TransferSchema.parse(body);
 
     if (validated.fromLocationId === validated.toLocationId) {
-      return apiError("Source and destination locations cannot be the same", 400);
+      return apiError('Source and destination locations cannot be the same', 400);
     }
 
     // Stock availability check
@@ -71,7 +73,7 @@ export const POST = withAuth(async (req, { user }) => {
       if (!balance || balance.available < item.requestedQty) {
         return apiError(
           `Insufficient stock for variant ${item.variantId}. Available: ${balance?.available ?? 0}`,
-          400
+          400,
         );
       }
     }
@@ -84,7 +86,7 @@ export const POST = withAuth(async (req, { user }) => {
           toLocationId: validated.toLocationId,
           requestedById: user.userId,
           notes: validated.notes,
-          status: "IN_TRANSIT",
+          status: 'IN_TRANSIT',
           items: {
             create: validated.items.map((i) => ({
               variantId: i.variantId,
@@ -98,15 +100,18 @@ export const POST = withAuth(async (req, { user }) => {
 
       // Deduct from source location
       for (const item of validated.items) {
-        await applyInventoryEvent({
-          variantId: item.variantId,
-          locationId: validated.fromLocationId,
-          eventType: InventoryEventType.TRANSFER_OUT,
-          quantity: item.requestedQty,
-          referenceId: newTransfer.id,
-          referenceType: "TRANSFER",
-          createdBy: user.userId,
-        }, tx);
+        await applyInventoryEvent(
+          {
+            variantId: item.variantId,
+            locationId: validated.fromLocationId,
+            eventType: InventoryEventType.TRANSFER_OUT,
+            quantity: item.requestedQty,
+            referenceId: newTransfer.id,
+            referenceType: 'TRANSFER',
+            createdBy: user.userId,
+          },
+          tx,
+        );
       }
 
       return newTransfer;

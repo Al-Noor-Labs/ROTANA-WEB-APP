@@ -1,8 +1,8 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { withAuth, MANAGER_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
+import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
 
 const PayslipUpdateSchema = z.object({
   basicSalary: z.number().nonnegative().optional(),
@@ -24,12 +24,12 @@ export const GET = withAuth(async (req, { params }) => {
             name: true,
             email: true,
             role: true,
-          }
-        }
+          },
+        },
       },
     });
 
-    if (!payslip) return apiError("Payslip not found", 404);
+    if (!payslip) return apiError('Payslip not found', 404);
 
     return apiSuccess(payslip);
   } catch (error) {
@@ -47,7 +47,7 @@ export const PUT = withAuth(async (req, { params }) => {
       where: { id: params.id },
     });
 
-    if (!payslip) return apiError("Payslip not found", 404);
+    if (!payslip) return apiError('Payslip not found', 404);
 
     const basicSalary = validated.basicSalary ?? Number(payslip.basicSalary);
     const allowances = validated.allowances ?? Number(payslip.allowances);
@@ -81,7 +81,7 @@ export const DELETE = withAuth(async (req, { params }) => {
       where: { id: params.id },
     });
 
-    return apiSuccess({ message: "Payslip deleted successfully" });
+    return apiSuccess({ message: 'Payslip deleted successfully' });
   } catch (error) {
     return handleApiError(error);
   }
