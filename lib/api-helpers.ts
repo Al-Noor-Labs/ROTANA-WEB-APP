@@ -121,3 +121,37 @@ export function parsePagination(url: string): { page: number; limit: number; ski
 export function buildMeta(page: number, limit: number, total: number): IPaginationMeta {
   return { page, limit, total, totalPages: Math.ceil(total / limit) };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ID generators for business documents
+// ─────────────────────────────────────────────────────────────────────────────
+
+function compactTimestamp(): string {
+  const now = new Date();
+  return [
+    now.getFullYear().toString().slice(2),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
+    String(now.getHours()).padStart(2, '0'),
+    String(now.getMinutes()).padStart(2, '0'),
+  ].join('');
+}
+
+function randomSuffix(len = 4): string {
+  return Math.random()
+    .toString(36)
+    .substring(2, 2 + len)
+    .toUpperCase();
+}
+
+export function generateGRNNumber(): string {
+  return `GRN-${compactTimestamp()}-${randomSuffix()}`;
+}
+
+export function generateInvoiceNumber(): string {
+  return `INV-${compactTimestamp()}-${randomSuffix()}`;
+}
+
+export function generateTransferNumber(): string {
+  return `TRF-${compactTimestamp()}-${randomSuffix()}`;
+}

@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, STAFF_ROLES, ADMIN_ROLES } from '@/lib/with-auth';
@@ -13,7 +12,7 @@ const AccountSchema = z.object({
 });
 
 // GET /api/finance/accounts - List ledger accounts
-export const GET = withAuth(async (req) => {
+export const GET = withAuth(async (_req) => {
   try {
     const accounts = await prisma.ledgerAccount.findMany({
       where: { isActive: true },
@@ -37,7 +36,7 @@ export const POST = withAuth(async (req) => {
     });
 
     if (existing) {
-      return apiError(`An account with code ${validated.code} already exists`, 400);
+      return apiError(409, 'CONFLICT');
     }
 
     const account = await prisma.ledgerAccount.create({

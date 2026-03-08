@@ -1,9 +1,8 @@
-import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
-import { apiSuccess, apiError, handleApiError, generateGRNNumber } from '@/lib/api-helpers';
-import { applyInventoryEvent } from '@/app/api/inventory/route';
+import { apiSuccess, handleApiError, generateGRNNumber } from '@/lib/api-helpers';
+import { applyInventoryEvent } from '@/app/api/v1/inventory/route';
 import { GRNStatus, InventoryEventType, Prisma } from '@/lib/generated/prisma';
 
 const GRNSchema = z.object({
@@ -36,7 +35,7 @@ export const GET = withAuth(async (req) => {
     const limit = parseInt(searchParams.get('limit') ?? '20');
 
     const where: Prisma.GoodsReceivedNoteWhereInput = {};
-    if (status) where.status = status;
+    if (status) where.status = status as GRNStatus;
     if (supplierId) where.supplierId = supplierId;
 
     const [grns, total] = await Promise.all([

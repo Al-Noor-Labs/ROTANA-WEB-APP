@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       where: { email: validated.email },
     });
     if (existing) {
-      return apiError('User with this email already exists', 409);
+      return apiError(409, 'CONFLICT');
     }
 
     const passwordHash = await bcrypt.hash(validated.password, 12);

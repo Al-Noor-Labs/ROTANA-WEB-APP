@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { withAuth, ADMIN_ROLES } from '@/lib/with-auth';
 import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
 import bcrypt from 'bcryptjs';
+import { Prisma } from '@/lib/generated/prisma';
 
 const UserUpdateSchema = z.object({
   name: z.string().optional(),
@@ -30,7 +31,7 @@ export const GET = withAuth(async (req) => {
     const { searchParams } = new URL(req.url);
     const role = searchParams.get('role');
 
-    const where: any = {};
+    const where: Prisma.UserWhereInput = {};
     if (role) where.role = role;
 
     const users = await prisma.user.findMany({

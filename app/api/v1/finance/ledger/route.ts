@@ -1,6 +1,5 @@
-import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { withAuth, STAFF_ROLES, ADMIN_ROLES } from '@/lib/with-auth';
+import { withAuth, STAFF_ROLES } from '@/lib/with-auth';
 import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 import { Prisma } from '@/lib/generated/prisma';
 

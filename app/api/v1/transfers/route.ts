@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
 import { apiSuccess, apiError, handleApiError, generateTransferNumber } from '@/lib/api-helpers';
-import { applyInventoryEvent } from '@/app/api/inventory/route';
+import { applyInventoryEvent } from '@/app/api/v1/inventory/route';
 import { InventoryEventType } from '@/lib/generated/prisma';
 
 const TransferSchema = z.object({
@@ -57,7 +57,7 @@ export const POST = withAuth(async (req, { user }) => {
     const validated = TransferSchema.parse(body);
 
     if (validated.fromLocationId === validated.toLocationId) {
-      return apiError('Source and destination locations cannot be the same', 400);
+      return apiError(400, 'VALIDATION_ERROR');
     }
 
     // Stock availability check
@@ -71,10 +71,7 @@ export const POST = withAuth(async (req, { user }) => {
         },
       });
       if (!balance || balance.available < item.requestedQty) {
-        return apiError(
-          `Insufficient stock for variant ${item.variantId}. Available: ${balance?.available ?? 0}`,
-          400,
-        );
+        return apiError(422, 'INSUFFICIENT_STOCK');
       }
     }
 

@@ -15,7 +15,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         variants: { where: { isActive: true } },
       },
     });
-    if (!product) return apiError('Product not found', 404);
+    if (!product) return apiError(404, 'NOT_FOUND');
     return apiSuccess(product);
   } catch (error) {
     return handleApiError(error);

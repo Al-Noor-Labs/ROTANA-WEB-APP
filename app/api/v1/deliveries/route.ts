@@ -12,7 +12,7 @@ export const GET = withAuth(async (req, { user }) => {
     const driverId = searchParams.get('driverId');
 
     const where: Prisma.DeliveryWhereInput = {};
-    if (status) where.status = status;
+    if (status) where.status = status as DeliveryStatus;
     if (driverId) where.driverId = driverId;
     if (user.role === 'DELIVERY_DRIVER') where.driverId = user.userId;
 
@@ -57,10 +57,10 @@ export const POST = withAuth(async (req) => {
       .parse(body);
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
-    if (!order) return apiError('Order not found', 404);
+    if (!order) return apiError(404, 'NOT_FOUND');
 
     const existing = await prisma.delivery.findUnique({ where: { orderId } });
-    if (existing) return apiError('Delivery already assigned for this order', 409);
+    if (existing) return apiError(409, 'CONFLICT');
 
     const delivery = await prisma.delivery.create({
       data: {

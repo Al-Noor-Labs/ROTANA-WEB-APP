@@ -8,7 +8,7 @@ import {
   OrderStatus,
   PaymentStatus,
 } from '@/lib/generated/prisma';
-import { applyInventoryEvent } from '@/app/api/inventory/route';
+import { applyInventoryEvent } from '@/app/api/v1/inventory/route';
 
 const UpdateDeliverySchema = z.object({
   status: z.nativeEnum(DeliveryStatus),
@@ -26,11 +26,11 @@ export const PATCH = withAuth(async (req, { params, user }) => {
     const validated = UpdateDeliverySchema.parse(body);
 
     const delivery = await prisma.delivery.findUnique({ where: { id: params.id } });
-    if (!delivery) return apiError('Delivery not found', 404);
+    if (!delivery) return apiError(404, 'NOT_FOUND');
 
     // Drivers can only update their own deliveries
     if (user.role === 'DELIVERY_DRIVER' && delivery.driverId !== user.userId) {
-      return apiError('Forbidden', 403);
+      return apiError(403, 'FORBIDDEN');
     }
 
     const updated = await prisma.delivery.update({

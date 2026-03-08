@@ -29,7 +29,7 @@ export const GET = withAuth(async (req, { params }) => {
       },
     });
 
-    if (!payslip) return apiError('Payslip not found', 404);
+    if (!payslip) return apiError(404, 'NOT_FOUND');
 
     return apiSuccess(payslip);
   } catch (error) {
@@ -47,7 +47,7 @@ export const PUT = withAuth(async (req, { params }) => {
       where: { id: params.id },
     });
 
-    if (!payslip) return apiError('Payslip not found', 404);
+    if (!payslip) return apiError(404, 'NOT_FOUND');
 
     const basicSalary = validated.basicSalary ?? Number(payslip.basicSalary);
     const allowances = validated.allowances ?? Number(payslip.allowances);
@@ -68,7 +68,7 @@ export const PUT = withAuth(async (req, { params }) => {
     return apiSuccess(updatedPayslip);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return apiError(error.issues[0].message, 400);
+      return apiError(400, 'VALIDATION_ERROR', error.issues);
     }
     return handleApiError(error);
   }

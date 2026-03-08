@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, STAFF_ROLES } from '@/lib/with-auth';
 import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
-import { applyInventoryEvent } from '@/app/api/inventory/route';
+import { applyInventoryEvent } from '@/app/api/v1/inventory/route';
 import { InventoryEventType } from '@/lib/generated/prisma';
 
 // POST /api/transfers/[id]/complete - Receive a transfer at destination
@@ -26,9 +26,9 @@ export const POST = withAuth(async (req, { params, user }) => {
       include: { items: true },
     });
 
-    if (!transfer) return apiError('Transfer not found', 404);
+    if (!transfer) return apiError(404, 'NOT_FOUND');
     if (transfer.status === 'COMPLETED') {
-      return apiError('Transfer already completed', 400);
+      return apiError(409, 'CONFLICT');
     }
 
     const result = await prisma.$transaction(async (tx) => {

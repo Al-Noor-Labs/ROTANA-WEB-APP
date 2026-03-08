@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, ADMIN_ROLES } from '@/lib/with-auth';
@@ -34,7 +33,7 @@ export const PATCH = withAuth(async (req, { params }) => {
     const existingUser = await prisma.user.findUnique({
       where: { id: params.id },
     });
-    if (!existingUser) return apiError('User not found', 404);
+    if (!existingUser) return apiError(404, 'NOT_FOUND');
 
     let passwordHash = undefined;
     if (validated.password) {
@@ -69,12 +68,12 @@ export const PATCH = withAuth(async (req, { params }) => {
 }, ADMIN_ROLES);
 
 // DELETE /api/users/[id] - Disable user (Soft Delete)
-export const DELETE = withAuth(async (req, { params }) => {
+export const DELETE = withAuth(async (_req, { params }) => {
   try {
     const existingUser = await prisma.user.findUnique({
       where: { id: params.id },
     });
-    if (!existingUser) return apiError('User not found', 404);
+    if (!existingUser) return apiError(404, 'NOT_FOUND');
 
     await prisma.user.update({
       where: { id: params.id },

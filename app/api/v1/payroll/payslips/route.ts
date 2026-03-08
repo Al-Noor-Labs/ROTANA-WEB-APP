@@ -121,7 +121,7 @@ export const POST = withAuth(async (req) => {
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return apiError(error.issues[0].message, 400);
+      return apiError(400, 'VALIDATION_ERROR', error.issues);
     }
     return handleApiError(error);
   }

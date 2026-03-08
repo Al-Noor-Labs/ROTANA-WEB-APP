@@ -1,8 +1,7 @@
-import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
-import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
+import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 import { InventoryEventType, Prisma } from '@/lib/generated/prisma';
 
 const StockEventSchema = z.object({
@@ -55,6 +54,7 @@ export async function applyInventoryEvent(
     '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
   >,
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- used via typeof for type narrowing
   const db = tx ?? prisma;
 
   const run = async (client: typeof db) => {
