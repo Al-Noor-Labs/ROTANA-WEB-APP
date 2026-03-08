@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
 import { apiSuccess, apiError, handleApiError, generateGRNNumber } from '@/lib/api-helpers';
 import { applyInventoryEvent } from '@/app/api/inventory/route';
-import { GRNStatus, InventoryEventType } from '@/lib/generated/prisma';
+import { GRNStatus, InventoryEventType, Prisma } from '@/lib/generated/prisma';
 
 const GRNSchema = z.object({
   supplierId: z.string().uuid(),
@@ -35,7 +35,7 @@ export const GET = withAuth(async (req) => {
     const page = parseInt(searchParams.get('page') ?? '1');
     const limit = parseInt(searchParams.get('limit') ?? '20');
 
-    const where: any = {};
+    const where: Prisma.GoodsReceivedNoteWhereInput = {};
     if (status) where.status = status;
     if (supplierId) where.supplierId = supplierId;
 

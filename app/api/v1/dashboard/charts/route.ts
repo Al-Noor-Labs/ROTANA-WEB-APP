@@ -3,7 +3,7 @@ import { withAuth, STAFF_ROLES } from '@/lib/with-auth';
 import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 
 // GET /api/dashboard/charts - FULL BI ANALYTICS SUITE
-export const GET = withAuth(async (req) => {
+export const GET = withAuth(async (_req) => {
   try {
     const now = new Date();
     const thirtyDaysAgo = new Date();

@@ -1,10 +1,9 @@
-import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth, STAFF_ROLES } from '@/lib/with-auth';
 import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 
 // GET /api/dashboard - Business intelligence summary
-export const GET = withAuth(async (req) => {
+export const GET = withAuth(async (_req) => {
   try {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { signAccessToken, signRefreshToken } from '@/lib/jwt';
 import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
+import { Role } from '@/lib/generated/prisma';
 
 const RegisterSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
         email: validated.email,
         phone: validated.phone,
         passwordHash,
-        role: validated.role as any,
+        role: validated.role as Role,
       },
       select: {
         id: true,

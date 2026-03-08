@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
 import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
-import { InventoryEventType } from '@/lib/generated/prisma';
+import { InventoryEventType, Prisma } from '@/lib/generated/prisma';
 
 const StockEventSchema = z.object({
   variantId: z.string().uuid(),
@@ -114,9 +114,9 @@ export async function applyInventoryEvent(
 
   // If a transaction client was passed, use it directly; otherwise wrap in a new transaction
   if (tx) {
-    return run(tx as any);
+    return run(tx as typeof db);
   }
-  return prisma.$transaction(async (innerTx) => run(innerTx as any));
+  return prisma.$transaction(async (innerTx) => run(innerTx as typeof db));
 }
 
 // GET /api/inventory - Query current stock levels
@@ -127,11 +127,11 @@ export const GET = withAuth(async (req) => {
     const variantId = searchParams.get('variantId');
     const lowStock = searchParams.get('lowStock') === 'true';
 
-    const where: any = {};
+    const where: Prisma.InventoryBalanceWhereInput = {};
     if (locationId) where.locationId = locationId;
     if (variantId) where.variantId = variantId;
 
-    let balances = await prisma.inventoryBalance.findMany({ where });
+    const balances = await prisma.inventoryBalance.findMany({ where });
 
     // Apply low stock filter in memory (compare with variant reorder level)
     // For a proper impl, this would be a DB view/join

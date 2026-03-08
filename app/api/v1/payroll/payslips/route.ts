@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
 import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
+import { Prisma } from '@/lib/generated/prisma';
 
 const PayslipSchema = z.object({
   userId: z.string().uuid(),
@@ -23,7 +24,7 @@ export const GET = withAuth(async (req) => {
     const month = searchParams.get('month');
     const year = searchParams.get('year');
 
-    const where: any = {};
+    const where: Prisma.PayslipWhereInput = {};
     if (userId) where.userId = userId;
     if (month) where.month = parseInt(month);
     if (year) where.year = parseInt(year);

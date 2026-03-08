@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth, STAFF_ROLES, ADMIN_ROLES } from '@/lib/with-auth';
 import { apiSuccess, handleApiError } from '@/lib/api-helpers';
+import { Prisma } from '@/lib/generated/prisma';
 
 // GET /api/finance/ledger - View all ledger entries
 export const GET = withAuth(async (req) => {
@@ -13,7 +14,7 @@ export const GET = withAuth(async (req) => {
     const to = searchParams.get('to');
     const referenceType = searchParams.get('referenceType');
 
-    const where: any = {};
+    const where: Prisma.LedgerEntryWhereInput = {};
     if (referenceType) where.referenceType = referenceType;
     if (from || to) {
       where.postedAt = {};

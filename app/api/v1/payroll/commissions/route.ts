@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
 import { apiSuccess, handleApiError } from '@/lib/api-helpers';
+import { Prisma } from '@/lib/generated/prisma';
 
 // GET /api/payroll/commissions - List sales commissions
 export const GET = withAuth(async (req) => {
@@ -10,7 +11,7 @@ export const GET = withAuth(async (req) => {
     const userId = searchParams.get('userId');
     const isPaid = searchParams.get('isPaid');
 
-    const where: any = {};
+    const where: Prisma.SalesCommissionWhereInput = {};
     if (userId) where.userId = userId;
     if (isPaid !== null) where.isPaid = isPaid === 'true';
 
