@@ -44,7 +44,7 @@ export const GET = withAuth(async (req) => {
           },
           include: { grn: { select: { supplierId: true } } },
         }),
-      ]);
+      ]));
 
     type GrnItem = (typeof supplierDiscrepancies)[number];
     type SupplierInfo = (typeof allSuppliers)[number];
