@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
-import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
+import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 import { LocationType } from '@/lib/generated/prisma';
 
 const LocationSchema = z.object({
@@ -13,7 +13,8 @@ const LocationSchema = z.object({
   city: z.string().optional(),
 });
 
-const BinSchema = z.object({
+// TODO: BinSchema will be used when POST /locations/:id/bins is implemented
+const _BinSchema = z.object({
   code: z.string().min(1),
   aisle: z.string().optional(),
   rack: z.string().optional(),

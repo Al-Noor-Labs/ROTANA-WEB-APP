@@ -1,7 +1,6 @@
-import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { withAuth, STAFF_ROLES, MANAGER_ROLES } from '@/lib/with-auth';
+import { withAuth, STAFF_ROLES } from '@/lib/with-auth';
 import { apiSuccess, apiError, handleApiError, generateInvoiceNumber } from '@/lib/api-helpers';
 import { applyInventoryEvent } from '@/app/api/v1/inventory/route';
 import { InventoryEventType, OrderStatus, PaymentStatus } from '@/lib/generated/prisma';
