@@ -4,13 +4,13 @@
 
 ## Team Members
 
-| Member  | Role               | Experience Level | Available Hours/Day                              |
-| ------- | ------------------ | ---------------- | ------------------------------------------------ |
-| Ayeen   | PM + Backend       | Mid              | 8h                                               |
-| Rahmath | Backend Developer  | Mid              | 8h                                               |
-| Faizan  | Frontend Developer | Mid              | 8h                                               |
-| Najeeb  | Frontend Developer | Mid              | 8h                                               |
-| Zaka    | Mobile Developer   | Mid              | Deferred — v2.0 mobile app (separate repo)       |
+| Member  | Role               | Experience Level | Available Hours/Day                        |
+| ------- | ------------------ | ---------------- | ------------------------------------------ |
+| Ayeen   | PM + Backend       | Mid              | 8h                                         |
+| Rahmath | Backend Developer  | Mid              | 8h                                         |
+| Faizan  | Frontend Developer | Mid              | 8h                                         |
+| Najeeb  | Frontend Developer | Mid              | 8h                                         |
+| Zaka    | Mobile Developer   | Mid              | Deferred — v2.0 mobile app (separate repo) |
 
 ---
 
@@ -46,7 +46,7 @@
 | Rahmath   | Ayeen        | -               |
 | Faizan    | Najeeb       | Ayeen           |
 | Najeeb    | Faizan       | Ayeen           |
-| Zaka      | Ayeen        | Rahmath          |
+| Zaka      | Ayeen        | Rahmath         |
 
 ### Rules
 

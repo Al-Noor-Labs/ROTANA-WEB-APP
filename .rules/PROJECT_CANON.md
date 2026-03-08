@@ -423,24 +423,24 @@ Before marking any feature as done, verify:
 
 ### Performance Budget
 
-| Metric                | Target   | Measured With        |
-| --------------------- | -------- | -------------------- |
-| Lighthouse Performance | ≥ 90     | Chrome DevTools      |
-| Lighthouse Accessibility | ≥ 90  | Chrome DevTools      |
-| Time to Interactive   | ≤ 3s     | Real device testing  |
-| API response time     | ≤ 200ms  | Pino request logging |
-| DB query time         | ≤ 100ms  | Prisma query logging |
+| Metric                   | Target  | Measured With        |
+| ------------------------ | ------- | -------------------- |
+| Lighthouse Performance   | ≥ 90    | Chrome DevTools      |
+| Lighthouse Accessibility | ≥ 90    | Chrome DevTools      |
+| Time to Interactive      | ≤ 3s    | Real device testing  |
+| API response time        | ≤ 200ms | Pino request logging |
+| DB query time            | ≤ 100ms | Prisma query logging |
 
 ### Documentation Requirements
 
-| Item                       | Where                                | When                        |
-| -------------------------- | ------------------------------------ | --------------------------- |
-| API route handler          | JSDoc in the route file              | On creation / modification  |
-| Service function           | JSDoc with `@param`, `@returns`      | On creation / modification  |
-| Zod schema                 | JSDoc describing the shape           | On creation                 |
-| Database migration         | Comment at top of migration SQL      | On creation                 |
-| Architecture decision      | `docs/` (if significant)             | When making non-obvious choices |
-| Environment variable (new) | `.env.example` + `PROJECT_CANON.md`  | On addition                 |
+| Item                       | Where                               | When                            |
+| -------------------------- | ----------------------------------- | ------------------------------- |
+| API route handler          | JSDoc in the route file             | On creation / modification      |
+| Service function           | JSDoc with `@param`, `@returns`     | On creation / modification      |
+| Zod schema                 | JSDoc describing the shape          | On creation                     |
+| Database migration         | Comment at top of migration SQL     | On creation                     |
+| Architecture decision      | `docs/` (if significant)            | When making non-obvious choices |
+| Environment variable (new) | `.env.example` + `PROJECT_CANON.md` | On addition                     |
 
 ### Definition of Done
 

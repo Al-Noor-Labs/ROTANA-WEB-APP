@@ -23,7 +23,7 @@
 
 | Member  | Role               | Modules Owned                                    | Review Buddy | Repo                                  |
 | ------- | ------------------ | ------------------------------------------------ | ------------ | ------------------------------------- |
-| Ayeen   | PM + Backend  | Auth, API architecture, DB schema, DevOps, CI/CD | Rahmath      | This repo                             |
+| Ayeen   | PM + Backend       | Auth, API architecture, DB schema, DevOps, CI/CD | Rahmath      | This repo                             |
 | Rahmath | Backend Developer  | Inventory, Invoicing, Payroll, B2B credit logic  | Ayeen        | This repo                             |
 | Faizan  | Frontend Developer | B2C portal, Customer flows, Checkout UI          | Najeeb       | This repo                             |
 | Najeeb  | Frontend Developer | Admin dashboards, Warehouse/Store UI             | Faizan       | This repo                             |
@@ -257,14 +257,14 @@ Reviewers MUST check these before approving:
 
 ### Review Depth
 
-| Change Type                                     | Required Review Depth            |
-| ----------------------------------------------- | -------------------------------- |
-| Auth, RBAC, payment, or security-related code   | **Line-by-line** — verify logic  |
-| Database migrations and schema changes          | **Line-by-line** — verify safety |
-| API Route Handlers                              | **Verify**: validation, auth, authz, response shape |
-| UI/component changes                            | **Verify**: responsiveness, a11y, design consistency |
-| Config, CI/CD, tooling changes                  | **Spot check** — verify correctness |
-| Documentation-only changes                      | **Quick read** — verify accuracy |
+| Change Type                                   | Required Review Depth                                |
+| --------------------------------------------- | ---------------------------------------------------- |
+| Auth, RBAC, payment, or security-related code | **Line-by-line** — verify logic                      |
+| Database migrations and schema changes        | **Line-by-line** — verify safety                     |
+| API Route Handlers                            | **Verify**: validation, auth, authz, response shape  |
+| UI/component changes                          | **Verify**: responsiveness, a11y, design consistency |
+| Config, CI/CD, tooling changes                | **Spot check** — verify correctness                  |
+| Documentation-only changes                    | **Quick read** — verify accuracy                     |
 
 ### Reviewer Responsibilities
 
@@ -295,13 +295,13 @@ Reviewers MUST check these before approving:
 
 ### Automated Checks (enforced by CI)
 
-| Check            | Command          | Must Pass |
-| ---------------- | ---------------- | --------- |
-| Formatting       | `pnpm format:check` | ✅        |
-| Linting          | `pnpm lint`      | ✅        |
-| Type checking    | `pnpm type-check` | ✅        |
-| Build            | `pnpm build`     | ✅        |
-| Unit tests       | `pnpm test`      | ✅        |
+| Check         | Command             | Must Pass |
+| ------------- | ------------------- | --------- |
+| Formatting    | `pnpm format:check` | ✅        |
+| Linting       | `pnpm lint`         | ✅        |
+| Type checking | `pnpm type-check`   | ✅        |
+| Build         | `pnpm build`        | ✅        |
+| Unit tests    | `pnpm test`         | ✅        |
 
 ### Manual Quality Checks (enforced by reviewer)
 

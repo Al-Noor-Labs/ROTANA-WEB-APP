@@ -34,20 +34,20 @@
 | Configure Prisma + Supabase connection                              | Ayeen           | P0       | 0.5d |
 | Design & create core DB schema (users, roles, products, categories) | Ayeen + Rahmath | P0       | 1d   |
 | Implement Supabase Auth integration                                 | Ayeen           | P0       | 1d   |
-| Implement RBAC guards (withAuth, withRole middleware)                | Rahmath         | P0       | 1d   |
+| Implement RBAC guards (withAuth, withRole middleware)               | Rahmath         | P0       | 1d   |
 | Setup Zod schemas in `lib/schemas/`                                 | Rahmath         | P1       | 0.5d |
 | Configure CI/CD pipeline                                            | Ayeen           | P1       | 0.5d |
 
 ### Frontend (Faizan + Najeeb)
 
-| Task                                         | Assignee | Priority | Est  |
-| -------------------------------------------- | -------- | -------- | ---- |
-| Setup shadcn/ui component library            | Najeeb   | P0       | 0.5d |
-| Build login / register pages                 | Faizan   | P0       | 1d   |
-| Build admin layout (sidebar, header, nav)    | Najeeb   | P0       | 1d   |
-| Build customer layout (header, footer, nav)  | Faizan   | P1       | 1d   |
-| Setup Zustand stores (auth, UI state)        | Najeeb   | P1       | 0.5d |
-| Setup React Query provider + API client      | Faizan   | P1       | 0.5d |
+| Task                                        | Assignee | Priority | Est  |
+| ------------------------------------------- | -------- | -------- | ---- |
+| Setup shadcn/ui component library           | Najeeb   | P0       | 0.5d |
+| Build login / register pages                | Faizan   | P0       | 1d   |
+| Build admin layout (sidebar, header, nav)   | Najeeb   | P0       | 1d   |
+| Build customer layout (header, footer, nav) | Faizan   | P1       | 1d   |
+| Setup Zustand stores (auth, UI state)       | Najeeb   | P1       | 0.5d |
+| Setup React Query provider + API client     | Faizan   | P1       | 0.5d |
 
 ### Sprint S1 Deliverable
 
