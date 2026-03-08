@@ -13,7 +13,7 @@ function requireEnv(name: string): string {
   if (!value || value.trim() === '') {
     throw new Error(
       `[rotana] Missing required environment variable: ${name}\n` +
-      `Make sure it is set in .env.local (development) or Vercel Environment Variables (production).`,
+        `Make sure it is set in .env.local (development) or Vercel Environment Variables (production).`,
     );
   }
   return value;
