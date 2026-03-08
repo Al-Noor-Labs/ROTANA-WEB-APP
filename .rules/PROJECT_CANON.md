@@ -4,7 +4,7 @@
 
 # Read this before touching any file. Update this when conventions change.
 
-# Last updated: March 2026 | Maintained by Ayeen (PM + Backend Lead)
+# Last updated: March 2026 | Maintained by Ayeen (PM + Backend )
 
 ---
 
@@ -390,6 +390,70 @@ NODE_ENV=                         # development | test | production
 ```
 
 > **Access**: Get values from the **Google Chat pinned message** (team group). Production secrets are managed by Ayeen on the Vercel dashboard.
+
+---
+
+## 9. Team Coding Standards & Practices
+
+### Code Readability
+
+- **Self-documenting code**: variable and function names should tell the reader _what_ and _why_
+- **JSDoc required** on: all exported service functions, all API route handlers, all Zod schemas
+- **Comment intent, not mechanics**: explain _why_ a decision was made, not _what_ the code does line-by-line
+- **Max complexity**: avoid deeply nested conditionals (> 3 levels) — extract helper functions
+- **Consistent formatting**: Prettier handles this — never override with inline comments
+
+### Error Handling Standards
+
+- **Never throw raw errors to the client** — always use `apiError()` helper with machine-readable codes
+- **Structured error types**: every error has `code` (SCREAMING_SNAKE) + `message` (human-readable) + optional `details`
+- **Service layer errors**: throw typed domain errors (e.g., `InsufficientStockError`) — route handlers catch and map to HTTP
+- **Unexpected errors**: caught globally — log with structured context (Pino), return generic `INTERNAL_ERROR` to client
+
+### Security Practices (Per-Feature Checklist)
+
+Before marking any feature as done, verify:
+
+- [ ] All inputs validated with Zod (request body, query params, path params)
+- [ ] Authentication checked (session cookie OR Bearer token)
+- [ ] Authorization checked (user role matches allowed roles for this action)
+- [ ] No PII logged (passwords, tokens, personal data, financial data)
+- [ ] No secrets exposed to the client (`NEXT_PUBLIC_*` only for genuinely public values)
+- [ ] Rate limiting applied on public endpoints (auth, registration, webhooks)
+
+### Performance Budget
+
+| Metric                   | Target  | Measured With        |
+| ------------------------ | ------- | -------------------- |
+| Lighthouse Performance   | ≥ 90    | Chrome DevTools      |
+| Lighthouse Accessibility | ≥ 90    | Chrome DevTools      |
+| Time to Interactive      | ≤ 3s    | Real device testing  |
+| API response time        | ≤ 200ms | Pino request logging |
+| DB query time            | ≤ 100ms | Prisma query logging |
+
+### Documentation Requirements
+
+| Item                       | Where                               | When                            |
+| -------------------------- | ----------------------------------- | ------------------------------- |
+| API route handler          | JSDoc in the route file             | On creation / modification      |
+| Service function           | JSDoc with `@param`, `@returns`     | On creation / modification      |
+| Zod schema                 | JSDoc describing the shape          | On creation                     |
+| Database migration         | Comment at top of migration SQL     | On creation                     |
+| Architecture decision      | `docs/` (if significant)            | When making non-obvious choices |
+| Environment variable (new) | `.env.example` + `PROJECT_CANON.md` | On addition                     |
+
+### Definition of Done
+
+A task is **done** only when ALL of the following are true:
+
+1. ✅ Code is written and follows PROJECT_CANON conventions
+2. ✅ TypeScript compiles with zero errors (`pnpm type-check`)
+3. ✅ Lint passes (`pnpm lint`)
+4. ✅ Critical paths have test coverage
+5. ✅ Code reviewed and approved by Review Buddy
+6. ✅ PR merged into `develop`
+7. ✅ Feature tested on the `develop` deployment
+8. ✅ Documentation updated (JSDoc, README, etc.)
 
 ---
 

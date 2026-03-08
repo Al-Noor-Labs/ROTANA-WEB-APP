@@ -28,9 +28,7 @@
         "api",
         "ui",
         "deps",
-        "ci",
-        "mobile",
-        "shared"
+        "ci"
       ]
     ],
     "subject-max-length": [2, "always", 72],
