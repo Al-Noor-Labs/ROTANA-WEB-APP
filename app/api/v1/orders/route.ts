@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { withAuth, STAFF_ROLES } from "@/lib/with-auth";
 import { apiSuccess, apiSuccessList, apiError, handleApiError, parsePagination, buildMeta } from "@/lib/api-helpers";
-import { Role, OrderType, PaymentMethod } from "@/app/generated/prisma";
+import { Role, OrderType, PaymentMethod } from "@/lib/generated/prisma";
 import { listOrders, createOrder } from "@/lib/services/orders.service";
 
 // ─────────────────────────────────────────────────────────────────────────────

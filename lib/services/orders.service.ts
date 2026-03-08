@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { applyInventoryEvent, checkStockAvailability } from "@/lib/services/inventory.service";
-import { InventoryEventType, OrderType, PaymentMethod, Prisma } from "@/app/generated/prisma";
+import { InventoryEventType, OrderType, PaymentMethod, Prisma } from "@/lib/generated/prisma";
 import { logger } from "@/lib/logger";
 
 // ─────────────────────────────────────────────────────────────────────────────

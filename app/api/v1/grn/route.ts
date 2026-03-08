@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from "@/lib/with-auth";
 import { apiSuccess, apiError, handleApiError, generateGRNNumber } from "@/lib/api-helpers";
 import { applyInventoryEvent } from "@/app/api/inventory/route";
-import { GRNStatus, InventoryEventType } from "@/app/generated/prisma";
+import { GRNStatus, InventoryEventType } from "@/lib/generated/prisma";
 
 const GRNSchema = z.object({
   supplierId: z.string().uuid(),

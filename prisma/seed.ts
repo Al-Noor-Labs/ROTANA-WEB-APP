@@ -9,7 +9,7 @@
  * - Sample Categories & Products
  */
 
-import { PrismaClient, Role, LocationType, ProductStatus } from "@/app/generated/prisma";
+import { PrismaClient, Role, LocationType, ProductStatus } from "@/lib/generated/prisma";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();

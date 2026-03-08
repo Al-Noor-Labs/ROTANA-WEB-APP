@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser, JWTPayload } from "@/lib/jwt";
-import { Role } from "@/app/generated/prisma";
+import { Role } from "@/lib/generated/prisma";
 import { apiError } from "@/lib/api-helpers";
 
 type RouteHandler = (

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { withAuth, STAFF_ROLES, ADMIN_ROLES } from "@/lib/with-auth";
 import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
-import { AccountType } from "@/app/generated/prisma";
+import { AccountType } from "@/lib/generated/prisma";
 
 const AccountSchema = z.object({
   code: z.string().min(1),

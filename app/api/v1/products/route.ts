@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { withAuth, MANAGER_ROLES } from "@/lib/with-auth";
 import { apiSuccess, apiSuccessList, apiError, handleApiError, parsePagination, buildMeta } from "@/lib/api-helpers";
-import type { Prisma } from "@/app/generated/prisma";
+import type { Prisma } from "@/lib/generated/prisma";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Request schemas

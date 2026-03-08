@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Role } from "@/app/generated/prisma";
+import { Role } from "@/lib/generated/prisma";
 import { NextRequest } from "next/server";
 
 // ─────────────────────────────────────────────────────────────────────────────

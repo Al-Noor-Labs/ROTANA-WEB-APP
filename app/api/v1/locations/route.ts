@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from "@/lib/with-auth";
 import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
-import { LocationType } from "@/app/generated/prisma";
+import { LocationType } from "@/lib/generated/prisma";
 
 const LocationSchema = z.object({
   name: z.string().min(1),

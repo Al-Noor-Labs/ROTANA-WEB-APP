@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from "@/lib/with-auth";
 import { apiSuccess, apiError, handleApiError, generateTransferNumber } from "@/lib/api-helpers";
 import { applyInventoryEvent } from "@/app/api/inventory/route";
-import { InventoryEventType } from "@/app/generated/prisma";
+import { InventoryEventType } from "@/lib/generated/prisma";
 
 const TransferSchema = z.object({
   fromLocationId: z.string().uuid(),

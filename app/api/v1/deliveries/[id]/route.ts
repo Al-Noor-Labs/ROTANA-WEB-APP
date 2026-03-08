@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { withAuth, DELIVERY_ROLES } from "@/lib/with-auth";
 import { apiSuccess, apiError, handleApiError, generateInvoiceNumber } from "@/lib/api-helpers";
-import { DeliveryStatus, InventoryEventType, OrderStatus, PaymentStatus } from "@/app/generated/prisma";
+import { DeliveryStatus, InventoryEventType, OrderStatus, PaymentStatus } from "@/lib/generated/prisma";
 import { applyInventoryEvent } from "@/app/api/inventory/route";
 
 const UpdateDeliverySchema = z.object({

@@ -13,7 +13,7 @@ import {
   InventoryEventType,
   OrderStatus,
   PaymentStatus,
-} from "@/app/generated/prisma";
+} from "@/lib/generated/prisma";
 
 // GET /api/orders/[id]
 export const GET = withAuth(async (req, { params, user }) => {

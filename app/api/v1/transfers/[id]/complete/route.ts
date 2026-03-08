@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { withAuth, STAFF_ROLES } from "@/lib/with-auth";
 import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
 import { applyInventoryEvent } from "@/app/api/inventory/route";
-import { InventoryEventType } from "@/app/generated/prisma";
+import { InventoryEventType } from "@/lib/generated/prisma";
 
 // POST /api/transfers/[id]/complete - Receive a transfer at destination
 export const POST = withAuth(async (req, { params, user }) => {

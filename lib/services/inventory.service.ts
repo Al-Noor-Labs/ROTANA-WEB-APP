@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { InventoryEventType } from "@/app/generated/prisma";
-import type { Prisma } from "@/app/generated/prisma";
+import { InventoryEventType } from "@/lib/generated/prisma";
+import type { Prisma } from "@/lib/generated/prisma";
 import { logger } from "@/lib/logger";
 
 // ─────────────────────────────────────────────────────────────────────────────

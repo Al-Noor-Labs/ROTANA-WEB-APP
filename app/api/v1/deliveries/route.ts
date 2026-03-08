@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { withAuth, MANAGER_ROLES, DELIVERY_ROLES, STAFF_ROLES } from "@/lib/with-auth";
 import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
-import { DeliveryStatus } from "@/app/generated/prisma";
+import { DeliveryStatus } from "@/lib/generated/prisma";
 
 // GET /api/deliveries - List deliveries (drivers see only theirs)
 export const GET = withAuth(async (req, { user }) => {

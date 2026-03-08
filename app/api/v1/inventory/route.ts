@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from "@/lib/with-auth";
 import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
-import { InventoryEventType } from "@/app/generated/prisma";
+import { InventoryEventType } from "@/lib/generated/prisma";
 
 const StockEventSchema = z.object({
   variantId: z.string().uuid(),
