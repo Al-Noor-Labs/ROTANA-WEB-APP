@@ -40,9 +40,9 @@ export const PATCH = withAuth(async (req, { params }) => {
       passwordHash = await bcrypt.hash(validated.password, 12);
     }
 
-    const { password, ...otherData } = validated;
+    const { password: _password, ...otherData } = validated;
 
-    const dataToUpdate: any = { ...otherData };
+    const dataToUpdate: Record<string, unknown> = { ...otherData };
     if (passwordHash) {
       dataToUpdate.passwordHash = passwordHash;
     }

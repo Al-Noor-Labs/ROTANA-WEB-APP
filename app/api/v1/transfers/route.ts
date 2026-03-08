@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
@@ -20,7 +19,8 @@ const TransferSchema = z.object({
     .min(1),
 });
 
-const CompleteTransferSchema = z.object({
+// TODO: CompleteTransferSchema used in transfers/[id]/complete — keeping for reference
+const _CompleteTransferSchema = z.object({
   items: z.array(
     z.object({
       variantId: z.string().uuid(),
@@ -30,7 +30,7 @@ const CompleteTransferSchema = z.object({
 });
 
 // GET /api/transfers
-export const GET = withAuth(async (req) => {
+export const GET = withAuth(async (_req) => {
   try {
     const transfers = await prisma.stockTransfer.findMany({
       include: {

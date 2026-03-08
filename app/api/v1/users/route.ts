@@ -1,29 +1,7 @@
-import { NextRequest } from 'next/server';
-import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, ADMIN_ROLES } from '@/lib/with-auth';
-import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
-import bcrypt from 'bcryptjs';
-import { Prisma } from '@/lib/generated/prisma';
-
-const UserUpdateSchema = z.object({
-  name: z.string().optional(),
-  phone: z.string().optional(),
-  role: z
-    .enum([
-      'SUPER_ADMIN',
-      'WAREHOUSE_MANAGER',
-      'STORE_MANAGER',
-      'CASHIER',
-      'SALESMAN',
-      'DELIVERY_DRIVER',
-      'ACCOUNTANT',
-      'CUSTOMER',
-    ])
-    .optional(),
-  isActive: z.boolean().optional(),
-  password: z.string().min(8).optional(),
-});
+import { apiSuccess, handleApiError } from '@/lib/api-helpers';
+import { Prisma, Role } from '@/lib/generated/prisma';
 
 // GET /api/users - List users (Admin)
 export const GET = withAuth(async (req) => {
@@ -32,7 +10,7 @@ export const GET = withAuth(async (req) => {
     const role = searchParams.get('role');
 
     const where: Prisma.UserWhereInput = {};
-    if (role) where.role = role;
+    if (role) where.role = role as Role;
 
     const users = await prisma.user.findMany({
       where,

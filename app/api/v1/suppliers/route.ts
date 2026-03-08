@@ -1,8 +1,7 @@
-import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
-import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
+import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 
 const SupplierSchema = z.object({
   name: z.string().min(1),
