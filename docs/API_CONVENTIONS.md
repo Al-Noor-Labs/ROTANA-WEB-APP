@@ -413,5 +413,5 @@ export async function POST(request: NextRequest) {
 
 ---
 
-_This document is maintained by Ayeen (PM + Backend Lead). Update when new patterns are established._
+_This document is maintained by Ayeen (PM + Backend ). Update when new patterns are established._
 _Mobile API consumers: see Authentication section (Section 4) for Bearer token usage._

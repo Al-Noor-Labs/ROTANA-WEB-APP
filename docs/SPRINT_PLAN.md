@@ -2,7 +2,7 @@
 
 > **Methodology**: Kanban with weekly sprints (8 sprints × ~7 days)
 > **Start Date**: TBD (after team onboarding)
-> **Team**: 5 members (2 FE, 2 BE, 1 Mobile — mobile starts in S5)
+> **Team**: 4 members (2 FE, 2 BE) — mobile app deferred to v2.0 (separate repo)
 
 ---
 
@@ -23,36 +23,35 @@
 
 ## Sprint S1 — Foundation & Auth (Week 1)
 
-> **Goal**: Repo restructured as Turborepo monorepo. Auth flow working end-to-end. DB schema for core entities.
+> **Goal**: Next.js project structure verified. Auth flow working end-to-end. DB schema for core entities.
 
 ### Backend (Ayeen + Rahmath)
 
-| Task                                                                 | Assignee        | Priority | Est  |
-| -------------------------------------------------------------------- | --------------- | -------- | ---- |
-| Setup Turborepo monorepo (`apps/web`, `apps/api`, `packages/shared`) | Ayeen           | P0       | 1d   |
-| Setup NestJS project in `apps/api`                                   | Ayeen           | P0       | 0.5d |
-| Configure Prisma + Supabase connection                               | Ayeen           | P0       | 0.5d |
-| Design & create core DB schema (users, roles, products, categories)  | Ayeen + Rahmath | P0       | 1d   |
-| Implement Supabase Auth integration                                  | Ayeen           | P0       | 1d   |
-| Implement RBAC guards (roles middleware)                             | Rahmath         | P0       | 1d   |
-| Setup shared Zod schemas in packages/shared                          | Rahmath         | P1       | 0.5d |
-| Configure CI/CD pipeline                                             | Ayeen           | P1       | 0.5d |
+| Task                                                                | Assignee        | Priority | Est  |
+| ------------------------------------------------------------------- | --------------- | -------- | ---- |
+| Verify Next.js project structure per PROJECT_CANON.md               | Ayeen           | P0       | 0.5d |
+| Setup API Route Handlers scaffold (`app/api/v1/`)                   | Ayeen           | P0       | 0.5d |
+| Configure Prisma + Supabase connection                              | Ayeen           | P0       | 0.5d |
+| Design & create core DB schema (users, roles, products, categories) | Ayeen + Rahmath | P0       | 1d   |
+| Implement Supabase Auth integration                                 | Ayeen           | P0       | 1d   |
+| Implement RBAC guards (withAuth, withRole middleware)               | Rahmath         | P0       | 1d   |
+| Setup Zod schemas in `lib/schemas/`                                 | Rahmath         | P1       | 0.5d |
+| Configure CI/CD pipeline                                            | Ayeen           | P1       | 0.5d |
 
 ### Frontend (Faizan + Najeeb)
 
-| Task                                         | Assignee | Priority | Est  |
-| -------------------------------------------- | -------- | -------- | ---- |
-| Migrate existing Next.js app into `apps/web` | Faizan   | P0       | 0.5d |
-| Setup shadcn/ui component library            | Najeeb   | P0       | 0.5d |
-| Build login / register pages                 | Faizan   | P0       | 1d   |
-| Build admin layout (sidebar, header, nav)    | Najeeb   | P0       | 1d   |
-| Build customer layout (header, footer, nav)  | Faizan   | P1       | 1d   |
-| Setup Zustand stores (auth, UI state)        | Najeeb   | P1       | 0.5d |
-| Setup React Query provider + API client      | Faizan   | P1       | 0.5d |
+| Task                                        | Assignee | Priority | Est  |
+| ------------------------------------------- | -------- | -------- | ---- |
+| Setup shadcn/ui component library           | Najeeb   | P0       | 0.5d |
+| Build login / register pages                | Faizan   | P0       | 1d   |
+| Build admin layout (sidebar, header, nav)   | Najeeb   | P0       | 1d   |
+| Build customer layout (header, footer, nav) | Faizan   | P1       | 1d   |
+| Setup Zustand stores (auth, UI state)       | Najeeb   | P1       | 0.5d |
+| Setup React Query provider + API client     | Faizan   | P1       | 0.5d |
 
 ### Sprint S1 Deliverable
 
-- [ ] Monorepo running with `pnpm dev`
+- [ ] Single Next.js app running with `pnpm dev`
 - [ ] Users can register and login
 - [ ] Admin and customer layouts rendered
 - [ ] RBAC working (admin vs customer access)
@@ -161,14 +160,6 @@
 | B2B registration form (with doc upload)    | Faizan   | P0       | 1.5d |
 | Admin: B2B approval/rejection UI           | Najeeb   | P1       | 1d   |
 
-### Mobile (Zaka starts)
-
-| Task                                 | Assignee | Priority | Est  |
-| ------------------------------------ | -------- | -------- | ---- |
-| Setup Expo project in `apps/mobile`  | Zaka     | P0       | 0.5d |
-| Mobile auth screens (login/register) | Zaka     | P0       | 2d   |
-| Mobile product browse                | Zaka     | P1       | 2d   |
-
 ---
 
 ## Sprint S6 — B2B Credit, Invoicing & Supplier (Week 6)
@@ -194,13 +185,6 @@
 | Admin: Invoice & due bills dashboard        | Najeeb   | P0       | 1.5d |
 | Supplier portal UI                          | Faizan   | P1       | 1.5d |
 
-### Mobile (Zaka)
-
-| Task                   | Assignee | Priority | Est |
-| ---------------------- | -------- | -------- | --- |
-| Mobile cart + checkout | Zaka     | P0       | 3d  |
-| Mobile order tracking  | Zaka     | P1       | 2d  |
-
 ---
 
 ## Sprint S7 — Delivery, Salesman & Payroll (Week 7)
@@ -225,13 +209,6 @@
 | Salesman dashboard                    | Najeeb   | P0       | 2d   |
 | Payroll dashboard                     | Najeeb   | P1       | 1.5d |
 | Return/refund flow UI                 | Faizan   | P1       | 1d   |
-
-### Mobile (Zaka)
-
-| Task                                | Assignee | Priority | Est |
-| ----------------------------------- | -------- | -------- | --- |
-| Mobile user profile & order history | Zaka     | P0       | 2d  |
-| Push notifications setup            | Zaka     | P1       | 1d  |
 
 ---
 
@@ -275,7 +252,6 @@
 | Client delays on open items (GST slabs, commission structure) | High   | Send reminder at S1, block specific features if needed |
 | Razorpay integration complexity                               | Medium | Spike in S2, implement in S3                           |
 | GST invoice compliance rules unclear                          | Medium | Research in S1, consult with CA                        |
-| Mobile development bottleneck (1 dev)                         | Medium | Prioritize web, mobile is v1.1                         |
 | Scope creep from client                                       | High   | Refer to SRD, use change request process               |
 
 ---

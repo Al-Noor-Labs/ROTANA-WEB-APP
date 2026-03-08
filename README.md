@@ -84,7 +84,7 @@ See [docs/SETUP.md](docs/SETUP.md) for the complete setup guide.
 
 | Member  | Role                            | Repo          |
 | ------- | ------------------------------- | ------------- |
-| Ayeen   | PM + Backend Lead               | This repo     |
+| Ayeen   | PM + Backend                    | This repo     |
 | Rahmath | Backend Developer               | This repo     |
 | Faizan  | Frontend Developer              | This repo     |
 | Najeeb  | Frontend Developer              | This repo     |
