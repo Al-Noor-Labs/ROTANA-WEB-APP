@@ -3,7 +3,9 @@ import { Role } from '@/lib/generated/prisma';
 import { NextRequest } from 'next/server';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Startup validation — fail fast with a clear message if secrets are missing
+// Lazy secret loading — deferred to first use so `next build` doesn't crash
+// when JWT env vars aren't available in the CI build environment.
+// At runtime (dev / production), these will fail fast on the first request.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function requireEnv(name: string): string {
@@ -11,17 +13,24 @@ function requireEnv(name: string): string {
   if (!value || value.trim() === '') {
     throw new Error(
       `[rotana] Missing required environment variable: ${name}\n` +
-        `Make sure it is set in .env.local (development) or Vercel Environment Variables (production).`,
+      `Make sure it is set in .env.local (development) or Vercel Environment Variables (production).`,
     );
   }
   return value;
 }
 
-const ACCESS_SECRET = requireEnv('JWT_ACCESS_SECRET');
-const REFRESH_SECRET = requireEnv('JWT_REFRESH_SECRET');
+let _accessSecret: string | null = null;
+let _refreshSecret: string | null = null;
 
-const ACCESS_EXPIRY = '15m';
-const REFRESH_EXPIRY = '7d';
+function getAccessSecret(): string {
+  if (!_accessSecret) _accessSecret = requireEnv('JWT_ACCESS_SECRET');
+  return _accessSecret;
+}
+
+function getRefreshSecret(): string {
+  if (!_refreshSecret) _refreshSecret = requireEnv('JWT_REFRESH_SECRET');
+  return _refreshSecret;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -38,11 +47,11 @@ export interface JWTPayload {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function signAccessToken(payload: JWTPayload): string {
-  return jwt.sign(payload, ACCESS_SECRET, { expiresIn: ACCESS_EXPIRY });
+  return jwt.sign(payload, getAccessSecret(), { expiresIn: '15m' });
 }
 
 export function signRefreshToken(payload: JWTPayload): string {
-  return jwt.sign(payload, REFRESH_SECRET, { expiresIn: REFRESH_EXPIRY });
+  return jwt.sign(payload, getRefreshSecret(), { expiresIn: '7d' });
 }
 
 /**
@@ -50,7 +59,7 @@ export function signRefreshToken(payload: JWTPayload): string {
  * Returns the payload or throws if the token is invalid/expired.
  */
 export function verifyAccessToken(token: string): JWTPayload {
-  return jwt.verify(token, ACCESS_SECRET) as JWTPayload;
+  return jwt.verify(token, getAccessSecret()) as JWTPayload;
 }
 
 /**
@@ -58,7 +67,7 @@ export function verifyAccessToken(token: string): JWTPayload {
  * Returns the payload or throws if the token is invalid/expired.
  */
 export function verifyRefreshToken(token: string): JWTPayload {
-  return jwt.verify(token, REFRESH_SECRET) as JWTPayload;
+  return jwt.verify(token, getRefreshSecret()) as JWTPayload;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
