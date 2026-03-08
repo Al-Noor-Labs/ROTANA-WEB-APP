@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
-import { withAuth, MANAGER_ROLES, STAFF_ROLES } from '@/lib/with-auth';
-import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
+import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
+import { apiSuccess, handleApiError } from '@/lib/api-helpers';
 
 const CategorySchema = z.object({
   name: z.string().min(1),
@@ -12,7 +12,7 @@ const CategorySchema = z.object({
 });
 
 // GET /api/categories - List all categories
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const categories = await prisma.category.findMany({
       where: { isActive: true },
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 }
 
 // POST /api/categories - Create category (managers only)
-export const POST = withAuth(async (req, { user }) => {
+export const POST = withAuth(async (req) => {
   try {
     const body = await req.json();
     const validated = CategorySchema.parse(body);

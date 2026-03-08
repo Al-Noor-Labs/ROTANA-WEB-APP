@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
 import { apiSuccess, handleApiError } from '@/lib/api-helpers';
@@ -45,23 +44,28 @@ export const GET = withAuth(async (req) => {
           },
           include: { grn: { select: { supplierId: true } } },
         }),
-      ])) as any;
+      ]);
+
+    type GrnItem = (typeof supplierDiscrepancies)[number];
+    type SupplierInfo = (typeof allSuppliers)[number];
+    type GrnGroup = (typeof supplierGrns)[number];
+    type InvoiceGroup = (typeof supplierInvoices)[number];
 
     // Build discrepancy map
-    const discrepancyMap = new Map();
-    supplierDiscrepancies.forEach((item: any) => {
+    const discrepancyMap = new Map<string, { damaged: number; received: number }>();
+    supplierDiscrepancies.forEach((item: GrnItem) => {
       const sId = item.grn.supplierId;
       if (!discrepancyMap.has(sId)) {
         discrepancyMap.set(sId, { damaged: 0, received: 0 });
       }
       const current = discrepancyMap.get(sId);
-      current.damaged += item.damagedQty || 0;
-      current.received += item.receivedQty || 0;
+      current.damaged += item.damagedQty ?? 0;
+      current.received += item.receivedQty ?? 0;
     });
 
-    const performanceData = allSuppliers.map((supplier: any) => {
-      const grnInfo = supplierGrns.find((g: any) => g.supplierId === supplier.id);
-      const invoiceInfo = supplierInvoices.find((i: any) => i.supplierId === supplier.id);
+    const performanceData = allSuppliers.map((supplier: SupplierInfo) => {
+      const grnInfo = supplierGrns.find((g: GrnGroup) => g.supplierId === supplier.id);
+      const invoiceInfo = supplierInvoices.find((i: InvoiceGroup) => i.supplierId === supplier.id);
       const discrepancies = discrepancyMap.get(supplier.id) || { damaged: 0, received: 0 };
 
       const totalReceived = discrepancies.received;
@@ -81,9 +85,10 @@ export const GET = withAuth(async (req) => {
       };
     });
 
+    type PerfRow = (typeof performanceData)[number];
     return apiSuccess({
       period: { startDate, endDate },
-      performance: performanceData.sort((a: any, b: any) => b.totalSpend - a.totalSpend),
+      performance: performanceData.sort((a: PerfRow, b: PerfRow) => b.totalSpend - a.totalSpend),
     });
   } catch (error) {
     return handleApiError(error);

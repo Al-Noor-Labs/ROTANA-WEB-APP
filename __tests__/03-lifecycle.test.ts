@@ -15,8 +15,8 @@ describe('Inventory & Orders Lifecycle', () => {
     // Fetch locations from seed
     const locRes = await apiFetch('/locations', token);
     const locations = locRes.data.data;
-    warehouseId = locations.find((l: any) => l.type === 'WAREHOUSE')?.id;
-    storeId = locations.find((l: any) => l.type === 'STORE')?.id;
+    warehouseId = locations.find((l: { type: string; id: string }) => l.type === 'WAREHOUSE')?.id;
+    storeId = locations.find((l: { type: string; id: string }) => l.type === 'STORE')?.id;
 
     // Fetch or create supplier
     const supRes = await apiFetch('/suppliers', token);
@@ -68,7 +68,7 @@ describe('Inventory & Orders Lifecycle', () => {
     expect(checkInv.status).toBe(200);
     // Stock should exist from this run's GRN or previous runs
     const totalStock = checkInv.data.data.reduce(
-      (sum: number, b: any) => sum + (b.available ?? 0),
+      (sum: number, b: { available?: number }) => sum + (b.available ?? 0),
       0,
     );
     expect(totalStock).toBeGreaterThan(0);

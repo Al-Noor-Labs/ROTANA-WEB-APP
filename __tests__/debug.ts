@@ -3,7 +3,7 @@ import { apiFetch, adminLogin } from './test-utils';
 async function debug() {
   const token = await adminLogin();
   const locs = await apiFetch('/locations', token);
-  const wh = locs.data.data.find((l: any) => l.type === 'WAREHOUSE');
+  const wh = locs.data.data.find((l: { type: string; id: string }) => l.type === 'WAREHOUSE');
   const sup = await apiFetch('/suppliers', token);
   const supplierId = sup.data.data[0]?.id;
   const prod = await apiFetch('/products', token);

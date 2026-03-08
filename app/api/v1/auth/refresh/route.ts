@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { refreshToken } = RefreshSchema.parse(body);
 
-    // Verify the token is valid
-    const payload = verifyRefreshToken(refreshToken);
+    // Verify the token signature before hitting the DB
+    verifyRefreshToken(refreshToken);
 
     // Check if token exists in DB
     const stored = await prisma.refreshToken.findUnique({
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!stored || stored.expiresAt < new Date() || !stored.user.isActive) {
-      return apiError('Invalid or expired refresh token', 401);
+      return apiError(401, 'UNAUTHENTICATED');
     }
 
     // Rotate tokens

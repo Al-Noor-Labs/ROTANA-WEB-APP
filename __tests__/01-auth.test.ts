@@ -54,7 +54,9 @@ describe('Auth & Users APIs', () => {
     expect(res.status).toBe(200);
 
     const resUsers = await apiFetch('/users', token, { method: 'GET' });
-    const user = resUsers.data.data.find((u: any) => u.id === userStaffId);
+    const user = resUsers.data.data.find(
+      (u: { id: string; isActive: boolean }) => u.id === userStaffId,
+    );
     expect(user.isActive).toBe(false);
   });
 });

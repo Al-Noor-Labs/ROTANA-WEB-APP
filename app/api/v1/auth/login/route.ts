@@ -17,12 +17,12 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || !user.isActive) {
-      return apiError('Invalid credentials', 401);
+      return apiError(401, 'UNAUTHENTICATED');
     }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
-      return apiError('Invalid credentials', 401);
+      return apiError(401, 'UNAUTHENTICATED');
     }
 
     const payload = { userId: user.id, email: user.email, role: user.role };
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const { passwordHash: _, ...safeUser } = user;
+    const { passwordHash: _passwordHash, ...safeUser } = user;
 
     return apiSuccess({ user: safeUser, accessToken, refreshToken });
   } catch (error) {

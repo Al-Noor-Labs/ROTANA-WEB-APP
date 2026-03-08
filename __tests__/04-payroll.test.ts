@@ -11,7 +11,7 @@ describe('Payroll & Commissions', () => {
 
     // Find or create a SALESMAN for payroll tests
     const usersRes = await apiFetch('/users?role=SALESMAN', token);
-    const activeSalesmen = usersRes.data.data?.filter((u: any) => u.isActive);
+    const activeSalesmen = usersRes.data.data?.filter((u: { isActive: boolean }) => u.isActive);
     if (activeSalesmen?.length > 0) {
       staffUserId = activeSalesmen[0].id;
     } else {

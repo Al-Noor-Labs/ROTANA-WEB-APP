@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
 import { apiSuccess, handleApiError } from '@/lib/api-helpers';
@@ -50,11 +49,16 @@ export const GET = withAuth(async (req) => {
       }),
     ]);
 
+    type StaffInfo = (typeof allStaff)[number];
+    type OrderGroup = (typeof staffOrders)[number];
+    type DeliveryGroup = (typeof staffDeliveries)[number];
+    type CommissionGroup = (typeof staffCommissions)[number];
+
     // Build performance map
-    const performanceData = allStaff.map((staff: any) => {
-      const ordersInfo = staffOrders.find((o: any) => o.assignedToId === staff.id);
-      const deliveryInfo = staffDeliveries.find((d: any) => d.driverId === staff.id);
-      const commissionInfo = staffCommissions.find((c: any) => c.userId === staff.id);
+    const performanceData = allStaff.map((staff: StaffInfo) => {
+      const ordersInfo = staffOrders.find((o: OrderGroup) => o.assignedToId === staff.id);
+      const deliveryInfo = staffDeliveries.find((d: DeliveryGroup) => d.driverId === staff.id);
+      const commissionInfo = staffCommissions.find((c: CommissionGroup) => c.userId === staff.id);
 
       return {
         id: staff.id,
@@ -68,9 +72,12 @@ export const GET = withAuth(async (req) => {
       };
     });
 
+    type PerfRow = (typeof performanceData)[number];
     return apiSuccess({
       period: { startDate, endDate },
-      performance: performanceData.sort((a: any, b: any) => b.ordersHandled - a.ordersHandled),
+      performance: performanceData.sort(
+        (a: PerfRow, b: PerfRow) => b.ordersHandled - a.ordersHandled,
+      ),
     });
   } catch (error) {
     return handleApiError(error);
