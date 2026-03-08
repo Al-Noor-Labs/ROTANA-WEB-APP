@@ -2,13 +2,18 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { withAuth, MANAGER_ROLES } from "@/lib/with-auth";
-import { apiSuccess, apiError, handleApiError } from "@/lib/api-helpers";
+import { apiSuccess, apiSuccessList, apiError, handleApiError, parsePagination, buildMeta } from "@/lib/api-helpers";
+import type { Prisma } from "@/app/generated/prisma";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Request schemas
+// ─────────────────────────────────────────────────────────────────────────────
 
 const ProductSchema = z.object({
   categoryId: z.string().uuid(),
-  name: z.string().min(1),
-  description: z.string().optional(),
-  brand: z.string().optional(),
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+  brand: z.string().max(100).optional(),
   imageUrl: z.string().url().optional(),
   images: z.array(z.string().url()).optional().default([]),
   barcode: z.string().optional(),
@@ -16,10 +21,10 @@ const ProductSchema = z.object({
   tags: z.array(z.string()).optional().default([]),
   variants: z.array(
     z.object({
-      sku: z.string().min(1),
-      name: z.string().min(1),
+      sku: z.string().min(1).max(50),
+      name: z.string().min(1).max(100),
       unitValue: z.number().positive(),
-      unitLabel: z.string().min(1),
+      unitLabel: z.string().min(1).max(20),
       costPrice: z.number().nonnegative(),
       sellingPrice: z.number().nonnegative(),
       mrp: z.number().optional(),
@@ -29,17 +34,27 @@ const ProductSchema = z.object({
   ).min(1, "At least one variant is required"),
 });
 
-// GET /api/products - List all products (with filters)
+// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/products — list products with filters (public, no auth required)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * GET /api/products
+ *
+ * Returns a paginated list of active products.
+ * Public endpoint — no authentication required (B2C catalogue browsing).
+ * Query params: categoryId, search, page, limit
+ */
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
+    const { page, limit, skip } = parsePagination(req.url);
+
     const categoryId = searchParams.get("categoryId");
     const search = searchParams.get("search");
-    const page = parseInt(searchParams.get("page") ?? "1");
-    const limit = parseInt(searchParams.get("limit") ?? "20");
-    const skip = (page - 1) * limit;
 
-    const where: any = { status: "ACTIVE" };
+    // Build typed where clause — no any
+    const where: Prisma.ProductWhereInput = { status: "ACTIVE" };
     if (categoryId) where.categoryId = categoryId;
     if (search) {
       where.OR = [
@@ -66,34 +81,37 @@ export async function GET(req: NextRequest) {
       prisma.product.count({ where }),
     ]);
 
-    return apiSuccess({
-      products,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
-    });
+    return apiSuccessList(products, buildMeta(page, limit, total));
   } catch (error) {
     return handleApiError(error);
   }
 }
 
-// POST /api/products - Create product with variants
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /api/products — create product with variants (managers only)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * POST /api/products
+ *
+ * Creates a new product with one or more variants.
+ * Roles: SUPER_ADMIN, WAREHOUSE_MANAGER, STORE_MANAGER
+ */
 export const POST = withAuth(async (req) => {
   try {
-    const body = await req.json();
-    const validated = ProductSchema.parse(body);
-    const { variants, ...productData } = validated;
+    const body: unknown = await req.json();
+    const parsed = ProductSchema.safeParse(body);
+    if (!parsed.success) {
+      return apiError(422, "VALIDATION_ERROR", parsed.error.flatten().fieldErrors);
+    }
+
+    const { variants, ...productData } = parsed.data;
 
     const product = await prisma.product.create({
       data: {
         ...productData,
         variants: {
-          create: variants.map((v) => ({
-            ...v,
-            unitValue: v.unitValue,
-            costPrice: v.costPrice,
-            sellingPrice: v.sellingPrice,
-            mrp: v.mrp,
-            taxRate: v.taxRate,
-          })),
+          create: variants,
         },
       },
       include: {
