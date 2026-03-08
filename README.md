@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rotana Store
 
-## Getting Started
+> Warehouse & Store Management Platform — built by Alnoor Labs for Rotana.
 
-First, run the development server:
+A unified, web-based operations platform for a grocery warehouse / dark store model. Handles everything from inbound purchase orders, inventory management, and B2C/B2B customer ordering, through to delivery, invoicing, salesman commissions, and staff payroll.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript 5 (strict mode) |
+| UI | shadcn/ui + Tailwind CSS 4 |
+| Database | PostgreSQL via Supabase + Prisma ORM |
+| Auth | Supabase Auth + JWT Bearer token |
+| State | Zustand + TanStack React Query |
+| Payments | Razorpay / Stripe |
+| File Storage | Cloudflare R2 |
+| Hosting | Vercel |
+| Package Manager | pnpm |
+
+> **API Design**: All backend logic runs as Next.js Route Handlers (`app/api/v1/`). These APIs are REST-first and mobile-ready — the Rotana mobile app (separate repository) consumes these same endpoints.
+
+---
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 1. Clone & install
+git clone https://github.com/<org>/ROTANA-WEB-APP.git
+cd ROTANA-WEB-APP
+pnpm install
+
+# 2. Environment variables
+cp .env.example .env.local
+# Fill in values from Google Chat pinned message
+
+# 3. Database
+pnpm db:generate
+pnpm db:migrate
+pnpm db:seed
+
+# 4. Start dev server
 pnpm dev
-# or
-bun dev
+# → http://localhost:3000 (web + API on the same server)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+See [docs/SETUP.md](docs/SETUP.md) for the complete setup guide.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Documentation
 
-## Learn More
+| Document | Purpose |
+|---|---|
+| [docs/SETUP.md](docs/SETUP.md) | Local development setup |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Team workflow, branching, commit conventions |
+| [docs/CODE_STYLE.md](docs/CODE_STYLE.md) | Code patterns with examples |
+| [docs/API_CONVENTIONS.md](docs/API_CONVENTIONS.md) | API Route Handler patterns and standards |
+| [.rules/PROJECT_CANON.md](.rules/PROJECT_CANON.md) | Tech stack, folder structure, naming rules |
+| [docs/BRANCH_PROTECTION.md](docs/BRANCH_PROTECTION.md) | GitHub branch protection setup |
+| [docs/Rotana_SRD_v1.docx.md](docs/Rotana_SRD_v1.docx.md) | Software Requirements Document |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## User Roles
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Role | Access |
+|---|---|
+| Super Admin | Full system — all dashboards, approvals, reports |
+| Warehouse Manager | Inbound stock, GRN, bin assignment, dispatch |
+| Store Manager | POS, shelf stock, order fulfillment |
+| Supplier | View POs, upload invoices, track payments |
+| Salesman | B2B order creation, commission tracking |
+| B2C Customer | Browse, order, pay online, track delivery |
+| B2B Buyer | Order on credit, view invoices, pay dues |
+| Delivery Staff | View delivery assignments, mark delivered |
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Team
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Member | Role | Repo |
+|---|---|---|
+| Ayeen | PM + Backend Lead | This repo |
+| Rahmath | Backend Developer | This repo |
+| Faizan | Frontend Developer | This repo |
+| Najeeb | Frontend Developer | This repo |
+| Zaka | Mobile Developer (React Native) | Separate repo |
+
+---
+
+*Built by Alnoor Labs — Confidential & Proprietary*

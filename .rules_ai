@@ -1,0 +1,127 @@
+# Rotana Store — AI Coding Assistant Rules
+# This file is automatically read by Cursor, Windsurf, and similar AI coding tools.
+# ALL team members MUST have this file in their project root.
+
+## CRITICAL: READ FIRST
+You are working on the Rotana Store codebase — a Warehouse & Store Management Platform.
+Before generating ANY code, you MUST read and follow:
+1. `.rules/PROJECT_CANON.md` — tech stack, naming, folder structure, forbidden patterns
+2. `CONTRIBUTING.md` — commit conventions, PR process, team rules
+
+## Project Context
+- **Stack**: Single Next.js 15 application (App Router). No monorepo. No separate backend server.
+- **Package Manager**: pnpm (NOT npm, NOT yarn)
+- **Database**: PostgreSQL via Supabase, ORM is Prisma
+- **Auth**: Supabase Auth (session cookies for web) + Bearer token (for API / future mobile)
+- **UI**: shadcn/ui + Tailwind CSS 4
+- **Validation**: Zod — all boundaries (API route handlers + Server Actions + forms)
+- **State**: Zustand for client state, TanStack React Query for server state
+- **API Design**: REST-first, stateless, JSON — designed so the Rotana Mobile App (separate repo, React Native, developed by Zaka) can consume these same endpoints in v2.0 without refactoring
+
+## ABSOLUTE RULES (NEVER VIOLATE)
+
+### 1. No Hallucinations
+- NEVER invent API methods, library functions, or config options
+- NEVER assume a package is installed — check `package.json` first
+- NEVER fabricate environment variable names
+- If you are unsure about an API, say so — do NOT guess
+
+### 2. TypeScript Strict Mode
+- NEVER use `any` — use `unknown` and type guards
+- NEVER use `// @ts-ignore` — prefer `// @ts-expect-error` with a comment explaining why
+- ALL function parameters and return types MUST be explicitly typed
+- ALL component props MUST have a defined interface
+
+### 3. Next.js — React Components
+- Default to Server Components — only add `'use client'` when React hooks or browser APIs are needed
+- Use App Router patterns ONLY (no Pages Router)
+- Data fetching in Server Components via `fetch` or Prisma service functions
+- Client-side data fetching via TanStack React Query (`useQuery`, `useMutation`)
+- Forms: use `react-hook-form` + Zod resolver
+- No `useEffect` for data fetching — ever
+- Error handling: use `error.tsx` files for error boundaries
+- Loading states: use `loading.tsx` files for suspense boundaries
+- Images: ALWAYS use `next/image` (never `<img>`)
+
+### 4. Next.js — API Route Handlers (app/api/**)
+- EVERY Route Handler MUST follow this pattern:
+  1. **Parse & validate** request body/params with Zod — reject early with 400
+  2. **Authenticate** — verify session/token — reject with 401 if missing
+  3. **Authorize** — check user role against allowed roles — reject with 403 if insufficient
+  4. **Execute** — call the service function (business logic)
+  5. **Respond** — return typed JSON using `apiSuccess()` or `apiError()` helpers
+- Route handlers are THIN — no business logic inside them
+- Business logic lives in `lib/services/` (pure TypeScript functions/classes)
+- EVERY route handler MUST have JSDoc describing what it does, required roles, and request/response shape
+- Use `export async function GET(request: NextRequest)` — always name-export HTTP methods
+- For mobile compatibility: ALWAYS accept `Authorization: Bearer <token>` alongside session cookies
+
+### 5. Next.js — Server Actions
+- Use Server Actions ONLY for form submissions and mutations triggered from Server Components
+- ALWAYS validate inputs with Zod inside the action
+- ALWAYS authenticate inside the action (never trust client)
+- Return `{ success: true, data: ... }` or `{ success: false, error: string }` — never throw to client
+- Do NOT use Server Actions as a replacement for REST API routes (mobile needs REST)
+
+### 6. Database / Prisma
+- Table names: snake_case, plural (e.g., `purchase_orders`)
+- Column names: snake_case (e.g., `created_at`)
+- Primary keys: `id` (UUID)
+- Foreign keys: `<entity>_id` (e.g., `customer_id`)
+- ALWAYS include `created_at` and `updated_at` timestamps
+- NEVER write raw SQL — use Prisma client
+- NEVER make schema changes without discussing with the team and running a migration
+- All Prisma calls go in `lib/services/` — NEVER call Prisma from a component or route handler directly
+
+### 7. Security
+- ALL user input MUST be validated server-side with Zod before any processing
+- NEVER expose `SUPABASE_SERVICE_ROLE_KEY` or `DATABASE_URL` to the client
+- `NEXT_PUBLIC_*` = safe for browser. Everything else = server-only (`.env.local`)
+- NEVER log PII (passwords, tokens, personal data, financial data)
+- ALWAYS use parameterized queries (Prisma handles this automatically)
+- ALWAYS check AUTHORIZATION (role) — not just AUTHENTICATION (logged in)
+- API routes: check CORS headers when requests come from external origins (mobile app)
+- Apply rate limiting on public endpoints (auth, registration, payment webhooks)
+
+### 8. Styling
+- Use Tailwind CSS utility classes — no inline styles, no CSS modules
+- Use shadcn/ui components from `components/ui/`
+- DO NOT modify files in `components/ui/` — they are auto-managed by shadcn CLI
+- Custom components go in `components/shared/`, `components/forms/`, `components/layouts/`, etc.
+- Follow responsive design: desktop-first for admin dashboards (Tailwind breakpoints)
+- Dark mode: use Tailwind `dark:` variants — do not hardcode colors
+
+### 9. File Organization
+- Follow the folder structure defined in `.rules/PROJECT_CANON.md`
+- Shared types go in `lib/types/`
+- Shared Zod schemas go in `lib/schemas/`
+- Shared utilities go in `lib/utils/`
+- API service functions go in `lib/services/`
+- API response helpers go in `lib/api/`
+- DO NOT create new top-level directories without team discussion
+
+### 10. Code Quality
+- Functions: max 50 lines (prefer < 30)
+- Components: max 200 lines — split into sub-components if larger
+- Use named exports (not default exports), EXCEPT: `page.tsx`, `layout.tsx`, `error.tsx`, `loading.tsx`, `not-found.tsx`, `route.ts`
+- No `console.log` — use structured logging via `lib/logger.ts` (pino); remove all debug logs before committing
+- No magic numbers/strings — use named constants in `lib/constants/`
+- No code duplication — extract shared utilities
+- Prefer composition over inheritance
+
+### 11. Testing
+- Test files next to source: `orders.service.ts` → `orders.service.test.ts`
+- Use Vitest for unit tests, Playwright for E2E
+- Descriptive test names: `should return 404 when order not found`
+- Test behavior, not implementation details
+- Mock external dependencies (Supabase, Razorpay, Cloudflare R2, etc.)
+
+## WHEN GENERATING CODE
+1. Check the relevant domain: `app/` (UI), `app/api/` (Route Handlers), `lib/` (services/utils)
+2. Follow the patterns already established in the codebase — read existing files first
+3. Use `@/` absolute imports (mapped to project root in `tsconfig.json`)
+4. Use existing components — don't reinvent what's already built
+5. Add proper error handling for every new feature
+6. Consider all 8 user roles when implementing access control:
+   `super_admin | warehouse_manager | store_manager | supplier | salesman | b2c_customer | b2b_buyer | delivery_staff`
+7. For API routes: ensure the response shape works for both browser (cookies) and mobile (Bearer token)
