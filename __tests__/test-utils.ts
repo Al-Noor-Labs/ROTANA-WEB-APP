@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:3000/api';
+export const BASE_URL = 'http://localhost:3000/api/v1';
 
 export async function apiFetch(path: string, token: string, options: RequestInit = {}) {
   const headers = new Headers(options.headers || {});
