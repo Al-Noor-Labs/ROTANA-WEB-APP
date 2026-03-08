@@ -1,5 +1,4 @@
 import { prisma } from "../lib/prisma";
-import { Role, OrderStatus, OrderType, PaymentStatus, GRNStatus } from "../app/generated/prisma/index.js";
 
 async function main() {
   console.log("Seeding staff and analytics data...");
@@ -27,7 +26,7 @@ async function main() {
     }
   });
 
-  const accountant = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: "accountant@rotana.com" },
     update: {},
     create: {

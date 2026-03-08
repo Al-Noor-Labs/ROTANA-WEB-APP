@@ -3,7 +3,7 @@ import { PrismaClient } from '../app/generated/prisma/index.js';
 const prisma = new PrismaClient();
 const BASE_URL = 'http://localhost:3000/api';
 
-async function post(path: string, body: any, token: string) {
+async function post(path: string, body: unknown, token: string) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -174,7 +174,7 @@ async function main() {
 
   if (bulkRes.success) {
     console.log(`✅ Success! Added ${bulkRes.data.length} products with multiple variants.`);
-    bulkRes.data.forEach((p: any) => {
+    bulkRes.data.forEach((p: { name: string; variants: unknown[] }) => {
       console.log(`   - ${p.name} (${p.variants.length} variant(s))`);
     });
   } else {
