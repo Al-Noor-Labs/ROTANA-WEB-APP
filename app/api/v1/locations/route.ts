@@ -13,15 +13,6 @@ const LocationSchema = z.object({
   city: z.string().optional(),
 });
 
-// TODO: BinSchema will be used when POST /locations/:id/bins is implemented
-const _BinSchema = z.object({
-  code: z.string().min(1),
-  aisle: z.string().optional(),
-  rack: z.string().optional(),
-  shelf: z.string().optional(),
-  maxCapacity: z.number().int().optional(),
-});
-
 // GET /api/locations
 export async function GET(req: NextRequest) {
   try {

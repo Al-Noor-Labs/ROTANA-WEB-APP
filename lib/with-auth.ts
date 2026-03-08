@@ -21,11 +21,11 @@ export function withAuth(handler: RouteHandler, allowedRoles: Role[] = []) {
     const user = getAuthUser(req);
 
     if (!user) {
-      return apiError('Authentication required', 401);
+      return apiError(401, 'UNAUTHENTICATED');
     }
 
     if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-      return apiError('You do not have permission to perform this action', 403);
+      return apiError(403, 'FORBIDDEN');
     }
 
     const params = await context.params;

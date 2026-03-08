@@ -6,7 +6,7 @@ import { applyInventoryEvent } from '@/app/api/v1/inventory/route';
 import { InventoryEventType, OrderStatus, PaymentStatus } from '@/lib/generated/prisma';
 
 // GET /api/orders/[id]
-export const GET = withAuth(async (req, { params, user }) => {
+export const GET = withAuth(async (_req, { params, user }) => {
   try {
     const order = await prisma.order.findUnique({
       where: { id: params.id },

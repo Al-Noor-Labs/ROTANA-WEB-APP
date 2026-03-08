@@ -92,7 +92,7 @@ async function main() {
       sourceLocationId: warehouse.id,
       items: {
         create: {
-          variantId: variant.id,
+          variantId: variant!.id,
           quantity: 10,
           unitPrice: 50,
           lineTotal: 500

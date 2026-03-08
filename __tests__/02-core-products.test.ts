@@ -4,7 +4,6 @@ import { apiFetch, adminLogin } from './test-utils';
 describe('Core Setup & Products APIs', () => {
   let token = '';
   let categoryId = '';
-  let _variantId = '';
 
   beforeAll(async () => {
     token = await adminLogin();
@@ -104,7 +103,7 @@ describe('Core Setup & Products APIs', () => {
 
     expect(prodRes.status).toBe(201);
     expect(prodRes.data.data.variants.length).toBe(2);
-    _variantId = prodRes.data.data.variants[0].id;
+    // variantId captured by lifecycle test separately
   });
 
   it('can bulk create products', async () => {

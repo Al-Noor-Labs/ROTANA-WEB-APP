@@ -12,7 +12,7 @@ const PayslipUpdateSchema = z.object({
 });
 
 // GET /api/payroll/payslips/[id] - Individual payslip details
-export const GET = withAuth(async (req, { params }) => {
+export const GET = withAuth(async (_req, { params }) => {
   try {
     const payslip = await prisma.payslip.findUnique({
       where: { id: params.id },
@@ -74,7 +74,7 @@ export const PUT = withAuth(async (req, { params }) => {
 }, MANAGER_ROLES);
 
 // DELETE /api/payroll/payslips/[id] - Delete a payslip
-export const DELETE = withAuth(async (req, { params }) => {
+export const DELETE = withAuth(async (_req, { params }) => {
   try {
     await prisma.payslip.delete({
       where: { id: params.id },

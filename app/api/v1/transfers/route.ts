@@ -19,16 +19,6 @@ const TransferSchema = z.object({
     .min(1),
 });
 
-// TODO: CompleteTransferSchema used in transfers/[id]/complete — keeping for reference
-const _CompleteTransferSchema = z.object({
-  items: z.array(
-    z.object({
-      variantId: z.string().uuid(),
-      receivedQty: z.number().int().nonnegative(),
-    }),
-  ),
-});
-
 // GET /api/transfers
 export const GET = withAuth(async (_req) => {
   try {

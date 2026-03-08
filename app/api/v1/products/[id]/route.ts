@@ -4,7 +4,7 @@ import { withAuth, MANAGER_ROLES } from '@/lib/with-auth';
 import { apiSuccess, apiError, handleApiError } from '@/lib/api-helpers';
 
 // GET /api/products/[id] - Get single product
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const product = await prisma.product.findUnique({
@@ -37,7 +37,7 @@ export const PATCH = withAuth(async (req, { params }) => {
 }, MANAGER_ROLES);
 
 // DELETE /api/products/[id] - Soft delete (set status to DISCONTINUED)
-export const DELETE = withAuth(async (req, { params }) => {
+export const DELETE = withAuth(async (_req, { params }) => {
   try {
     await prisma.product.update({
       where: { id: params.id },

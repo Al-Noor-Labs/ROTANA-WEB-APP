@@ -60,8 +60,10 @@ export const GET = withAuth(async (req) => {
         discrepancyMap.set(sId, { damaged: 0, received: 0 });
       }
       const current = discrepancyMap.get(sId);
-      current.damaged += item.damagedQty ?? 0;
-      current.received += item.receivedQty ?? 0;
+      if (current) {
+        current.damaged += item.damagedQty ?? 0;
+        current.received += item.receivedQty ?? 0;
+      }
     });
 
     const performanceData = allSuppliers.map((supplier: SupplierInfo) => {
