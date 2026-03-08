@@ -1,10 +1,9 @@
-import { PrismaClient } from '../app/generated/prisma/index.js';
-import bcrypt from 'bcryptjs';
+import { PrismaClient } from '@/lib/generated/prisma';
 
 const prisma = new PrismaClient();
 const BASE_URL = 'http://localhost:3000/api';
 
-async function post(path: string, body: any, token: string) {
+async function post(path: string, body: unknown, token: string) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -30,7 +29,7 @@ async function main() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
-  }).then(r => r.json());
+  }).then((r) => r.json());
 
   const token = loginRes.data.accessToken;
   console.log('✅ Login successful');
@@ -46,15 +45,27 @@ async function main() {
   // 4. Test Bulk ADD
   console.log('⏳ Adding 5 products in one bulk request...');
   const ts = Date.now();
-  const bulkProducts = [1, 2, 3, 4, 5].map(i => ({
+  const bulkProducts = [1, 2, 3, 4, 5].map((i) => ({
     categoryId,
     name: `Bulk Product ${i} - ${ts}`,
     brand: 'BulkBrand',
-    variants: [{ sku: `BULK-SKU-${i}-${ts}`, name: 'Standard Pack', unitValue: 1, unitLabel: 'pcs', costPrice: 10, sellingPrice: 20 }]
+    variants: [
+      {
+        sku: `BULK-SKU-${i}-${ts}`,
+        name: 'Standard Pack',
+        unitValue: 1,
+        unitLabel: 'pcs',
+        costPrice: 10,
+        sellingPrice: 20,
+      },
+    ],
   }));
 
   const bulkRes = await post('/products/bulk', bulkProducts, token);
-  if (!bulkRes.success) { console.error('❌ Bulk Add Failed:', bulkRes); return; }
+  if (!bulkRes.success) {
+    console.error('❌ Bulk Add Failed:', bulkRes);
+    return;
+  }
   console.log(`✅ Bulk Added ${bulkRes.data.length} products successfully`);
 
   // 5. Test DATA FETCHING (GET all products)

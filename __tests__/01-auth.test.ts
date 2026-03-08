@@ -23,8 +23,8 @@ describe('Auth & Users APIs', () => {
         name: 'Test Staff',
         email: `staff-${Date.now()}@test.com`,
         password: 'Password123!',
-        role: 'CASHIER'
-      })
+        role: 'CASHIER',
+      }),
     });
     expect(res.status).toBe(201);
     expect(res.data.success).toBe(true);
@@ -41,7 +41,7 @@ describe('Auth & Users APIs', () => {
   it('should update a specific user', async () => {
     const res = await apiFetch(`/users/${userStaffId}`, token, {
       method: 'PATCH',
-      body: JSON.stringify({ name: 'Updated Staff', role: 'STORE_MANAGER' })
+      body: JSON.stringify({ name: 'Updated Staff', role: 'STORE_MANAGER' }),
     });
     expect(res.status).toBe(200);
     expect(res.data.success).toBe(true);
@@ -54,7 +54,9 @@ describe('Auth & Users APIs', () => {
     expect(res.status).toBe(200);
 
     const resUsers = await apiFetch('/users', token, { method: 'GET' });
-    const user = resUsers.data.data.find((u: any) => u.id === userStaffId);
+    const user = resUsers.data.data.find(
+      (u: { id: string; isActive: boolean }) => u.id === userStaffId,
+    );
     expect(user.isActive).toBe(false);
   });
 });

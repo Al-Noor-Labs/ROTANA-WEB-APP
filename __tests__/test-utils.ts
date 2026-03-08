@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:3000/api';
+export const BASE_URL = 'http://localhost:3000/api/v1';
 
 export async function apiFetch(path: string, token: string, options: RequestInit = {}) {
   const headers = new Headers(options.headers || {});
@@ -25,7 +25,7 @@ export async function adminLogin(retries = 5): Promise<string> {
     } catch (err) {
       if (attempt === retries) throw err;
       // Wait 1s before retry (for hot-reload or server startup)
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 1000));
     }
   }
   throw new Error('adminLogin: exhausted retries');

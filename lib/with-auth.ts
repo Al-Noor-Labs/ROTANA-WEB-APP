@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAuthUser, JWTPayload } from "@/lib/jwt";
-import { Role } from "@/app/generated/prisma";
-import { apiError } from "@/lib/api-helpers";
+import { NextRequest, NextResponse } from 'next/server';
+import { getAuthUser, JWTPayload } from '@/lib/jwt';
+import { Role } from '@/lib/generated/prisma';
+import { apiError } from '@/lib/api-helpers';
 
 type RouteHandler = (
   req: NextRequest,
-  context: { params: Record<string, string>; user: JWTPayload }
+  context: { params: Record<string, string>; user: JWTPayload },
 ) => Promise<NextResponse>;
 
 /**
@@ -16,16 +16,16 @@ type RouteHandler = (
 export function withAuth(handler: RouteHandler, allowedRoles: Role[] = []) {
   return async (
     req: NextRequest,
-    context: { params: Record<string, string> | Promise<Record<string, string>> }
+    context: { params: Record<string, string> | Promise<Record<string, string>> },
   ) => {
     const user = getAuthUser(req);
 
     if (!user) {
-      return apiError("Authentication required", 401);
+      return apiError(401, 'UNAUTHENTICATED');
     }
 
     if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-      return apiError("You do not have permission to perform this action", 403);
+      return apiError(403, 'FORBIDDEN');
     }
 
     const params = await context.params;
@@ -35,11 +35,7 @@ export function withAuth(handler: RouteHandler, allowedRoles: Role[] = []) {
 
 // Role groups for convenience
 export const ADMIN_ROLES: Role[] = [Role.SUPER_ADMIN];
-export const MANAGER_ROLES: Role[] = [
-  Role.SUPER_ADMIN,
-  Role.WAREHOUSE_MANAGER,
-  Role.STORE_MANAGER,
-];
+export const MANAGER_ROLES: Role[] = [Role.SUPER_ADMIN, Role.WAREHOUSE_MANAGER, Role.STORE_MANAGER];
 export const STAFF_ROLES: Role[] = [
   Role.SUPER_ADMIN,
   Role.WAREHOUSE_MANAGER,

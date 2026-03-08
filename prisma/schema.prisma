@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
@@ -120,6 +120,13 @@ enum SupplierStatus {
   ACTIVE
   INACTIVE
   BLACKLISTED
+}
+
+enum TransferStatus {
+  PENDING
+  IN_TRANSIT
+  COMPLETED
+  CANCELLED
 }
 
 // ============================================================
@@ -432,7 +439,7 @@ model StockTransfer {
   fromLocation   Location @relation("TransferFrom", fields: [fromLocationId], references: [id])
   toLocationId   String   @map("to_location_id")
   toLocation     Location @relation("TransferTo", fields: [toLocationId], references: [id])
-  status         String   @default("PENDING") // PENDING, IN_TRANSIT, COMPLETED
+  status         TransferStatus @default(PENDING)
   requestedById  String   @map("requested_by_id")
   notes          String?
   createdAt      DateTime @default(now()) @map("created_at")
@@ -661,4 +668,16 @@ model SalesCommission {
   createdAt  DateTime @default(now()) @map("created_at")
 
   @@map("sales_commissions")
+}
+
+// ============================================================
+// COUNTERS (sequential ID generation)
+// ============================================================
+
+model Counter {
+  name      String   @id
+  value     BigInt   @default(0)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("counters")
 }

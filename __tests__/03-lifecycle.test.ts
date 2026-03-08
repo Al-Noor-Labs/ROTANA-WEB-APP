@@ -15,8 +15,8 @@ describe('Inventory & Orders Lifecycle', () => {
     // Fetch locations from seed
     const locRes = await apiFetch('/locations', token);
     const locations = locRes.data.data;
-    warehouseId = locations.find((l: any) => l.type === 'WAREHOUSE')?.id;
-    storeId = locations.find((l: any) => l.type === 'STORE')?.id;
+    warehouseId = locations.find((l: { type: string; id: string }) => l.type === 'WAREHOUSE')?.id;
+    storeId = locations.find((l: { type: string; id: string }) => l.type === 'STORE')?.id;
 
     // Fetch or create supplier
     const supRes = await apiFetch('/suppliers', token);
@@ -25,7 +25,7 @@ describe('Inventory & Orders Lifecycle', () => {
     } else {
       const newSup = await apiFetch('/suppliers', token, {
         method: 'POST',
-        body: JSON.stringify({ name: 'Test Supplier', email: `sup-${Date.now()}@test.com` })
+        body: JSON.stringify({ name: 'Test Supplier', email: `sup-${Date.now()}@test.com` }),
       });
       supplierId = newSup.data.data.id;
     }
@@ -46,8 +46,8 @@ describe('Inventory & Orders Lifecycle', () => {
         supplierId,
         locationId: warehouseId,
         notes: 'Lifecycle Test GRN',
-        items: [{ variantId, orderedQty: 100, receivedQty: 100, damagedQty: 0, costPrice: 50 }]
-      })
+        items: [{ variantId, orderedQty: 100, receivedQty: 100, damagedQty: 0, costPrice: 50 }],
+      }),
     });
 
     expect(grnRes.status).toBe(201);
@@ -61,10 +61,16 @@ describe('Inventory & Orders Lifecycle', () => {
     expect(listGrn.status).toBe(200);
     expect(listGrn.data.data.grns.length).toBeGreaterThanOrEqual(1);
 
-    const checkInv = await apiFetch(`/inventory?locationId=${warehouseId}&variantId=${variantId}`, token);
+    const checkInv = await apiFetch(
+      `/inventory?locationId=${warehouseId}&variantId=${variantId}`,
+      token,
+    );
     expect(checkInv.status).toBe(200);
     // Stock should exist from this run's GRN or previous runs
-    const totalStock = checkInv.data.data.reduce((sum: number, b: any) => sum + (b.available ?? 0), 0);
+    const totalStock = checkInv.data.data.reduce(
+      (sum: number, b: { available?: number }) => sum + (b.available ?? 0),
+      0,
+    );
     expect(totalStock).toBeGreaterThan(0);
   });
 
@@ -76,8 +82,8 @@ describe('Inventory & Orders Lifecycle', () => {
         locationId: warehouseId,
         eventType: 'ADJUSTMENT',
         quantity: 5,
-        notes: 'Manual test adjustment'
-      })
+        notes: 'Manual test adjustment',
+      }),
     });
     expect(adjRes.status).toBe(201);
   });
@@ -88,8 +94,8 @@ describe('Inventory & Orders Lifecycle', () => {
       body: JSON.stringify({
         fromLocationId: warehouseId,
         toLocationId: storeId,
-        items: [{ variantId, requestedQty: 5 }]
-      })
+        items: [{ variantId, requestedQty: 5 }],
+      }),
     });
 
     expect(trfRes.status).toBe(201);
@@ -98,7 +104,7 @@ describe('Inventory & Orders Lifecycle', () => {
 
     const completeRes = await apiFetch(`/transfers/${transferId}/complete`, token, {
       method: 'POST',
-      body: JSON.stringify({ items: [{ variantId, receivedQty: 5 }] })
+      body: JSON.stringify({ items: [{ variantId, receivedQty: 5 }] }),
     });
 
     expect(completeRes.status).toBe(200);
@@ -114,8 +120,8 @@ describe('Inventory & Orders Lifecycle', () => {
         sourceLocationId: storeId,
         deliveryCharge: 0,
         discountAmount: 0,
-        items: [{ variantId, quantity: 1 }]
-      })
+        items: [{ variantId, quantity: 1 }],
+      }),
     });
 
     expect(orderRes.status).toBe(201);
@@ -131,20 +137,20 @@ describe('Inventory & Orders Lifecycle', () => {
       method: 'POST',
       body: JSON.stringify({
         orderId: currentOrderId,
-        estimatedAt: new Date(Date.now() + 86400000).toISOString()
-      })
+        estimatedAt: new Date(Date.now() + 86400000).toISOString(),
+      }),
     });
     expect(assignRes.status).toBe(201);
     const deliveryId = assignRes.data.data.id;
 
     await apiFetch(`/deliveries/${deliveryId}`, token, {
       method: 'PATCH',
-      body: JSON.stringify({ status: 'PICKED_UP' })
+      body: JSON.stringify({ status: 'PICKED_UP' }),
     });
 
     const completeRes = await apiFetch(`/deliveries/${deliveryId}`, token, {
       method: 'PATCH',
-      body: JSON.stringify({ status: 'DELIVERED', notes: 'Test delivery complete' })
+      body: JSON.stringify({ status: 'DELIVERED', notes: 'Test delivery complete' }),
     });
     expect(completeRes.status).toBe(200);
 

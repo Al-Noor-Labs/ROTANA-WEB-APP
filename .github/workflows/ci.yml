@@ -1,0 +1,121 @@
+name: CI — Lint, Type-Check, Build
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prettier — format check
+        run: pnpm format:check
+
+      - name: ESLint — lint check
+        run: pnpm lint
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+        # prisma generate reads from schema only — no DB connection needed
+
+      - name: TypeScript — type check
+        run: pnpm type-check
+
+  build:
+    name: Build Verification
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+        # prisma generate reads from schema only — no DB connection needed
+
+      - name: Build all apps
+        run: pnpm build
+        env:
+          # Add dummy env vars needed for build
+          NEXT_PUBLIC_SUPABASE_URL: 'https://placeholder.supabase.co'
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: 'placeholder-key'
+
+  # Uncomment when tests are added
+  # test:
+  #   name: Tests
+  #   needs: quality
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 15
+  #
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Setup pnpm
+  #       uses: pnpm/action-setup@v4
+  #       with:
+  #         version: ${{ env.PNPM_VERSION }}
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+  #         cache: 'pnpm'
+  #
+  #     - name: Install dependencies
+  #       run: pnpm install --frozen-lockfile
+  #
+  #     - name: Run unit tests
+  #       run: pnpm test
+  #
+  #     - name: Upload coverage
+  #       uses: codecov/codecov-action@v4
+  #       if: always()
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}

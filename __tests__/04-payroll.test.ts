@@ -11,7 +11,7 @@ describe('Payroll & Commissions', () => {
 
     // Find or create a SALESMAN for payroll tests
     const usersRes = await apiFetch('/users?role=SALESMAN', token);
-    const activeSalesmen = usersRes.data.data?.filter((u: any) => u.isActive);
+    const activeSalesmen = usersRes.data.data?.filter((u: { isActive: boolean }) => u.isActive);
     if (activeSalesmen?.length > 0) {
       staffUserId = activeSalesmen[0].id;
     } else {
@@ -21,8 +21,8 @@ describe('Payroll & Commissions', () => {
           name: 'Test Salesman',
           email: `salesman-${Date.now()}@rotana.com`,
           password: 'RotanaSalesman123!',
-          role: 'SALESMAN'
-        })
+          role: 'SALESMAN',
+        }),
       });
       staffUserId = regRes.data.data.user.id;
     }
@@ -49,7 +49,7 @@ describe('Payroll & Commissions', () => {
         allowances: 2000,
         deductions: 500,
         commissions: 1000,
-      })
+      }),
     });
 
     expect(payRes.status).toBe(201);
@@ -73,7 +73,7 @@ describe('Payroll & Commissions', () => {
         allowances: 2000,
         deductions: 1000,
         commissions: 0,
-      })
+      }),
     });
     expect(updRes.status).toBe(200);
     expect(parseFloat(updRes.data.data.netPay)).toBe(51000); // 50000 + 2000 - 1000
@@ -83,9 +83,25 @@ describe('Payroll & Commissions', () => {
     const bulkRes = await apiFetch('/payroll/payslips', token, {
       method: 'POST',
       body: JSON.stringify([
-        { userId: staffUserId, month: 1, year: 2024, basicSalary: 40000, allowances: 1000, deductions: 0, commissions: 500 },
-        { userId: staffUserId, month: 2, year: 2024, basicSalary: 40000, allowances: 1000, deductions: 200, commissions: 800 },
-      ])
+        {
+          userId: staffUserId,
+          month: 1,
+          year: 2024,
+          basicSalary: 40000,
+          allowances: 1000,
+          deductions: 0,
+          commissions: 500,
+        },
+        {
+          userId: staffUserId,
+          month: 2,
+          year: 2024,
+          basicSalary: 40000,
+          allowances: 1000,
+          deductions: 200,
+          commissions: 800,
+        },
+      ]),
     });
 
     expect(bulkRes.status).toBe(201);
