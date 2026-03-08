@@ -1,10 +1,9 @@
 import { PrismaClient } from '../app/generated/prisma/index.js';
-import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 const BASE_URL = 'http://localhost:3000/api';
 
-async function post(path: string, body: any, token: string) {
+async function post(path: string, body: unknown, token: string) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },

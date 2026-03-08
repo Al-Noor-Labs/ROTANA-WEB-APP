@@ -9,7 +9,13 @@
  * - Sample Categories & Products
  */
 
-import { PrismaClient, Role, LocationType, ProductStatus } from '@/lib/generated/prisma';
+import {
+  PrismaClient,
+  Role,
+  LocationType,
+  ProductStatus,
+  AccountType,
+} from '@/lib/generated/prisma';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -43,7 +49,7 @@ async function main() {
     await prisma.ledgerAccount.upsert({
       where: { code: account.code },
       update: {},
-      create: account as any,
+      create: { ...account, type: account.type as AccountType },
     });
   }
   console.log(`  ✅ Created ${accounts.length} ledger accounts`);
@@ -51,7 +57,7 @@ async function main() {
   // ─── 2. Super Admin User ─────────────────────────────────────────────────
   console.log('  👤 Creating super admin...');
   const passwordHash = await bcrypt.hash('Rotana@Admin123', 12);
-  const admin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@rotana.com' },
     update: {},
     create: {

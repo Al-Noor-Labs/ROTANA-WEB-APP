@@ -3,7 +3,7 @@ import { PrismaClient } from '../app/generated/prisma/index.js';
 const prisma = new PrismaClient();
 const BASE_URL = 'http://localhost:3000/api';
 
-async function post(path: string, body: any, token: string) {
+async function post(path: string, body: unknown, token: string) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -12,7 +12,7 @@ async function post(path: string, body: any, token: string) {
   return res.json();
 }
 
-async function patch(path: string, body: any, token: string) {
+async function patch(path: string, body: unknown, token: string) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -45,7 +45,7 @@ async function main() {
   const products = await get('/products', token);
   const variant = products.data.products[0].variants[0];
   const locations = await get('/locations', token);
-  const warehouse = locations.data.find((l: any) => l.type === 'WAREHOUSE');
+  const warehouse = locations.data.find((l: { type: string }) => l.type === 'WAREHOUSE');
   const suppliers = await get('/suppliers', token);
   const supplier = suppliers.data[0];
 
@@ -124,17 +124,17 @@ async function main() {
     console.log(`   - Active Locations: ${trends.stockPerLocation.length}`);
 
     console.log('\n📊 Category Contribution:');
-    trends.categories.forEach((c: any) => {
+    trends.categories.forEach((c: { name: string; revenue: number }) => {
       console.log(`   🔸 ${c.name}: ₹${c.revenue}`);
     });
 
     console.log('\n📈 Recent Sales Trend:');
-    trends.sales.slice(-5).forEach((s: any) => {
+    trends.sales.slice(-5).forEach((s: { date: string; revenue: number; orders: number }) => {
       console.log(`   📅 ${s.date}: ₹${s.revenue} (${s.orders} orders)`);
     });
 
     console.log('\n💸 Monthly Payroll History:');
-    finances.payrollHistory.forEach((p: any) => {
+    finances.payrollHistory.forEach((p: { period: string; amount: number }) => {
       console.log(`   📅 ${p.period}: ₹${p.amount}`);
     });
   } else {
