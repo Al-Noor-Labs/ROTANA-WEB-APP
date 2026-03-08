@@ -79,7 +79,7 @@ jobs:
         run: pnpm db:generate
         # prisma generate reads from schema only — no DB connection needed
 
-      - name: Build all apps
+      - name: Build Next.js app
         run: pnpm build
         env:
           # Add dummy env vars needed for build

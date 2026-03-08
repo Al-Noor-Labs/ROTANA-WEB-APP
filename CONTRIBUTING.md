@@ -23,7 +23,7 @@
 
 | Member  | Role               | Modules Owned                                    | Review Buddy | Repo                                  |
 | ------- | ------------------ | ------------------------------------------------ | ------------ | ------------------------------------- |
-| Ayeen   | PM + Backend Lead  | Auth, API architecture, DB schema, DevOps, CI/CD | Rahmath      | This repo                             |
+| Ayeen   | PM + Backend  | Auth, API architecture, DB schema, DevOps, CI/CD | Rahmath      | This repo                             |
 | Rahmath | Backend Developer  | Inventory, Invoicing, Payroll, B2B credit logic  | Ayeen        | This repo                             |
 | Faizan  | Frontend Developer | B2C portal, Customer flows, Checkout UI          | Najeeb       | This repo                             |
 | Najeeb  | Frontend Developer | Admin dashboards, Warehouse/Store UI             | Faizan       | This repo                             |
@@ -242,6 +242,126 @@ Reviewers MUST check these before approving:
 - ❌ Using AI to bypass code review ("it's just AI-generated, looks fine")
 - ❌ Letting AI introduce NestJS, Express, or any backend framework (we use Next.js Route Handlers only)
 - ❌ Letting AI generate monorepo configs — this is a single Next.js app
+
+---
+
+## Peer Review Protocol
+
+> **Good code reviews catch bugs, share knowledge, and raise everyone's skill level.**
+
+### Turnaround Time
+
+- **24 hours max** from PR assignment to first review
+- If you can't review in time, reassign to the **Backup Reviewer** listed in `docs/TEAM_MATRIX.md`
+- Urgent hotfixes: review within **4 hours** — tagged with `urgent` label
+
+### Review Depth
+
+| Change Type                                     | Required Review Depth            |
+| ----------------------------------------------- | -------------------------------- |
+| Auth, RBAC, payment, or security-related code   | **Line-by-line** — verify logic  |
+| Database migrations and schema changes          | **Line-by-line** — verify safety |
+| API Route Handlers                              | **Verify**: validation, auth, authz, response shape |
+| UI/component changes                            | **Verify**: responsiveness, a11y, design consistency |
+| Config, CI/CD, tooling changes                  | **Spot check** — verify correctness |
+| Documentation-only changes                      | **Quick read** — verify accuracy |
+
+### Reviewer Responsibilities
+
+1. **Pull the branch locally** and test the feature before approving (for all P0/P1 changes)
+2. **Check the PR against the Code Review Checklist** (Section 6 above)
+3. **Leave actionable feedback** — not just "looks wrong", but "consider using X because Y"
+4. **Approve only if** you'd be comfortable deploying this code to production today
+
+### Feedback Etiquette
+
+- Be specific and constructive — suggest alternatives, not just objections
+- Use GitHub suggestion blocks for small fixes (makes applying trivial)
+- Distinguish between **blockers** (must fix) and **nit** (nice to have) — prefix with `nit:` for non-blocking
+- No personal criticism — review the code, not the coder
+- Acknowledge good work — a quick 👍 or `nice pattern!` goes a long way
+
+### Escalation Path
+
+1. Reviewer and author try to resolve disagreements in PR comments
+2. If unresolved after 2 rounds, escalate to Ayeen for a final call
+3. Ayeen's decision is final — move on and document the reasoning
+
+---
+
+## Code Quality Gates
+
+> **Every PR must pass these gates before merge. No exceptions.**
+
+### Automated Checks (enforced by CI)
+
+| Check            | Command          | Must Pass |
+| ---------------- | ---------------- | --------- |
+| Formatting       | `pnpm format:check` | ✅        |
+| Linting          | `pnpm lint`      | ✅        |
+| Type checking    | `pnpm type-check` | ✅        |
+| Build            | `pnpm build`     | ✅        |
+| Unit tests       | `pnpm test`      | ✅        |
+
+### Manual Quality Checks (enforced by reviewer)
+
+- **Zero `@ts-ignore`** — use `@ts-expect-error` with explanation if truly unavoidable
+- **Zero `any` types** — use `unknown` and type guards
+- **Zero `console.log`** — use structured logging (`lib/logger.ts`)
+- **Functions ≤ 50 lines** — break down complex logic
+- **Components ≤ 200 lines** — extract sub-components
+
+### Testing Requirements
+
+- New service functions: **unit tests required** for critical paths (success + error cases)
+- New API routes: **integration test recommended** (request → response validation)
+- Bug fixes: **regression test required** (prove the bug is fixed)
+- UI-only changes: manual testing is acceptable — document what was tested in PR
+
+### Performance Awareness
+
+- **Lighthouse target**: ≥ 90 for Performance, Accessibility, Best Practices
+- **Bundle size**: note in PR description if adding dependencies > 50KB gzipped
+- **Database**: avoid N+1 queries — use Prisma `include` and `select`
+
+---
+
+## Developer Onboarding Checklist
+
+> **New team member? Follow this step-by-step.**
+
+### Day 1 — Access & Setup
+
+- [ ] Get added to the GitHub repository (ask Ayeen)
+- [ ] Get added to the Google Chat team group
+- [ ] Get added to the Supabase project (viewer access)
+- [ ] Clone the repo and follow [docs/SETUP.md](docs/SETUP.md) to set up local dev
+- [ ] Get `.env.local` values from Google Chat pinned message
+
+### Day 1 — Required Reading
+
+Read these documents **in order** — they define how we work:
+
+1. [README.md](../README.md) — project overview
+2. [.rules/PROJECT_CANON.md](../.rules/PROJECT_CANON.md) — tech stack, naming, folder structure, forbidden patterns
+3. [CONTRIBUTING.md](../CONTRIBUTING.md) — this file (git workflow, commits, PRs, code review)
+4. [docs/API_CONVENTIONS.md](docs/API_CONVENTIONS.md) — API route handler patterns
+5. [docs/CODE_STYLE.md](docs/CODE_STYLE.md) — code examples for common patterns
+6. [docs/TEAM_MATRIX.md](docs/TEAM_MATRIX.md) — who owns what
+
+### Day 2 — First PR
+
+- [ ] Pick a small `good-first-issue` from GitHub Issues
+- [ ] Create a feature branch following our naming convention
+- [ ] Implement the change following PROJECT_CANON patterns
+- [ ] Open a PR — your Review Buddy will review
+- [ ] Address review feedback and get merged
+
+### Ongoing
+
+- Post daily standup in Google Chat by 10:00 AM IST
+- Keep your Review Buddy updated on blockers
+- Ask in Google Chat before making architectural decisions
 
 ---
 

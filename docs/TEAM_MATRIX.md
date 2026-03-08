@@ -1,14 +1,16 @@
 # Team Assignment Matrix — Rotana Store
 
+> **Note**: The Rotana mobile app is deferred to v2.0 and will be developed in a separate repository. Zaka is not part of the current build team. APIs are built mobile-ready for future consumption.
+
 ## Team Members
 
-| Member  | Role                   | Experience Level | Available Hours/Day |
-| ------- | ---------------------- | ---------------- | ------------------- |
-| Ayeen   | PM + Backend Lead      | Lead             | 8h                  |
-| Rahmath | Backend Developer      | Mid              | 8h                  |
-| Faizan  | Frontend Developer     | Mid              | 8h                  |
-| Najeeb  | Frontend Developer     | Mid              | 8h                  |
-| Zaka    | React Native Developer | Mid              | 8h (starts S5)      |
+| Member  | Role               | Experience Level | Available Hours/Day                              |
+| ------- | ------------------ | ---------------- | ------------------------------------------------ |
+| Ayeen   | PM + Backend       | Mid              | 8h                                               |
+| Rahmath | Backend Developer  | Mid              | 8h                                               |
+| Faizan  | Frontend Developer | Mid              | 8h                                               |
+| Najeeb  | Frontend Developer | Mid              | 8h                                               |
+| Zaka    | Mobile Developer   | Mid              | Deferred — v2.0 mobile app (separate repo)       |
 
 ---
 
@@ -31,7 +33,6 @@
 | Salesman            | Rahmath       | Najeeb              | API + Web      |
 | Delivery            | Ayeen         | Faizan              | API + Web      |
 | Payroll             | Rahmath       | Najeeb              | API + Web      |
-| Mobile App          | Zaka          | Ayeen               | Mobile         |
 | DevOps / CI/CD      | Ayeen         | -                   | Infrastructure |
 | Database / Schema   | Ayeen         | Rahmath             | API            |
 
@@ -45,7 +46,7 @@
 | Rahmath   | Ayeen        | -               |
 | Faizan    | Najeeb       | Ayeen           |
 | Najeeb    | Faizan       | Ayeen           |
-| Zaka      | Ayeen        | Faizan          |
+| Zaka      | Ayeen        | Rahmath          |
 
 ### Rules
 

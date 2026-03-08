@@ -50,7 +50,7 @@ Closes #<!-- issue number -->
 
 #### Security
 
-- [ ] All user inputs are validated (Zod / class-validator)
+- [ ] All user inputs are validated with Zod schemas
 - [ ] Auth and role guards are in place for new endpoints
 - [ ] No secrets or credentials in the code
 - [ ] No unsafe HTML rendering
