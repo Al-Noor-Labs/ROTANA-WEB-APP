@@ -669,3 +669,15 @@ model SalesCommission {
 
   @@map("sales_commissions")
 }
+
+// ============================================================
+// COUNTERS (sequential ID generation)
+// ============================================================
+
+model Counter {
+  name      String   @id
+  value     BigInt   @default(0)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("counters")
+}
