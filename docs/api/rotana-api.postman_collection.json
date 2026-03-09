@@ -1,0 +1,1442 @@
+{
+  "info": {
+    "name": "Rotana Store API v1",
+    "description": "Complete API collection for the Rotana Store ERP platform.\n\nBase URL: `{{baseUrl}}/api/v1`\n\n## Authentication\nAll protected endpoints require a Bearer token in the `Authorization` header.\nObtain tokens via `POST /auth/login` or `POST /auth/register`.\n\n## Response Envelope\n```json\n// Success\n{ \"success\": true, \"data\": { ... } }\n\n// List with pagination\n{ \"success\": true, \"data\": [...], \"meta\": { \"page\": 1, \"limit\": 20, \"total\": 100, \"totalPages\": 5 } }\n\n// Error\n{ \"success\": false, \"error\": { \"code\": \"NOT_FOUND\", \"message\": \"...\" } }\n```\n\n## Role Groups\n| Group | Roles |\n|---|---|\n| ADMIN_ROLES | SUPER_ADMIN |\n| MANAGER_ROLES | SUPER_ADMIN, WAREHOUSE_MANAGER, STORE_MANAGER |\n| STAFF_ROLES | SUPER_ADMIN, WAREHOUSE_MANAGER, STORE_MANAGER, CASHIER, ACCOUNTANT |\n| DELIVERY_ROLES | SUPER_ADMIN, WAREHOUSE_MANAGER, DELIVERY_DRIVER |",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Authentication & session management. Public endpoints (login, register) do not require tokens.",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"SecureP@ss123\",\n  \"phone\": \"9876543210\",\n  \"role\": \"CUSTOMER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Register a new user. Returns user object + JWT tokens.\n\n**Auth:** Public\n\n**Roles for registration:** CUSTOMER (default), CASHIER, SALESMAN, DELIVERY_DRIVER\n\n**Validation:**\n- `name`: string, min 2 chars\n- `email`: valid email, unique\n- `password`: string, min 8 chars\n- `phone`: string, min 10 chars (optional)\n- `role`: enum (optional, defaults to CUSTOMER)"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@rotana.com\",\n  \"password\": \"SecureP@ss123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Authenticate with email/password. Returns user object + JWT access & refresh tokens.\n\nAuto-saves tokens to collection variables via test script.\n\n**Auth:** Public\n\n**Validation:**\n- `email`: valid email\n- `password`: string, min 1 char"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success) {",
+                  "  pm.collectionVariables.set('accessToken', res.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            },
+            "description": "Rotate JWT tokens. Invalidates the old refresh token and issues new access + refresh tokens.\n\n**Auth:** Public (uses refresh token in body)\n\n**Validation:**\n- `refreshToken`: string, min 1 char"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "me"]
+            },
+            "description": "Get the authenticated user's profile.\n\n**Auth:** Bearer Token\n\n**Returns:** id, name, email, phone, role, avatarUrl, isActive, createdAt"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "me"]
+            },
+            "description": "Logout by deleting all refresh tokens for the current user.\n\n**Auth:** Bearer Token"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "User management (Admin only).",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users?role=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "",
+                  "description": "Filter by role: SUPER_ADMIN | WAREHOUSE_MANAGER | STORE_MANAGER | CASHIER | SALESMAN | DELIVERY_DRIVER | ACCOUNTANT | CUSTOMER"
+                }
+              ]
+            },
+            "description": "List all users. Optionally filter by role.\n\n**Auth:** Bearer Token\n**Roles:** ADMIN_ROLES (SUPER_ADMIN)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"phone\": \"9876543210\",\n  \"role\": \"CASHIER\",\n  \"isActive\": true,\n  \"password\": \"NewP@ssword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "User UUID"
+                }
+              ]
+            },
+            "description": "Update a user's profile, role, status, or password.\n\n**Auth:** Bearer Token\n**Roles:** ADMIN_ROLES (SUPER_ADMIN)\n\n**Body (all optional):**\n- `name`: string\n- `phone`: string\n- `role`: enum\n- `isActive`: boolean\n- `password`: string, min 8 chars (will be hashed)"
+          },
+          "response": []
+        },
+        {
+          "name": "Disable User (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "User UUID"
+                }
+              ]
+            },
+            "description": "Soft-delete a user by setting `isActive` to false.\n\n**Auth:** Bearer Token\n**Roles:** ADMIN_ROLES (SUPER_ADMIN)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "description": "Product catalogue management. GET list/detail are public.",
+      "item": [
+        {
+          "name": "List Products (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products?categoryId=&search=&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products"],
+              "query": [
+                {
+                  "key": "categoryId",
+                  "value": "",
+                  "description": "Filter by category UUID"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name, brand, or tag"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Items per page (default: 20, max: 100)"
+                }
+              ]
+            },
+            "description": "List active products with variants. Paginated.\n\n**Auth:** Public (no token required)\n\n**Returns:** Paginated list with `meta` object."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product by ID (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Product UUID"
+                }
+              ]
+            },
+            "description": "Get a single product with its active variants and category.\n\n**Auth:** Public"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"uuid-here\",\n  \"name\": \"Basmati Rice\",\n  \"description\": \"Premium aged basmati rice\",\n  \"brand\": \"Daawat\",\n  \"imageUrl\": \"https://example.com/rice.jpg\",\n  \"images\": [],\n  \"barcode\": \"8901234567890\",\n  \"isPerishable\": false,\n  \"tags\": [\"rice\", \"staples\"],\n  \"variants\": [\n    {\n      \"sku\": \"RICE-BAS-1KG\",\n      \"name\": \"1 Kg Pack\",\n      \"unitValue\": 1,\n      \"unitLabel\": \"kg\",\n      \"costPrice\": 80,\n      \"sellingPrice\": 120,\n      \"mrp\": 130,\n      \"taxRate\": 5,\n      \"reorderLevel\": 10\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products"]
+            },
+            "description": "Create a product with one or more variants.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES (SUPER_ADMIN, WAREHOUSE_MANAGER, STORE_MANAGER)\n\n**Required:** categoryId, name, variants (min 1)\n**Variant required:** sku, name, unitValue, unitLabel, costPrice, sellingPrice"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Product Name\",\n  \"description\": \"Updated description\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Product UUID"
+                }
+              ]
+            },
+            "description": "Update product fields (partial update, no schema enforcement).\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product (Soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Product UUID"
+                }
+              ]
+            },
+            "description": "Soft-delete a product by setting status to DISCONTINUED.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Create Products",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"categoryId\": \"uuid-here\",\n    \"name\": \"Product A\",\n    \"brand\": \"Brand X\",\n    \"isPerishable\": false,\n    \"tags\": [],\n    \"variants\": [\n      {\n        \"sku\": \"PROD-A-1\",\n        \"name\": \"Default\",\n        \"unitValue\": 1,\n        \"unitLabel\": \"pc\",\n        \"costPrice\": 50,\n        \"sellingPrice\": 80,\n        \"taxRate\": 5,\n        \"reorderLevel\": 10\n      }\n    ]\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/bulk",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products", "bulk"]
+            },
+            "description": "Create multiple products in a single request. Body is an array of product objects (same schema as single create).\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "description": "Product category management.",
+      "item": [
+        {
+          "name": "List Categories (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "categories"]
+            },
+            "description": "List all active categories with their children.\n\n**Auth:** Public"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Beverages\",\n  \"description\": \"All types of drinks\",\n  \"imageUrl\": \"https://example.com/beverages.jpg\",\n  \"parentId\": \"uuid-of-parent-category\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "categories"]
+            },
+            "description": "Create a new product category. Slug is auto-generated from name.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES\n\n**Required:** name\n**Optional:** description, imageUrl, parentId (UUID for subcategories)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "description": "Order lifecycle management.",
+      "item": [
+        {
+          "name": "List Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders?status=&orderType=&customerId=&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "PENDING | CONFIRMED | PROCESSING | READY | DISPATCHED | DELIVERED | CANCELLED | RETURNED"
+                },
+                {
+                  "key": "orderType",
+                  "value": "",
+                  "description": "B2C_DELIVERY | B2C_PICKUP | B2B_WHOLESALE | INTERNAL_TRANSFER"
+                },
+                {
+                  "key": "customerId",
+                  "value": "",
+                  "description": "Filter by customer UUID"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Items per page (max 100)"
+                }
+              ]
+            },
+            "description": "List orders with filters and pagination. Role-scoped: SALESMAN sees only assigned orders, CUSTOMER sees only own orders.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Order UUID"
+                }
+              ]
+            },
+            "description": "Get full order details including items, customer, delivery, invoice, and ledger entries. Customers can only view their own orders.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"customer-uuid\",\n  \"orderType\": \"B2C_DELIVERY\",\n  \"paymentMethod\": \"CASH\",\n  \"sourceLocationId\": \"warehouse-uuid\",\n  \"deliveryAddressId\": \"address-uuid\",\n  \"items\": [\n    {\n      \"variantId\": \"variant-uuid\",\n      \"quantity\": 2\n    }\n  ],\n  \"notes\": \"Deliver before 5 PM\",\n  \"discountAmount\": 0,\n  \"deliveryCharge\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders"]
+            },
+            "description": "Create a new order with inventory reservation.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES\n\n**Required:** orderType, items (min 1 with variantId + quantity)\n**Optional:** customerId, paymentMethod (CASH|CARD|UPI|BANK_TRANSFER|CREDIT), sourceLocationId, destLocationId, deliveryAddressId, notes, discountAmount, deliveryCharge"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DELIVERED\",\n  \"paymentStatus\": \"PAID\",\n  \"paidAmount\": 500,\n  \"notes\": \"Payment received\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Order UUID"
+                }
+              ]
+            },
+            "description": "Update order status, payment, or assignment. Triggers inventory fulfillment on DELIVERED and reservation release on CANCELLED. Auto-generates invoice and ledger entries on delivery.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES\n\n**Body (all optional):**\n- `status`: OrderStatus enum\n- `paymentStatus`: PENDING | PARTIAL | PAID | REFUNDED\n- `paidAmount`: number\n- `gatewayRef`: string\n- `notes`: string\n- `assignedToId`: UUID"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Deliveries",
+      "description": "Delivery tracking and driver management.",
+      "item": [
+        {
+          "name": "List Deliveries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/deliveries?status=&driverId=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "deliveries"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "ASSIGNED | PICKED_UP | IN_TRANSIT | DELIVERED | FAILED | RETURNED"
+                },
+                {
+                  "key": "driverId",
+                  "value": "",
+                  "description": "Filter by driver UUID"
+                }
+              ]
+            },
+            "description": "List deliveries. Drivers automatically see only their own deliveries.\n\n**Auth:** Bearer Token\n**Roles:** DELIVERY_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Delivery",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"order-uuid\",\n  \"driverId\": \"driver-uuid\",\n  \"estimatedAt\": \"2026-03-10T15:00:00Z\",\n  \"routeOrder\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/deliveries",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "deliveries"]
+            },
+            "description": "Create/assign a delivery for an order. One delivery per order.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES\n\n**Required:** orderId (UUID)\n**Optional:** driverId, estimatedAt (ISO datetime), routeOrder (integer)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Delivery Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DELIVERED\",\n  \"latitude\": 12.9716,\n  \"longitude\": 77.5946,\n  \"deliveryProof\": \"https://storage.example.com/proof.jpg\",\n  \"notes\": \"Delivered to security guard\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/deliveries/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "deliveries", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Delivery UUID"
+                }
+              ]
+            },
+            "description": "Driver updates delivery status. On DELIVERED: triggers full fulfillment pipeline (order status, inventory release/fulfill, ledger posting, invoice generation).\n\n**Auth:** Bearer Token\n**Roles:** DELIVERY_ROLES (drivers can only update their own)\n\n**Required:** status (DeliveryStatus enum)\n**Optional:** latitude, longitude, deliveryProof (URL), failureReason, notes"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Inventory",
+      "description": "Stock level queries and manual inventory events.",
+      "item": [
+        {
+          "name": "Get Stock Levels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inventory?locationId=&variantId=&lowStock=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "inventory"],
+              "query": [
+                {
+                  "key": "locationId",
+                  "value": "",
+                  "description": "Filter by location UUID"
+                },
+                {
+                  "key": "variantId",
+                  "value": "",
+                  "description": "Filter by variant UUID"
+                },
+                {
+                  "key": "lowStock",
+                  "value": "false",
+                  "description": "true = show only items at or below reorder level"
+                }
+              ]
+            },
+            "description": "Query current inventory balances (onHand, reserved, available) enriched with variant and product info.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Apply Inventory Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"variantId\": \"variant-uuid\",\n  \"locationId\": \"location-uuid\",\n  \"eventType\": \"STOCK_IN\",\n  \"quantity\": 100,\n  \"referenceId\": \"optional-ref-id\",\n  \"referenceType\": \"MANUAL\",\n  \"notes\": \"Manual stock adjustment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/inventory",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "inventory"]
+            },
+            "description": "Manually apply an inventory event. Creates an immutable event record and updates the balance.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES\n\n**Required:** variantId, locationId, eventType, quantity (positive int)\n**Optional:** binId, referenceId, referenceType, notes\n\n**Event Types:** STOCK_IN | STOCK_OUT | ADJUSTMENT | ORDER_RESERVED | ORDER_RELEASED | ORDER_FULFILLED | TRANSFER_IN | TRANSFER_OUT | DAMAGE_WRITE_OFF | RETURN_IN"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Locations",
+      "description": "Warehouse and store location management.",
+      "item": [
+        {
+          "name": "List Locations (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/locations?type=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "locations"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "",
+                  "description": "WAREHOUSE | STORE | DELIVERY_HUB"
+                }
+              ]
+            },
+            "description": "List all active locations with their bins.\n\n**Auth:** Public\n\n**Optional filter:** type (LocationType enum)"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Location",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Main Warehouse\",\n  \"type\": \"WAREHOUSE\",\n  \"code\": \"WH-001\",\n  \"address\": \"123 Industrial Area\",\n  \"city\": \"Riyadh\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "locations"]
+            },
+            "description": "Create a new location.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES\n\n**Required:** name, type (LocationType), code\n**Optional:** address, city"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Suppliers",
+      "description": "Vendor/supplier management.",
+      "item": [
+        {
+          "name": "List Suppliers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/suppliers?search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "suppliers"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name or contact name"
+                }
+              ]
+            },
+            "description": "List active suppliers with optional search.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Supplier",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Al Marai Foods\",\n  \"contactName\": \"Ahmed Khan\",\n  \"phone\": \"+966501234567\",\n  \"email\": \"ahmed@almarai.com\",\n  \"address\": \"123 Supply Street\",\n  \"city\": \"Jeddah\",\n  \"gstNumber\": \"GST12345\",\n  \"panNumber\": \"PAN12345\",\n  \"paymentTerms\": 30,\n  \"creditLimit\": 50000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/suppliers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "suppliers"]
+            },
+            "description": "Create a new supplier.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES\n\n**Required:** name\n**Optional:** contactName, phone, email, address, city, gstNumber, panNumber, paymentTerms (default 30), creditLimit"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "GRN (Goods Received Notes)",
+      "description": "Goods receiving and stock-in management.",
+      "item": [
+        {
+          "name": "List GRNs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/grn?status=&supplierId=&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "grn"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "RECEIVED | STOCKED | CANCELLED"
+                },
+                {
+                  "key": "supplierId",
+                  "value": "",
+                  "description": "Filter by supplier UUID"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "List goods received notes with pagination.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Create GRN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"supplierId\": \"supplier-uuid\",\n  \"locationId\": \"warehouse-uuid\",\n  \"invoiceRef\": \"INV-2026-001\",\n  \"notes\": \"Weekly supply shipment\",\n  \"items\": [\n    {\n      \"variantId\": \"variant-uuid\",\n      \"orderedQty\": 100,\n      \"receivedQty\": 95,\n      \"damagedQty\": 3,\n      \"costPrice\": 50.00,\n      \"expiryDate\": \"2026-12-31T00:00:00Z\",\n      \"batchNumber\": \"BATCH-001\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/grn",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "grn"]
+            },
+            "description": "Create a GRN and automatically stock in received items. Damaged items are written off. The GRN transitions from RECEIVED → STOCKED atomically.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES\n\n**Required:** supplierId, locationId, items (min 1)\n**Item required:** variantId, orderedQty, receivedQty, costPrice\n**Item optional:** damagedQty (default 0), expiryDate, batchNumber"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transfers",
+      "description": "Inter-location stock transfer management.",
+      "item": [
+        {
+          "name": "List Transfers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/transfers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "transfers"]
+            },
+            "description": "List all stock transfers with from/to locations and items.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Initiate Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromLocationId\": \"source-location-uuid\",\n  \"toLocationId\": \"dest-location-uuid\",\n  \"notes\": \"Restocking branch store\",\n  \"items\": [\n    {\n      \"variantId\": \"variant-uuid\",\n      \"requestedQty\": 50\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/transfers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "transfers"]
+            },
+            "description": "Initiate a stock transfer between locations. Validates stock availability and deducts from source (TRANSFER_OUT).\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES\n\n**Required:** fromLocationId, toLocationId (must differ), items (min 1)\n**Optional:** notes"
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Transfer (Receive)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"variantId\": \"variant-uuid\",\n      \"receivedQty\": 48\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/transfers/:id/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "transfers", ":id", "complete"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Transfer UUID"
+                }
+              ]
+            },
+            "description": "Receive a transfer at the destination. Records received quantities and adds to destination inventory (TRANSFER_IN). Marks transfer as COMPLETED.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES\n\n**Required:** items array with variantId + receivedQty"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Finance",
+      "description": "Ledger accounts and accounting entries.",
+      "item": [
+        {
+          "name": "List Ledger Accounts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/finance/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "finance", "accounts"]
+            },
+            "description": "List all active ledger accounts ordered by code.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Ledger Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"2001\",\n  \"name\": \"Accounts Payable\",\n  \"type\": \"LIABILITY\",\n  \"description\": \"Money owed to suppliers\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/finance/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "finance", "accounts"]
+            },
+            "description": "Create a non-system ledger account. Code must be unique.\n\n**Auth:** Bearer Token\n**Roles:** ADMIN_ROLES (SUPER_ADMIN)\n\n**Required:** code, name, type (ASSET | LIABILITY | EQUITY | REVENUE | EXPENSE)\n**Optional:** description"
+          },
+          "response": []
+        },
+        {
+          "name": "List Ledger Entries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/finance/ledger?page=1&limit=30&from=&to=&referenceType=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "finance", "ledger"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "30",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "from",
+                  "value": "",
+                  "description": "Start date (ISO)"
+                },
+                {
+                  "key": "to",
+                  "value": "",
+                  "description": "End date (ISO)"
+                },
+                {
+                  "key": "referenceType",
+                  "value": "",
+                  "description": "Filter: ORDER | GRN | TRANSFER | PAYROLL"
+                }
+              ]
+            },
+            "description": "List ledger entries (double-entry journal) with pagination and date/type filters.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payroll",
+      "description": "Payslip and sales commission management.",
+      "item": [
+        {
+          "name": "List Commissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payroll/commissions?userId=&isPaid=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payroll", "commissions"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "",
+                  "description": "Filter by user UUID"
+                },
+                {
+                  "key": "isPaid",
+                  "value": "",
+                  "description": "true | false"
+                }
+              ]
+            },
+            "description": "List sales commissions with user and order details.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "List Payslips",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payroll/payslips?userId=&month=&year=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payroll", "payslips"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "",
+                  "description": "Filter by user UUID"
+                },
+                {
+                  "key": "month",
+                  "value": "",
+                  "description": "Month (1-12)"
+                },
+                {
+                  "key": "year",
+                  "value": "",
+                  "description": "Year (e.g. 2026)"
+                }
+              ]
+            },
+            "description": "List payslips with user details. Filter by employee, month, or year.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Payslip",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"employee-uuid\",\n  \"month\": 3,\n  \"year\": 2026,\n  \"basicSalary\": 5000,\n  \"allowances\": 1000,\n  \"deductions\": 500,\n  \"commissions\": 800,\n  \"paidAt\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payroll/payslips",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payroll", "payslips"]
+            },
+            "description": "Create or update a payslip. Supports single object or array for bulk creation. Net pay is auto-calculated: `basicSalary + allowances + commissions - deductions`. Upserts on (userId, month, year) composite key.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES\n\n**Required:** userId, month (1-12), year, basicSalary\n**Optional:** allowances (default 0), deductions (default 0), commissions (default 0), paidAt (ISO datetime or null)"
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Create Payslips",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"userId\": \"employee-uuid-1\",\n    \"month\": 3,\n    \"year\": 2026,\n    \"basicSalary\": 5000,\n    \"allowances\": 1000,\n    \"deductions\": 500,\n    \"commissions\": 800\n  },\n  {\n    \"userId\": \"employee-uuid-2\",\n    \"month\": 3,\n    \"year\": 2026,\n    \"basicSalary\": 4000,\n    \"allowances\": 800,\n    \"deductions\": 400,\n    \"commissions\": 600\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payroll/payslips",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payroll", "payslips"]
+            },
+            "description": "Bulk create/update payslips. Same endpoint as single create — send an array instead of an object.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payslip by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payroll/payslips/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payroll", "payslips", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Payslip UUID"
+                }
+              ]
+            },
+            "description": "Get individual payslip details with employee info.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Payslip",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"basicSalary\": 5500,\n  \"allowances\": 1200,\n  \"paidAt\": \"2026-03-28T12:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payroll/payslips/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payroll", "payslips", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Payslip UUID"
+                }
+              ]
+            },
+            "description": "Update an existing payslip. Net pay is recalculated.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES\n\n**All fields optional:** basicSalary, allowances, deductions, commissions, paidAt"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Payslip",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payroll/payslips/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payroll", "payslips", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Payslip UUID"
+                }
+              ]
+            },
+            "description": "Permanently delete a payslip.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "description": "Business intelligence and BI chart data.",
+      "item": [
+        {
+          "name": "Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "dashboard"]
+            },
+            "description": "Business intelligence summary: orders (today/month/pending), revenue (total/monthly/growth%), inventory alerts, delivery stats, and top 5 selling products.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Charts Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/dashboard/charts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "dashboard", "charts"]
+            },
+            "description": "Full BI analytics suite for charting: P&L (revenue, COGS, salaries, margins), sales trends (30 days), category revenue distribution, stock per location, payroll history, and current stock value.\n\n**Auth:** Bearer Token\n**Roles:** STAFF_ROLES"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "description": "Performance analytics for employees and suppliers.",
+      "item": [
+        {
+          "name": "Employee Performance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analytics/employees?startDate=&endDate=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "analytics", "employees"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "",
+                  "description": "ISO date (defaults to first day of current month)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "",
+                  "description": "ISO date (defaults to now)"
+                }
+              ]
+            },
+            "description": "Performance analytics for non-customer staff: orders handled, revenue generated, deliveries completed, commissions earned.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES"
+          },
+          "response": []
+        },
+        {
+          "name": "Supplier Performance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/analytics/suppliers?startDate=&endDate=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "analytics", "suppliers"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "",
+                  "description": "ISO date (defaults to first day of current month)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "",
+                  "description": "ISO date (defaults to now)"
+                }
+              ]
+            },
+            "description": "Supplier performance analytics: total GRNs, invoices, spend, discrepancy rate, and reliability score.\n\n**Auth:** Bearer Token\n**Roles:** MANAGER_ROLES"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
