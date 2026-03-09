@@ -45,6 +45,7 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 ## Response Format
 
 ### Success (single resource)
+
 ```json
 {
   "success": true,
@@ -53,6 +54,7 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 ```
 
 ### Success (paginated list)
+
 ```json
 {
   "success": true,
@@ -67,6 +69,7 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 ```
 
 ### Error
+
 ```json
 {
   "success": false,
@@ -84,12 +87,12 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ## Role-Based Access Control
 
-| Group | Roles | Used By |
-|---|---|---|
-| **ADMIN_ROLES** | `SUPER_ADMIN` | User management, ledger account creation |
-| **MANAGER_ROLES** | `SUPER_ADMIN`, `WAREHOUSE_MANAGER`, `STORE_MANAGER` | Products, GRN, transfers, suppliers, inventory events |
-| **STAFF_ROLES** | `SUPER_ADMIN`, `WAREHOUSE_MANAGER`, `STORE_MANAGER`, `CASHIER`, `ACCOUNTANT` | Orders, dashboard, finance ledger, inventory queries |
-| **DELIVERY_ROLES** | `SUPER_ADMIN`, `WAREHOUSE_MANAGER`, `DELIVERY_DRIVER` | Delivery management |
+| Group              | Roles                                                                        | Used By                                               |
+| ------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------------- |
+| **ADMIN_ROLES**    | `SUPER_ADMIN`                                                                | User management, ledger account creation              |
+| **MANAGER_ROLES**  | `SUPER_ADMIN`, `WAREHOUSE_MANAGER`, `STORE_MANAGER`                          | Products, GRN, transfers, suppliers, inventory events |
+| **STAFF_ROLES**    | `SUPER_ADMIN`, `WAREHOUSE_MANAGER`, `STORE_MANAGER`, `CASHIER`, `ACCOUNTANT` | Orders, dashboard, finance ledger, inventory queries  |
+| **DELIVERY_ROLES** | `SUPER_ADMIN`, `WAREHOUSE_MANAGER`, `DELIVERY_DRIVER`                        | Delivery management                                   |
 
 **All Roles:** `SUPER_ADMIN` · `WAREHOUSE_MANAGER` · `STORE_MANAGER` · `CASHIER` · `SALESMAN` · `DELIVERY_DRIVER` · `ACCOUNTANT` · `CUSTOMER`
 
@@ -99,29 +102,31 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ### 1. Auth
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `POST` | `/auth/register` | Public | Register a new user |
-| `POST` | `/auth/login` | Public | Login with email/password |
-| `POST` | `/auth/refresh` | Public | Rotate access + refresh tokens |
-| `GET` | `/auth/me` | Bearer | Get current user profile |
-| `POST` | `/auth/me` | Bearer | Logout (delete refresh tokens) |
+| Method | Endpoint         | Auth   | Description                    |
+| ------ | ---------------- | ------ | ------------------------------ |
+| `POST` | `/auth/register` | Public | Register a new user            |
+| `POST` | `/auth/login`    | Public | Login with email/password      |
+| `POST` | `/auth/refresh`  | Public | Rotate access + refresh tokens |
+| `GET`  | `/auth/me`       | Bearer | Get current user profile       |
+| `POST` | `/auth/me`       | Bearer | Logout (delete refresh tokens) |
 
 <details>
 <summary><strong>POST /auth/register</strong></summary>
 
 ```json
 {
-  "name": "John Doe",           // required, min 2 chars
-  "email": "john@example.com",  // required, unique
-  "password": "SecureP@ss123",  // required, min 8 chars
-  "phone": "9876543210",        // optional, min 10 chars
-  "role": "CUSTOMER"            // optional, default: CUSTOMER
+  "name": "John Doe", // required, min 2 chars
+  "email": "john@example.com", // required, unique
+  "password": "SecureP@ss123", // required, min 8 chars
+  "phone": "9876543210", // optional, min 10 chars
+  "role": "CUSTOMER" // optional, default: CUSTOMER
 }
 ```
+
 **Allowed roles for self-registration:** `CUSTOMER`, `CASHIER`, `SALESMAN`, `DELIVERY_DRIVER`
 
 **Response (201):** `{ success, data: { user, accessToken, refreshToken } }`
+
 </details>
 
 <details>
@@ -129,11 +134,13 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ```json
 {
-  "email": "admin@rotana.com",  // required
-  "password": "SecureP@ss123"   // required
+  "email": "admin@rotana.com", // required
+  "password": "SecureP@ss123" // required
 }
 ```
+
 **Response (200):** `{ success, data: { user, accessToken, refreshToken } }`
+
 </details>
 
 <details>
@@ -141,20 +148,22 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ```json
 {
-  "refreshToken": "eyJhbG..."  // required
+  "refreshToken": "eyJhbG..." // required
 }
 ```
+
 **Response (200):** `{ success, data: { accessToken, refreshToken } }`
+
 </details>
 
 ---
 
 ### 2. Users
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/users` | ADMIN_ROLES | List all users |
-| `PATCH` | `/users/:id` | ADMIN_ROLES | Update user |
+| Method   | Endpoint     | Auth        | Description                |
+| -------- | ------------ | ----------- | -------------------------- |
+| `GET`    | `/users`     | ADMIN_ROLES | List all users             |
+| `PATCH`  | `/users/:id` | ADMIN_ROLES | Update user                |
 | `DELETE` | `/users/:id` | ADMIN_ROLES | Soft-delete (disable) user |
 
 **Query params (GET):** `role` — filter by role enum
@@ -164,27 +173,28 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ```json
 {
-  "name": "Updated Name",       // optional
-  "phone": "9876543210",         // optional
-  "role": "CASHIER",             // optional, full role enum
-  "isActive": true,              // optional
-  "password": "NewP@ss123"       // optional, min 8 chars (hashed)
+  "name": "Updated Name", // optional
+  "phone": "9876543210", // optional
+  "role": "CASHIER", // optional, full role enum
+  "isActive": true, // optional
+  "password": "NewP@ss123" // optional, min 8 chars (hashed)
 }
 ```
+
 </details>
 
 ---
 
 ### 3. Products
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/products` | **Public** | List products (paginated) |
-| `GET` | `/products/:id` | **Public** | Get single product |
-| `POST` | `/products` | MANAGER_ROLES | Create product with variants |
-| `PATCH` | `/products/:id` | MANAGER_ROLES | Update product |
-| `DELETE` | `/products/:id` | MANAGER_ROLES | Soft-delete (DISCONTINUED) |
-| `POST` | `/products/bulk` | MANAGER_ROLES | Bulk create products |
+| Method   | Endpoint         | Auth          | Description                  |
+| -------- | ---------------- | ------------- | ---------------------------- |
+| `GET`    | `/products`      | **Public**    | List products (paginated)    |
+| `GET`    | `/products/:id`  | **Public**    | Get single product           |
+| `POST`   | `/products`      | MANAGER_ROLES | Create product with variants |
+| `PATCH`  | `/products/:id`  | MANAGER_ROLES | Update product               |
+| `DELETE` | `/products/:id`  | MANAGER_ROLES | Soft-delete (DISCONTINUED)   |
+| `POST`   | `/products/bulk` | MANAGER_ROLES | Bulk create products         |
 
 **Query params (GET list):** `categoryId`, `search`, `page`, `limit`
 
@@ -217,41 +227,44 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
   ]
 }
 ```
+
 **Required:** `categoryId`, `name`, `variants` (min 1)
+
 </details>
 
 ---
 
 ### 4. Categories
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/categories` | **Public** | List active categories with children |
-| `POST` | `/categories` | MANAGER_ROLES | Create category |
+| Method | Endpoint      | Auth          | Description                          |
+| ------ | ------------- | ------------- | ------------------------------------ |
+| `GET`  | `/categories` | **Public**    | List active categories with children |
+| `POST` | `/categories` | MANAGER_ROLES | Create category                      |
 
 <details>
 <summary><strong>POST /categories</strong></summary>
 
 ```json
 {
-  "name": "Beverages",               // required
-  "description": "All drinks",       // optional
-  "imageUrl": "https://...",          // optional
+  "name": "Beverages", // required
+  "description": "All drinks", // optional
+  "imageUrl": "https://...", // optional
   "parentId": "parent-category-uuid" // optional (subcategory)
 }
 ```
+
 </details>
 
 ---
 
 ### 5. Orders
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/orders` | STAFF_ROLES | List orders (paginated, role-scoped) |
-| `GET` | `/orders/:id` | STAFF_ROLES | Get order details |
-| `POST` | `/orders` | STAFF_ROLES | Create order (reserves inventory) |
-| `PATCH` | `/orders/:id` | STAFF_ROLES | Update status/payment |
+| Method  | Endpoint      | Auth        | Description                          |
+| ------- | ------------- | ----------- | ------------------------------------ |
+| `GET`   | `/orders`     | STAFF_ROLES | List orders (paginated, role-scoped) |
+| `GET`   | `/orders/:id` | STAFF_ROLES | Get order details                    |
+| `POST`  | `/orders`     | STAFF_ROLES | Create order (reserves inventory)    |
+| `PATCH` | `/orders/:id` | STAFF_ROLES | Update status/payment                |
 
 **Query params (GET list):** `status`, `orderType`, `customerId`, `page`, `limit`
 
@@ -263,11 +276,12 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 ```json
 {
   "customerId": "uuid",
-  "orderType": "B2C_DELIVERY",          // required: B2C_DELIVERY | B2C_PICKUP | B2B_WHOLESALE | INTERNAL_TRANSFER
-  "paymentMethod": "CASH",              // CASH | CARD | UPI | BANK_TRANSFER | CREDIT
+  "orderType": "B2C_DELIVERY", // required: B2C_DELIVERY | B2C_PICKUP | B2B_WHOLESALE | INTERNAL_TRANSFER
+  "paymentMethod": "CASH", // CASH | CARD | UPI | BANK_TRANSFER | CREDIT
   "sourceLocationId": "warehouse-uuid",
   "deliveryAddressId": "address-uuid",
-  "items": [                             // required, min 1
+  "items": [
+    // required, min 1
     { "variantId": "uuid", "quantity": 2 }
   ],
   "notes": "Deliver before 5 PM",
@@ -275,6 +289,7 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
   "deliveryCharge": 50
 }
 ```
+
 </details>
 
 <details>
@@ -290,19 +305,21 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
   "assignedToId": "salesman-uuid"
 }
 ```
+
 > On `DELIVERED`: inventory fulfilled, ledger entries posted, invoice auto-generated.
 > On `CANCELLED`: reserved inventory released.
+
 </details>
 
 ---
 
 ### 6. Deliveries
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/deliveries` | DELIVERY_ROLES | List deliveries |
-| `POST` | `/deliveries` | MANAGER_ROLES | Assign delivery to order |
-| `PATCH` | `/deliveries/:id` | DELIVERY_ROLES | Update delivery status |
+| Method  | Endpoint          | Auth           | Description              |
+| ------- | ----------------- | -------------- | ------------------------ |
+| `GET`   | `/deliveries`     | DELIVERY_ROLES | List deliveries          |
+| `POST`  | `/deliveries`     | MANAGER_ROLES  | Assign delivery to order |
+| `PATCH` | `/deliveries/:id` | DELIVERY_ROLES | Update delivery status   |
 
 **Query params (GET):** `status`, `driverId`
 
@@ -313,12 +330,13 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ```json
 {
-  "orderId": "order-uuid",           // required
-  "driverId": "driver-uuid",         // optional
+  "orderId": "order-uuid", // required
+  "driverId": "driver-uuid", // optional
   "estimatedAt": "2026-03-10T15:00:00Z",
   "routeOrder": 1
 }
 ```
+
 </details>
 
 <details>
@@ -326,7 +344,7 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ```json
 {
-  "status": "DELIVERED",             // required: ASSIGNED | PICKED_UP | IN_TRANSIT | DELIVERED | FAILED | RETURNED
+  "status": "DELIVERED", // required: ASSIGNED | PICKED_UP | IN_TRANSIT | DELIVERED | FAILED | RETURNED
   "latitude": 12.9716,
   "longitude": 77.5946,
   "deliveryProof": "https://...",
@@ -334,16 +352,18 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
   "notes": "Left with security"
 }
 ```
+
 > On `DELIVERED`: triggers full fulfillment (order → inventory → ledger → invoice).
+
 </details>
 
 ---
 
 ### 7. Inventory
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/inventory` | STAFF_ROLES | Query stock levels |
+| Method | Endpoint     | Auth          | Description                  |
+| ------ | ------------ | ------------- | ---------------------------- |
+| `GET`  | `/inventory` | STAFF_ROLES   | Query stock levels           |
 | `POST` | `/inventory` | MANAGER_ROLES | Apply manual inventory event |
 
 **Query params (GET):** `locationId`, `variantId`, `lowStock` (true/false)
@@ -364,16 +384,17 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 ```
 
 **Event types:** `STOCK_IN` · `STOCK_OUT` · `ADJUSTMENT` · `ORDER_RESERVED` · `ORDER_RELEASED` · `ORDER_FULFILLED` · `TRANSFER_IN` · `TRANSFER_OUT` · `DAMAGE_WRITE_OFF` · `RETURN_IN`
+
 </details>
 
 ---
 
 ### 8. Locations
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/locations` | **Public** | List active locations with bins |
-| `POST` | `/locations` | MANAGER_ROLES | Create location |
+| Method | Endpoint     | Auth          | Description                     |
+| ------ | ------------ | ------------- | ------------------------------- |
+| `GET`  | `/locations` | **Public**    | List active locations with bins |
+| `POST` | `/locations` | MANAGER_ROLES | Create location                 |
 
 **Query params (GET):** `type` — `WAREHOUSE` · `STORE` · `DELIVERY_HUB`
 
@@ -382,23 +403,24 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ```json
 {
-  "name": "Main Warehouse",  // required
-  "type": "WAREHOUSE",       // required
-  "code": "WH-001",          // required
-  "address": "123 Street",   // optional
-  "city": "Riyadh"           // optional
+  "name": "Main Warehouse", // required
+  "type": "WAREHOUSE", // required
+  "code": "WH-001", // required
+  "address": "123 Street", // optional
+  "city": "Riyadh" // optional
 }
 ```
+
 </details>
 
 ---
 
 ### 9. Suppliers
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/suppliers` | STAFF_ROLES | List active suppliers |
-| `POST` | `/suppliers` | MANAGER_ROLES | Create supplier |
+| Method | Endpoint     | Auth          | Description           |
+| ------ | ------------ | ------------- | --------------------- |
+| `GET`  | `/suppliers` | STAFF_ROLES   | List active suppliers |
+| `POST` | `/suppliers` | MANAGER_ROLES | Create supplier       |
 
 **Query params (GET):** `search` — name or contact name
 
@@ -407,7 +429,7 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ```json
 {
-  "name": "Al Marai Foods",       // required
+  "name": "Al Marai Foods", // required
   "contactName": "Ahmed Khan",
   "phone": "+966501234567",
   "email": "ahmed@almarai.com",
@@ -415,20 +437,21 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
   "city": "Jeddah",
   "gstNumber": "GST12345",
   "panNumber": "PAN12345",
-  "paymentTerms": 30,            // default: 30 days
+  "paymentTerms": 30, // default: 30 days
   "creditLimit": 50000
 }
 ```
+
 </details>
 
 ---
 
 ### 10. GRN (Goods Received Notes)
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/grn` | STAFF_ROLES | List GRNs (paginated) |
-| `POST` | `/grn` | MANAGER_ROLES | Create GRN + auto stock-in |
+| Method | Endpoint | Auth          | Description                |
+| ------ | -------- | ------------- | -------------------------- |
+| `GET`  | `/grn`   | STAFF_ROLES   | List GRNs (paginated)      |
+| `POST` | `/grn`   | MANAGER_ROLES | Create GRN + auto stock-in |
 
 **Query params (GET):** `status`, `supplierId`, `page`, `limit`
 
@@ -447,25 +470,27 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
       "orderedQty": 100,
       "receivedQty": 95,
       "damagedQty": 3,
-      "costPrice": 50.00,
+      "costPrice": 50.0,
       "expiryDate": "2026-12-31T00:00:00Z",
       "batchNumber": "BATCH-001"
     }
   ]
 }
 ```
+
 > Usable qty (`receivedQty - damagedQty`) is stocked in. Damaged items are written off. GRN transitions `RECEIVED → STOCKED` atomically.
+
 </details>
 
 ---
 
 ### 11. Stock Transfers
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/transfers` | STAFF_ROLES | List all transfers |
-| `POST` | `/transfers` | MANAGER_ROLES | Initiate inter-location transfer |
-| `POST` | `/transfers/:id/complete` | STAFF_ROLES | Receive transfer at destination |
+| Method | Endpoint                  | Auth          | Description                      |
+| ------ | ------------------------- | ------------- | -------------------------------- |
+| `GET`  | `/transfers`              | STAFF_ROLES   | List all transfers               |
+| `POST` | `/transfers`              | MANAGER_ROLES | Initiate inter-location transfer |
+| `POST` | `/transfers/:id/complete` | STAFF_ROLES   | Receive transfer at destination  |
 
 <details>
 <summary><strong>POST /transfers</strong></summary>
@@ -475,12 +500,12 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
   "fromLocationId": "source-uuid",
   "toLocationId": "dest-uuid",
   "notes": "Restocking branch",
-  "items": [
-    { "variantId": "uuid", "requestedQty": 50 }
-  ]
+  "items": [{ "variantId": "uuid", "requestedQty": 50 }]
 }
 ```
+
 > Validates stock availability. Deducts from source via `TRANSFER_OUT`.
+
 </details>
 
 <details>
@@ -488,23 +513,23 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ```json
 {
-  "items": [
-    { "variantId": "uuid", "receivedQty": 48 }
-  ]
+  "items": [{ "variantId": "uuid", "receivedQty": 48 }]
 }
 ```
+
 > Adds to destination via `TRANSFER_IN`. Marks transfer `COMPLETED`.
+
 </details>
 
 ---
 
 ### 12. Finance
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/finance/accounts` | STAFF_ROLES | List ledger accounts |
-| `POST` | `/finance/accounts` | ADMIN_ROLES | Create ledger account |
-| `GET` | `/finance/ledger` | STAFF_ROLES | View ledger entries (paginated) |
+| Method | Endpoint            | Auth        | Description                     |
+| ------ | ------------------- | ----------- | ------------------------------- |
+| `GET`  | `/finance/accounts` | STAFF_ROLES | List ledger accounts            |
+| `POST` | `/finance/accounts` | ADMIN_ROLES | Create ledger account           |
+| `GET`  | `/finance/ledger`   | STAFF_ROLES | View ledger entries (paginated) |
 
 **Ledger query params:** `page`, `limit`, `from` (ISO date), `to` (ISO date), `referenceType`
 
@@ -513,26 +538,27 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ```json
 {
-  "code": "2001",                 // required, unique
-  "name": "Accounts Payable",    // required
-  "type": "LIABILITY",           // ASSET | LIABILITY | EQUITY | REVENUE | EXPENSE
-  "description": "Money owed"    // optional
+  "code": "2001", // required, unique
+  "name": "Accounts Payable", // required
+  "type": "LIABILITY", // ASSET | LIABILITY | EQUITY | REVENUE | EXPENSE
+  "description": "Money owed" // optional
 }
 ```
+
 </details>
 
 ---
 
 ### 13. Payroll
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/payroll/commissions` | MANAGER_ROLES | List sales commissions |
-| `GET` | `/payroll/payslips` | MANAGER_ROLES | List payslips |
-| `POST` | `/payroll/payslips` | MANAGER_ROLES | Create/bulk payslips (upsert) |
-| `GET` | `/payroll/payslips/:id` | MANAGER_ROLES | Get payslip detail |
-| `PUT` | `/payroll/payslips/:id` | MANAGER_ROLES | Update payslip |
-| `DELETE` | `/payroll/payslips/:id` | MANAGER_ROLES | Delete payslip |
+| Method   | Endpoint                | Auth          | Description                   |
+| -------- | ----------------------- | ------------- | ----------------------------- |
+| `GET`    | `/payroll/commissions`  | MANAGER_ROLES | List sales commissions        |
+| `GET`    | `/payroll/payslips`     | MANAGER_ROLES | List payslips                 |
+| `POST`   | `/payroll/payslips`     | MANAGER_ROLES | Create/bulk payslips (upsert) |
+| `GET`    | `/payroll/payslips/:id` | MANAGER_ROLES | Get payslip detail            |
+| `PUT`    | `/payroll/payslips/:id` | MANAGER_ROLES | Update payslip                |
+| `DELETE` | `/payroll/payslips/:id` | MANAGER_ROLES | Delete payslip                |
 
 **Commission query params:** `userId`, `isPaid`
 **Payslip query params:** `userId`, `month`, `year`
@@ -552,18 +578,20 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
   "paidAt": null
 }
 ```
+
 > **Net pay** auto-calculated: `basicSalary + allowances + commissions - deductions`
 > Upserts on `(userId, month, year)`. Send an array for bulk creation.
+
 </details>
 
 ---
 
 ### 14. Dashboard
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/dashboard` | STAFF_ROLES | Business summary (KPIs) |
-| `GET` | `/dashboard/charts` | STAFF_ROLES | Full BI chart data |
+| Method | Endpoint            | Auth        | Description             |
+| ------ | ------------------- | ----------- | ----------------------- |
+| `GET`  | `/dashboard`        | STAFF_ROLES | Business summary (KPIs) |
+| `GET`  | `/dashboard/charts` | STAFF_ROLES | Full BI chart data      |
 
 **Dashboard summary returns:** orders (today/month/pending), revenue (total/monthly/growth%), inventory alerts, delivery stats, top 5 products.
 
@@ -573,10 +601,10 @@ Tokens are obtained via `POST /auth/login` or `POST /auth/register`. Access toke
 
 ### 15. Analytics
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/analytics/employees` | MANAGER_ROLES | Employee performance metrics |
-| `GET` | `/analytics/suppliers` | MANAGER_ROLES | Supplier performance metrics |
+| Method | Endpoint               | Auth          | Description                  |
+| ------ | ---------------------- | ------------- | ---------------------------- |
+| `GET`  | `/analytics/employees` | MANAGER_ROLES | Employee performance metrics |
+| `GET`  | `/analytics/suppliers` | MANAGER_ROLES | Supplier performance metrics |
 
 **Query params:** `startDate`, `endDate` (ISO dates, defaults to current month)
 
