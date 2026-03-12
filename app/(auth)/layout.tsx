@@ -12,14 +12,14 @@ export default function AuthLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="relative min-h-screen flex flex-col bg-[#F8FAFC] font-sans">
+    <div className="relative flex min-h-screen flex-col bg-[#F8FAFC] font-sans">
       {/* Header */}
-      <header className="w-full border-b border-primary/10 bg-white/80 backdrop-blur-md sticky top-0 z-50 px-6 lg:px-20 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <header className="border-primary/10 sticky top-0 z-50 w-full border-b bg-white/80 px-6 py-4 backdrop-blur-md lg:px-20">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <div className="bg-[#7c3bed] text-white p-2 rounded-lg">
+            <div className="rounded-lg bg-[#7c3bed] p-2 text-white">
               <svg
-                className="w-6 h-6"
+                className="h-6 w-6"
                 fill="none"
                 viewBox="0 0 48 48"
                 xmlns="http://www.w3.org/2000/svg"
@@ -33,14 +33,13 @@ export default function AuthLayout({
               </svg>
             </div>
             <span className="text-xl font-bold tracking-tight text-slate-900">
-              Rotana{' '}
-              <span className="text-[#7c3bed] font-medium">Store</span>
+              Rotana <span className="font-medium text-[#7c3bed]">Store</span>
             </span>
           </Link>
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden items-center gap-6 md:flex">
             <Link
               href="#"
-              className="text-sm font-medium text-slate-600 hover:text-[#7c3bed] transition-colors"
+              className="text-sm font-medium text-slate-600 transition-colors hover:text-[#7c3bed]"
             >
               Help Center
             </Link>
@@ -49,13 +48,11 @@ export default function AuthLayout({
       </header>
 
       {/* Main content */}
-      <main className="flex-grow flex items-center justify-center p-6 lg:p-12">
-        {children}
-      </main>
+      <main className="flex flex-grow items-center justify-center p-6 lg:p-12">{children}</main>
 
       {/* Decorative background blurs */}
-      <div className="fixed bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-[#7c3bed]/5 to-transparent -z-10 pointer-events-none" />
-      <div className="fixed top-20 right-20 w-64 h-64 bg-[#7c3bed]/5 blur-3xl rounded-full -z-10 pointer-events-none" />
+      <div className="pointer-events-none fixed bottom-0 left-0 -z-10 h-1/3 w-full bg-gradient-to-t from-[#7c3bed]/5 to-transparent" />
+      <div className="pointer-events-none fixed top-20 right-20 -z-10 h-64 w-64 rounded-full bg-[#7c3bed]/5 blur-3xl" />
     </div>
   );
 }

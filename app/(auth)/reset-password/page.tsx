@@ -61,10 +61,7 @@ export default function ResetPasswordPage() {
       const result = await res.json();
 
       if (!res.ok) {
-        setServerError(
-          result.error?.message ??
-            'Failed to reset password. Please try again.'
-        );
+        setServerError(result.error?.message ?? 'Failed to reset password. Please try again.');
         return;
       }
 
@@ -77,30 +74,23 @@ export default function ResetPasswordPage() {
   return (
     <div className="w-full max-w-[480px]">
       {/* Reset Password Card */}
-      <div className="bg-white border border-slate-200/60 rounded-2xl shadow-xl shadow-[#7c3bed]/5 p-8 lg:p-10">
+      <div className="rounded-2xl border border-slate-200/60 bg-white p-8 shadow-xl shadow-[#7c3bed]/5 lg:p-10">
         <div className="mb-8">
-          <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
-            Reset Password
-          </h1>
-          <p className="text-slate-500 text-sm">
-            Enter your new password below.
-          </p>
+          <h1 className="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl">Reset Password</h1>
+          <p className="text-sm text-slate-500">Enter your new password below.</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Server-level error */}
           {serverError && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {serverError}
             </div>
           )}
 
           {/* New Password */}
           <div className="space-y-2">
-            <Label
-              htmlFor="password"
-              className="text-sm font-semibold text-slate-700"
-            >
+            <Label htmlFor="password" className="text-sm font-semibold text-slate-700">
               New Password
             </Label>
             <div className="relative flex items-center">
@@ -108,20 +98,16 @@ export default function ResetPasswordPage() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                className="h-12 pr-12 rounded-xl border-slate-200 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]/20 transition-all"
+                className="h-12 rounded-xl border-slate-200 pr-12 transition-all focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]/20"
                 {...register('password')}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 text-slate-400 hover:text-slate-600 transition-colors"
+                className="absolute right-4 text-slate-400 transition-colors hover:text-slate-600"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
             {errors.password ? (
@@ -133,10 +119,7 @@ export default function ResetPasswordPage() {
 
           {/* Confirm Password */}
           <div className="space-y-2">
-            <Label
-              htmlFor="confirmPassword"
-              className="text-sm font-semibold text-slate-700"
-            >
+            <Label htmlFor="confirmPassword" className="text-sm font-semibold text-slate-700">
               Confirm Password
             </Label>
             <div className="relative flex items-center">
@@ -144,28 +127,20 @@ export default function ResetPasswordPage() {
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                className="h-12 pr-12 rounded-xl border-slate-200 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]/20 transition-all"
+                className="h-12 rounded-xl border-slate-200 pr-12 transition-all focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]/20"
                 {...register('confirmPassword')}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-4 text-slate-400 hover:text-slate-600 transition-colors"
-                aria-label={
-                  showConfirmPassword ? 'Hide password' : 'Show password'
-                }
+                className="absolute right-4 text-slate-400 transition-colors hover:text-slate-600"
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
               >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
+                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-xs text-red-500">
-                {errors.confirmPassword.message}
-              </p>
+              <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>
             )}
           </div>
 
@@ -173,13 +148,9 @@ export default function ResetPasswordPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-12 bg-[#7c3bed] hover:bg-[#7c3bed]/90 text-white font-bold rounded-xl shadow-lg shadow-[#7c3bed]/25 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+            className="h-12 w-full rounded-xl bg-[#7c3bed] font-bold text-white shadow-lg shadow-[#7c3bed]/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#7c3bed]/90 active:translate-y-0"
           >
-            {isSubmitting ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              'Reset Password'
-            )}
+            {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Reset Password'}
           </Button>
         </form>
 
@@ -187,10 +158,7 @@ export default function ResetPasswordPage() {
         <div className="mt-10 text-center">
           <p className="text-sm text-slate-500">
             Return to{' '}
-            <Link
-              href="/login"
-              className="text-[#7c3bed] font-bold hover:underline"
-            >
+            <Link href="/login" className="font-bold text-[#7c3bed] hover:underline">
               Login
             </Link>
           </p>

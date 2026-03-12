@@ -48,9 +48,7 @@ export default function ForgotPasswordPage() {
       const result = await res.json();
 
       if (!res.ok) {
-        setServerError(
-          result.error?.message ?? 'Failed to send OTP. Please try again.'
-        );
+        setServerError(result.error?.message ?? 'Failed to send OTP. Please try again.');
         return;
       }
 
@@ -63,25 +61,22 @@ export default function ForgotPasswordPage() {
   return (
     <div className="w-full max-w-[480px]">
       {/* Forgot Password Card */}
-      <div className="bg-white border border-slate-200/60 rounded-2xl shadow-xl shadow-[#7c3bed]/5 p-8 lg:p-10">
+      <div className="rounded-2xl border border-slate-200/60 bg-white p-8 shadow-xl shadow-[#7c3bed]/5 lg:p-10">
         <div className="mb-8">
-          <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
-            Forgot Password
-          </h1>
-          <p className="text-slate-500 text-sm">
-            Enter your email address and we&apos;ll send you an Link to reset
-            your password.
+          <h1 className="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl">Forgot Password</h1>
+          <p className="text-sm text-slate-500">
+            Enter your email address and we&apos;ll send you an Link to reset your password.
           </p>
         </div>
 
         {success ? (
           <div className="space-y-6">
-            <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3">
+            <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
               Link has been sent to your email. Please check your inbox.
             </div>
             <Link
               href="/login"
-              className="block text-center text-sm text-[#7c3bed] font-bold hover:underline"
+              className="block text-center text-sm font-bold text-[#7c3bed] hover:underline"
             >
               Return to Login
             </Link>
@@ -90,42 +85,33 @@ export default function ForgotPasswordPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Server-level error */}
             {serverError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {serverError}
               </div>
             )}
 
             {/* Email */}
             <div className="space-y-2">
-              <Label
-                htmlFor="email"
-                className="text-sm font-semibold text-slate-700"
-              >
+              <Label htmlFor="email" className="text-sm font-semibold text-slate-700">
                 Email Address
               </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="name@company.com"
-                className="h-12 rounded-xl border-slate-200 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]/20 transition-all"
+                className="h-12 rounded-xl border-slate-200 transition-all focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]/20"
                 {...register('email')}
               />
-              {errors.email && (
-                <p className="text-xs text-red-500">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
             </div>
 
             {/* Send Link Button */}
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 bg-[#7c3bed] hover:bg-[#7c3bed]/90 text-white font-bold rounded-xl shadow-lg shadow-[#7c3bed]/25 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+              className="h-12 w-full rounded-xl bg-[#7c3bed] font-bold text-white shadow-lg shadow-[#7c3bed]/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#7c3bed]/90 active:translate-y-0"
             >
-              {isSubmitting ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                'Send Link'
-              )}
+              {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Send Link'}
             </Button>
           </form>
         )}
@@ -135,10 +121,7 @@ export default function ForgotPasswordPage() {
           <div className="mt-10 text-center">
             <p className="text-sm text-slate-500">
               Return to{' '}
-              <Link
-                href="/login"
-                className="text-[#7c3bed] font-bold hover:underline"
-              >
+              <Link href="/login" className="font-bold text-[#7c3bed] hover:underline">
                 Login
               </Link>
             </p>

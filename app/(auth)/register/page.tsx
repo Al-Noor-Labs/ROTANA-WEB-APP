@@ -10,10 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  registerSchema,
-  type RegisterFormValues,
-} from '@/lib/schemas/auth.schema';
+import { registerSchema, type RegisterFormValues } from '@/lib/schemas/auth.schema';
 
 /**
  * Registration page for Rotana Store.
@@ -54,9 +51,7 @@ export default function RegisterPage() {
         if (res.status === 409) {
           setServerError('An account with this email already exists.');
         } else {
-          setServerError(
-            result.error?.message ?? 'Registration failed. Please try again.'
-          );
+          setServerError(result.error?.message ?? 'Registration failed. Please try again.');
         }
         return;
       }
@@ -71,48 +66,36 @@ export default function RegisterPage() {
   return (
     <div className="w-full max-w-lg">
       {/* Signup Card */}
-      <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-xl shadow-slate-200/50">
         {/* Card Header */}
         <div className="p-8 pb-4 text-center">
-          <h1 className="text-2xl font-bold text-slate-900">
-            Create your account
-          </h1>
-          <p className="text-slate-500 mt-2 text-sm">
-            Join Rotana Store — your wholesale network.
-          </p>
+          <h1 className="text-2xl font-bold text-slate-900">Create your account</h1>
+          <p className="mt-2 text-sm text-slate-500">Join Rotana Store — your wholesale network.</p>
         </div>
 
         {/* Signup Form */}
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="p-8 pt-4 space-y-6"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-8 pt-4">
           {/* Server-level error */}
           {serverError && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {serverError}
             </div>
           )}
 
           {/* Full Name */}
           <div>
-            <Label
-              htmlFor="name"
-              className="block text-sm font-semibold text-slate-900 mb-1.5"
-            >
+            <Label htmlFor="name" className="mb-1.5 block text-sm font-semibold text-slate-900">
               Full Name
             </Label>
             <Input
               id="name"
               type="text"
               placeholder="John Doe"
-              className="w-full px-4 py-2.5 rounded-lg border-slate-300 focus:ring-2 focus:ring-[#7c3bed] focus:border-[#7c3bed] transition-all placeholder:text-slate-400 text-sm"
+              className="w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]"
               {...register('name')}
             />
             {errors.name ? (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.name.message}
-              </p>
+              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
             ) : (
               <p className="mt-1 text-xs text-slate-400">min 2 characters</p>
             )}
@@ -120,72 +103,53 @@ export default function RegisterPage() {
 
           {/* Email Address */}
           <div>
-            <Label
-              htmlFor="email"
-              className="block text-sm font-semibold text-slate-900 mb-1.5"
-            >
+            <Label htmlFor="email" className="mb-1.5 block text-sm font-semibold text-slate-900">
               Email Address
             </Label>
             <Input
               id="email"
               type="email"
               placeholder="john@example.com"
-              className="w-full px-4 py-2.5 rounded-lg border-slate-300 focus:ring-2 focus:ring-[#7c3bed] focus:border-[#7c3bed] transition-all placeholder:text-slate-400 text-sm"
+              className="w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]"
               {...register('email')}
             />
-            {errors.email && (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.email.message}
-              </p>
-            )}
+            {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
           </div>
 
-         {/* Phone Number */}
+          {/* Phone Number */}
           <div>
-            <Label
-              htmlFor="phone"
-              className="block text-sm font-semibold text-slate-900 mb-1.5"
-            >
+            <Label htmlFor="phone" className="mb-1.5 block text-sm font-semibold text-slate-900">
               Phone Number{' '}
             </Label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 text-sm border-r border-slate-200 pr-2 my-2.5">
+              <span className="absolute inset-y-0 left-0 my-2.5 flex items-center border-r border-slate-200 pr-2 pl-4 text-sm text-slate-400">
                 +91
               </span>
               <Input
                 id="phone"
                 type="tel"
                 placeholder="9876543210"
-                className="w-full pl-16 pr-4 py-2.5 rounded-lg border-slate-300 focus:ring-2 focus:ring-[#7c3bed] focus:border-[#7c3bed] transition-all placeholder:text-slate-400 text-sm"
+                className="w-full rounded-lg border-slate-300 py-2.5 pr-4 pl-16 text-sm transition-all placeholder:text-slate-400 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]"
                 {...register('phone')}
               />
             </div>
-            {errors.phone && (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.phone.message}
-              </p>
-            )}
+            {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>}
           </div>
 
           {/* Password */}
           <div>
-            <Label
-              htmlFor="password"
-              className="block text-sm font-semibold text-slate-900 mb-1.5"
-            >
+            <Label htmlFor="password" className="mb-1.5 block text-sm font-semibold text-slate-900">
               Password
             </Label>
             <Input
               id="password"
               type="password"
               placeholder="SecureP@ss123"
-              className="w-full px-4 py-2.5 rounded-lg border-slate-300 focus:ring-2 focus:ring-[#7c3bed] focus:border-[#7c3bed] transition-all placeholder:text-slate-400 text-sm"
+              className="w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]"
               {...register('password')}
             />
             {errors.password ? (
-              <p className="mt-1 text-xs text-red-500">
-                {errors.password.message}
-              </p>
+              <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
             ) : (
               <p className="mt-1 text-xs text-slate-400">min 8 characters</p>
             )}
@@ -195,40 +159,27 @@ export default function RegisterPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-12 bg-[#7c3bed] hover:bg-[#7c3bed]/90 text-white font-bold rounded-xl shadow-lg shadow-[#7c3bed]/25 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+            className="h-12 w-full rounded-xl bg-[#7c3bed] font-bold text-white shadow-lg shadow-[#7c3bed]/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#7c3bed]/90 active:translate-y-0"
           >
-            {isSubmitting ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              'Create Account'
-            )}
+            {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Create Account'}
           </Button>
         </form>
 
         {/* Card Footer */}
-        <div className="bg-slate-50 p-6 text-center border-t border-slate-100">
+        <div className="border-t border-slate-100 bg-slate-50 p-6 text-center">
           <p className="text-sm text-slate-600">
             Already have an account?{' '}
-            <Link
-              href="/login"
-              className="text-[#7c3bed] font-semibold hover:underline"
-            >
+            <Link href="/login" className="font-semibold text-[#7c3bed] hover:underline">
               Log in
             </Link>
           </p>
-          <p className="text-xs text-slate-400 mt-4 leading-relaxed">
+          <p className="mt-4 text-xs leading-relaxed text-slate-400">
             By signing up, you agree to our{' '}
-            <Link
-              href="#"
-              className="underline hover:text-slate-600 transition-colors"
-            >
+            <Link href="#" className="underline transition-colors hover:text-slate-600">
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link
-              href="#"
-              className="underline hover:text-slate-600 transition-colors"
-            >
+            <Link href="#" className="underline transition-colors hover:text-slate-600">
               Privacy Policy
             </Link>
             .
