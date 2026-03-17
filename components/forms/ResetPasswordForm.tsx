@@ -6,23 +6,20 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  resetPasswordSchema,
+  type ResetPasswordFormValues,
+} from '@/lib/schemas/auth.schema';
 
-const resetPasswordSchema = z
-  .object({
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string().min(1, 'Please confirm your password'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+/** Response shape from POST /api/v1/auth/reset-password */
+interface IResetPasswordApiResponse {
+  success: boolean;
+  error?: { code: string; message: string };
+}
 
 /**
  * Client-side reset password form.
@@ -46,6 +43,38 @@ export function ResetPasswordForm() {
     defaultValues: { password: '', confirmPassword: '' },
   });
 
+  // Guard: show error if token is missing from the URL
+  if (!token) {
+    return (
+      <div className="w-full max-w-[480px]">
+        <div className="rounded-2xl border border-slate-200/60 bg-white p-8 shadow-xl shadow-brand/5 lg:p-10">
+          <div className="mb-6">
+            <h1 className="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl">
+              Invalid Reset Link
+            </h1>
+            <p className="text-sm text-slate-500">
+              This password reset link is invalid or has expired. Please request a new one.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <Link
+              href="/forgot-password"
+              className="block rounded-xl bg-brand px-4 py-3 text-center font-bold text-white shadow-lg shadow-brand/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand/90"
+            >
+              Request New Link
+            </Link>
+            <p className="text-center text-sm text-slate-500">
+              Return to{' '}
+              <Link href="/login" className="font-bold text-brand hover:underline">
+                Login
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   async function onSubmit(data: ResetPasswordFormValues) {
     setServerError(null);
 
@@ -56,7 +85,7 @@ export function ResetPasswordForm() {
         body: JSON.stringify({ password: data.password, token }),
       });
 
-      const result = await res.json();
+      const result: IResetPasswordApiResponse = await res.json();
 
       if (!res.ok) {
         setServerError(result.error?.message ?? 'Failed to reset password. Please try again.');
@@ -71,7 +100,7 @@ export function ResetPasswordForm() {
 
   return (
     <div className="w-full max-w-[480px]">
-      <div className="rounded-2xl border border-slate-200/60 bg-white p-8 shadow-xl shadow-[#7c3bed]/5 lg:p-10">
+      <div className="rounded-2xl border border-slate-200/60 bg-white p-8 shadow-xl shadow-brand/5 lg:p-10">
         <div className="mb-8">
           <h1 className="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl">Reset Password</h1>
           <p className="text-sm text-slate-500">Enter your new password below.</p>
@@ -94,7 +123,7 @@ export function ResetPasswordForm() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                className="h-12 rounded-xl border-slate-200 pr-12 transition-all focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]/20"
+                className="h-12 rounded-xl border-slate-200 pr-12 transition-all focus:border-brand focus:ring-2 focus:ring-brand/20"
                 {...register('password')}
               />
               <button
@@ -123,7 +152,7 @@ export function ResetPasswordForm() {
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                className="h-12 rounded-xl border-slate-200 pr-12 transition-all focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]/20"
+                className="h-12 rounded-xl border-slate-200 pr-12 transition-all focus:border-brand focus:ring-2 focus:ring-brand/20"
                 {...register('confirmPassword')}
               />
               <button
@@ -144,7 +173,7 @@ export function ResetPasswordForm() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="h-12 w-full rounded-xl bg-[#7c3bed] font-bold text-white shadow-lg shadow-[#7c3bed]/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#7c3bed]/90 active:translate-y-0"
+            className="h-12 w-full rounded-xl bg-brand font-bold text-white shadow-lg shadow-brand/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand/90 active:translate-y-0"
           >
             {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Reset Password'}
           </Button>
@@ -154,7 +183,7 @@ export function ResetPasswordForm() {
         <div className="mt-10 text-center">
           <p className="text-sm text-slate-500">
             Return to{' '}
-            <Link href="/login" className="font-bold text-[#7c3bed] hover:underline">
+            <Link href="/login" className="font-bold text-brand hover:underline">
               Login
             </Link>
           </p>
