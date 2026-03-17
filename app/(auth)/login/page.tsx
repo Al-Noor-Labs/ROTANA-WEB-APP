@@ -65,7 +65,7 @@ export default function LoginPage() {
   return (
     <div className="w-full max-w-[480px]">
       {/* Login Card */}
-      <div className="rounded-2xl border border-slate-200/60 bg-white p-8 shadow-xl shadow-brand/5 lg:p-10">
+      <div className="shadow-brand/5 rounded-2xl border border-slate-200/60 bg-white p-8 shadow-xl lg:p-10">
         <div className="mb-8">
           <h1 className="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl">Welcome Back</h1>
           <p className="text-sm text-slate-500">Login to your Rotana Store account.</p>
@@ -88,7 +88,7 @@ export default function LoginPage() {
               id="email"
               type="email"
               placeholder="name@company.com"
-              className="h-12 rounded-xl border-slate-200 transition-all focus:border-brand focus:ring-2 focus:ring-brand/20"
+              className="focus:border-brand focus:ring-brand/20 h-12 rounded-xl border-slate-200 transition-all focus:ring-2"
               {...register('email')}
             />
             {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
@@ -102,7 +102,7 @@ export default function LoginPage() {
               </Label>
               <Link
                 href="/forgot-password"
-                className="text-xs font-medium text-brand hover:underline"
+                className="text-brand text-xs font-medium hover:underline"
               >
                 Forgot Password?
               </Link>
@@ -112,7 +112,7 @@ export default function LoginPage() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                className="h-12 rounded-xl border-slate-200 pr-12 transition-all focus:border-brand focus:ring-2 focus:ring-brand/20"
+                className="focus:border-brand focus:ring-brand/20 h-12 rounded-xl border-slate-200 pr-12 transition-all focus:ring-2"
                 {...register('password')}
               />
               <button
@@ -131,7 +131,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="h-12 w-full rounded-xl bg-brand font-bold text-white shadow-lg shadow-brand/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand/90 active:translate-y-0"
+            className="bg-brand shadow-brand/25 hover:bg-brand/90 h-12 w-full rounded-xl font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
           >
             {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Sign In'}
           </Button>
@@ -141,7 +141,7 @@ export default function LoginPage() {
         <div className="mt-10 text-center">
           <p className="text-sm text-slate-500">
             Don&apos;t have an account?{' '}
-            <Link href="/register" className="ml-1 font-bold text-brand hover:underline">
+            <Link href="/register" className="text-brand ml-1 font-bold hover:underline">
               Create Account
             </Link>
           </p>

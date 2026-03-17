@@ -100,7 +100,7 @@ export default function RegisterPage() {
               id="name"
               type="text"
               placeholder="John Doe"
-              className="w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand"
+              className="focus:border-brand focus:ring-brand w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:ring-2"
               {...register('name')}
             />
             {errors.name ? (
@@ -119,7 +119,7 @@ export default function RegisterPage() {
               id="email"
               type="email"
               placeholder="john@example.com"
-              className="w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand"
+              className="focus:border-brand focus:ring-brand w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:ring-2"
               {...register('email')}
             />
             {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
@@ -138,7 +138,7 @@ export default function RegisterPage() {
                 id="phone"
                 type="tel"
                 placeholder="9876543210"
-                className="w-full rounded-lg border-slate-300 py-2.5 pr-4 pl-16 text-sm transition-all placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand"
+                className="focus:border-brand focus:ring-brand w-full rounded-lg border-slate-300 py-2.5 pr-4 pl-16 text-sm transition-all placeholder:text-slate-400 focus:ring-2"
                 {...register('phone')}
               />
             </div>
@@ -155,7 +155,7 @@ export default function RegisterPage() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="SecureP@ss123"
-                className="w-full rounded-lg border-slate-300 px-4 py-2.5 pr-12 text-sm transition-all placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand"
+                className="focus:border-brand focus:ring-brand w-full rounded-lg border-slate-300 px-4 py-2.5 pr-12 text-sm transition-all placeholder:text-slate-400 focus:ring-2"
                 {...register('password')}
               />
               <button
@@ -178,7 +178,7 @@ export default function RegisterPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="h-12 w-full rounded-xl bg-brand font-bold text-white shadow-lg shadow-brand/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand/90 active:translate-y-0"
+            className="bg-brand shadow-brand/25 hover:bg-brand/90 h-12 w-full rounded-xl font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
           >
             {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Create Account'}
           </Button>
@@ -188,7 +188,7 @@ export default function RegisterPage() {
         <div className="border-t border-slate-100 bg-slate-50 p-6 text-center">
           <p className="text-sm text-slate-600">
             Already have an account?{' '}
-            <Link href="/login" className="font-semibold text-brand hover:underline">
+            <Link href="/login" className="text-brand font-semibold hover:underline">
               Log in
             </Link>
           </p>

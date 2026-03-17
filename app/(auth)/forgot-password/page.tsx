@@ -9,10 +9,7 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  forgotPasswordSchema,
-  type ForgotPasswordFormValues,
-} from '@/lib/schemas/auth.schema';
+import { forgotPasswordSchema, type ForgotPasswordFormValues } from '@/lib/schemas/auth.schema';
 
 /** Response shape from POST /api/v1/auth/forgot-password */
 interface IForgotPasswordApiResponse {
@@ -63,7 +60,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="w-full max-w-[480px]">
       {/* Forgot Password Card */}
-      <div className="rounded-2xl border border-slate-200/60 bg-white p-8 shadow-xl shadow-brand/5 lg:p-10">
+      <div className="shadow-brand/5 rounded-2xl border border-slate-200/60 bg-white p-8 shadow-xl lg:p-10">
         <div className="mb-8">
           <h1 className="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl">Forgot Password</h1>
           <p className="text-sm text-slate-500">
@@ -78,7 +75,7 @@ export default function ForgotPasswordPage() {
             </div>
             <Link
               href="/login"
-              className="block text-center text-sm font-bold text-brand hover:underline"
+              className="text-brand block text-center text-sm font-bold hover:underline"
             >
               Return to Login
             </Link>
@@ -101,7 +98,7 @@ export default function ForgotPasswordPage() {
                 id="email"
                 type="email"
                 placeholder="name@company.com"
-                className="h-12 rounded-xl border-slate-200 transition-all focus:border-brand focus:ring-2 focus:ring-brand/20"
+                className="focus:border-brand focus:ring-brand/20 h-12 rounded-xl border-slate-200 transition-all focus:ring-2"
                 {...register('email')}
               />
               {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
@@ -111,7 +108,7 @@ export default function ForgotPasswordPage() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="h-12 w-full rounded-xl bg-brand font-bold text-white shadow-lg shadow-brand/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand/90 active:translate-y-0"
+              className="bg-brand shadow-brand/25 hover:bg-brand/90 h-12 w-full rounded-xl font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
             >
               {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Send Link'}
             </Button>
@@ -123,7 +120,7 @@ export default function ForgotPasswordPage() {
           <div className="mt-10 text-center">
             <p className="text-sm text-slate-500">
               Return to{' '}
-              <Link href="/login" className="font-bold text-brand hover:underline">
+              <Link href="/login" className="text-brand font-bold hover:underline">
                 Login
               </Link>
             </p>

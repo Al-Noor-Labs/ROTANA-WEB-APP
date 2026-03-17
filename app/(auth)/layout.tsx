@@ -17,7 +17,7 @@ export default function AuthLayout({
       <header className="border-primary/10 sticky top-0 z-50 w-full border-b bg-white/80 px-6 py-4 backdrop-blur-md lg:px-20">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <div className="rounded-lg bg-brand p-2 text-white">
+            <div className="bg-brand rounded-lg p-2 text-white">
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -33,13 +33,13 @@ export default function AuthLayout({
               </svg>
             </div>
             <span className="text-xl font-bold tracking-tight text-slate-900">
-              Rotana <span className="font-medium text-brand">Store</span>
+              Rotana <span className="text-brand font-medium">Store</span>
             </span>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
             <Link
               href="#"
-              className="text-sm font-medium text-slate-600 transition-colors hover:text-brand"
+              className="hover:text-brand text-sm font-medium text-slate-600 transition-colors"
             >
               Help Center
             </Link>
@@ -51,8 +51,8 @@ export default function AuthLayout({
       <main className="flex flex-grow items-center justify-center p-6 lg:p-12">{children}</main>
 
       {/* Decorative background blurs */}
-      <div className="pointer-events-none fixed bottom-0 left-0 -z-10 h-1/3 w-full bg-gradient-to-t from-brand/5 to-transparent" />
-      <div className="pointer-events-none fixed top-20 right-20 -z-10 h-64 w-64 rounded-full bg-brand/5 blur-3xl" />
+      <div className="from-brand/5 pointer-events-none fixed bottom-0 left-0 -z-10 h-1/3 w-full bg-gradient-to-t to-transparent" />
+      <div className="bg-brand/5 pointer-events-none fixed top-20 right-20 -z-10 h-64 w-64 rounded-full blur-3xl" />
     </div>
   );
 }
