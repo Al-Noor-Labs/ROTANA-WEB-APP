@@ -5,12 +5,20 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { registerSchema, type RegisterFormValues } from '@/lib/schemas/auth.schema';
+import { DEFAULT_COUNTRY_CODE } from '@/lib/constants/phone';
+
+/** Response shape from POST /api/v1/auth/register */
+interface IRegisterApiResponse {
+  success: boolean;
+  data?: { accessToken: string; refreshToken: string };
+  error?: { code: string; message: string };
+}
 
 /**
  * Registration page for Rotana Store.
@@ -18,6 +26,7 @@ import { registerSchema, type RegisterFormValues } from '@/lib/schemas/auth.sche
  */
 export default function RegisterPage() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -45,7 +54,7 @@ export default function RegisterPage() {
         body: JSON.stringify(payload),
       });
 
-      const result = await res.json();
+      const result: IRegisterApiResponse = await res.json();
 
       if (!res.ok) {
         if (res.status === 409) {
@@ -91,7 +100,7 @@ export default function RegisterPage() {
               id="name"
               type="text"
               placeholder="John Doe"
-              className="w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]"
+              className="focus:border-brand focus:ring-brand w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:ring-2"
               {...register('name')}
             />
             {errors.name ? (
@@ -110,7 +119,7 @@ export default function RegisterPage() {
               id="email"
               type="email"
               placeholder="john@example.com"
-              className="w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]"
+              className="focus:border-brand focus:ring-brand w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:ring-2"
               {...register('email')}
             />
             {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
@@ -123,13 +132,13 @@ export default function RegisterPage() {
             </Label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 my-2.5 flex items-center border-r border-slate-200 pr-2 pl-4 text-sm text-slate-400">
-                +91
+                {DEFAULT_COUNTRY_CODE}
               </span>
               <Input
                 id="phone"
                 type="tel"
                 placeholder="9876543210"
-                className="w-full rounded-lg border-slate-300 py-2.5 pr-4 pl-16 text-sm transition-all placeholder:text-slate-400 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]"
+                className="focus:border-brand focus:ring-brand w-full rounded-lg border-slate-300 py-2.5 pr-4 pl-16 text-sm transition-all placeholder:text-slate-400 focus:ring-2"
                 {...register('phone')}
               />
             </div>
@@ -141,13 +150,23 @@ export default function RegisterPage() {
             <Label htmlFor="password" className="mb-1.5 block text-sm font-semibold text-slate-900">
               Password
             </Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="SecureP@ss123"
-              className="w-full rounded-lg border-slate-300 px-4 py-2.5 text-sm transition-all placeholder:text-slate-400 focus:border-[#7c3bed] focus:ring-2 focus:ring-[#7c3bed]"
-              {...register('password')}
-            />
+            <div className="relative flex items-center">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="SecureP@ss123"
+                className="focus:border-brand focus:ring-brand w-full rounded-lg border-slate-300 px-4 py-2.5 pr-12 text-sm transition-all placeholder:text-slate-400 focus:ring-2"
+                {...register('password')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 text-slate-400 transition-colors hover:text-slate-600"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
             {errors.password ? (
               <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
             ) : (
@@ -159,7 +178,7 @@ export default function RegisterPage() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="h-12 w-full rounded-xl bg-[#7c3bed] font-bold text-white shadow-lg shadow-[#7c3bed]/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#7c3bed]/90 active:translate-y-0"
+            className="bg-brand shadow-brand/25 hover:bg-brand/90 h-12 w-full rounded-xl font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
           >
             {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Create Account'}
           </Button>
@@ -169,7 +188,7 @@ export default function RegisterPage() {
         <div className="border-t border-slate-100 bg-slate-50 p-6 text-center">
           <p className="text-sm text-slate-600">
             Already have an account?{' '}
-            <Link href="/login" className="font-semibold text-[#7c3bed] hover:underline">
+            <Link href="/login" className="text-brand font-semibold hover:underline">
               Log in
             </Link>
           </p>
